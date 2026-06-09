@@ -26,6 +26,7 @@ export class VehicleComponent implements OnInit {
   isDeleting = false;
   message = '';
   error = '';
+  showForm = true;
 
   constructor(
     private fb: FormBuilder,
@@ -68,7 +69,8 @@ export class VehicleComponent implements OnInit {
       model: ['', Validators.required],
       manufacturer: ['', Validators.required],
       mileage: [0, [Validators.required, Validators.min(0)]],
-      capacityKg: [0, [Validators.required, Validators.min(1)]],
+      capacity: [0, [Validators.required, Validators.min(1)]],
+      weightUnit: ['Kg', Validators.required],
       status: ['AVAILABLE', Validators.required],
       fuelType: ['DIESEL', Validators.required],
       registrationDate: [new Date().toISOString().slice(0, 10), Validators.required],
@@ -105,7 +107,26 @@ export class VehicleComponent implements OnInit {
     this.message = '';
     this.error = '';
 
-    const payload = this.vehicleForm.value as VehiclePayload;
+    const formVal = this.vehicleForm.value;
+    const computedCapacityKg = formVal.weightUnit === 'Ton' ? formVal.capacity * 1000 : formVal.capacity;
+
+    const payload: VehiclePayload = {
+      chassisNumber: formVal.chassisNumber,
+      engineNumber: formVal.engineNumber,
+      registrationNumber: formVal.registrationNumber,
+      vehicleType: formVal.vehicleType,
+      model: formVal.model,
+      manufacturer: formVal.manufacturer,
+      mileage: formVal.mileage,
+      capacityKg: computedCapacityKg,
+      status: formVal.status,
+      fuelType: formVal.fuelType,
+      registrationDate: formVal.registrationDate,
+      insuranceExpiryDate: formVal.insuranceExpiryDate,
+      pollutionExpiryDate: formVal.pollutionExpiryDate,
+      currentLocation: formVal.currentLocation
+    };
+
     const request = this.isEditMode && this.editId
       ? this.vehicleService.updateVehicle(this.editId, payload)
       : this.vehicleService.createVehicle(payload);
@@ -127,6 +148,10 @@ export class VehicleComponent implements OnInit {
   edit(vehicle: any): void {
     this.isEditMode = true;
     this.editId = vehicle.id || vehicle.vehicleId;
+    
+    const capKg = vehicle.capacityKg || 0;
+    const isTon = capKg > 0 && capKg % 1000 === 0;
+    
     this.vehicleForm.patchValue({
       chassisNumber: vehicle.chassisNumber || '',
       engineNumber: vehicle.engineNumber || '',
@@ -135,7 +160,8 @@ export class VehicleComponent implements OnInit {
       model: vehicle.model || '',
       manufacturer: vehicle.manufacturer || '',
       mileage: vehicle.mileage || 0,
-      capacityKg: vehicle.capacityKg || 0,
+      capacity: isTon ? capKg / 1000 : capKg,
+      weightUnit: isTon ? 'Ton' : 'Kg',
       status: vehicle.status || 'AVAILABLE',
       fuelType: vehicle.fuelType || 'DIESEL',
       registrationDate: vehicle.registrationDate || '',
@@ -185,7 +211,8 @@ export class VehicleComponent implements OnInit {
     this.vehicleForm.reset({
       vehicleType: 'TRUCK',
       mileage: 0,
-      capacityKg: 0,
+      capacity: 0,
+      weightUnit: 'Kg',
       status: 'AVAILABLE',
       fuelType: 'DIESEL',
       registrationDate: new Date().toISOString().slice(0, 10)
@@ -193,6 +220,13 @@ export class VehicleComponent implements OnInit {
     this.isEditMode = false;
     this.editId = null;
     this.loadVehicles();
+  }
+
+  toggleForm(): void {
+    this.showForm = !this.showForm;
+    if (this.showForm) {
+      this.reset();
+    }
   }
 
   private extractList(response: any): any[] {

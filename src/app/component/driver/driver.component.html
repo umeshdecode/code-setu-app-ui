@@ -15,8 +15,8 @@
           <span class="material-icons">arrow_back</span>
           Back
         </a>
-        <button class="circle-btn" type="button" (click)="reset()">
-          <span class="material-icons">add</span>
+        <button class="circle-btn" type="button" (click)="toggleForm()">
+          <span class="material-icons">{{ showForm ? 'close' : 'add' }}</span>
         </button>
       </div>
     </div>
@@ -46,7 +46,7 @@
     </div> -->
   </div>
 
-  <div class="list-card">
+  <div class="list-card" *ngIf="showForm">
     <div class="gradient-line"></div>
 
     <div class="card-header">
@@ -61,7 +61,14 @@
         </div>
         <div class="form-group">
           <label>Phone Number *</label>
-          <input formControlName="phoneNumber" placeholder="+91 XXXXX XXXXX">
+          <div class="mobile-split-group">
+            <select class="code-select" formControlName="phoneCode">
+              <option *ngFor="let c of countryCodes" [value]="c.code">
+                {{c.cca2 ? c.cca2 + ' (' + c.code + ')' : c.code + ' (' + c.name + ')'}}
+              </option>
+            </select>
+            <input formControlName="phoneNumber" placeholder="Phone Number">
+          </div>
         </div>
         <div class="form-group">
           <label>Email *</label>

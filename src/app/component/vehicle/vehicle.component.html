@@ -15,8 +15,8 @@
           <span class="material-icons">arrow_back</span>
           Back
         </a>
-        <button class="circle-btn" type="button" (click)="reset()">
-          <span class="material-icons">add</span>
+        <button class="circle-btn" type="button" (click)="toggleForm()">
+          <span class="material-icons">{{ showForm ? 'close' : 'add' }}</span>
         </button>
       </div>
     </div>
@@ -46,7 +46,7 @@
     </div> -->
   </div>
 
-  <div class="list-card">
+  <div class="list-card" *ngIf="showForm">
     <div class="gradient-line"></div>
 
     <div class="card-header">
@@ -84,8 +84,14 @@
           <input type="number" formControlName="mileage" placeholder="5.5">
         </div>
         <div class="form-group">
-          <label>Capacity Kg *</label>
-          <input type="number" formControlName="capacityKg" placeholder="15000">
+          <label>Capacity *</label>
+          <div class="capacity-split-group">
+            <input type="number" formControlName="capacity" placeholder="15000">
+            <select formControlName="weightUnit">
+              <option value="Kg">Kg</option>
+              <option value="Ton">Ton</option>
+            </select>
+          </div>
         </div>
         <div class="form-group">
           <label>Status *</label>

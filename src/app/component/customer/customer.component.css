@@ -925,3 +925,35 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+.mobile-split-container {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.mobile-code-select {
+  width: 90px;
+  flex: 0 0 90px;
+  min-width: 0;
+  height: 36px;
+  padding: 0 6px;
+  font-size: 13.5px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  color: #111827;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.mobile-code-select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.mobile-split-container input {
+  flex: 1;
+  min-width: 0;
+}
+

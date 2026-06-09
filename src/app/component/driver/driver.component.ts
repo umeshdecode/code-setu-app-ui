@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { LoaderComponent } from '../loader/loader.component';
 import { DriverPayload, DriverService } from 'src/app/services/driver.service';
@@ -26,14 +27,24 @@ export class DriverComponent implements OnInit {
   isDeleting = false;
   message = '';
   error = '';
+  showForm = true;
+
+  countryCodes: any[] = [
+    { name: 'India', code: '+91', cca2: 'IN' },
+    { name: 'USA', code: '+1', cca2: 'US' },
+    { name: 'UK', code: '+44', cca2: 'GB' },
+    { name: 'UAE', code: '+971', cca2: 'AE' }
+  ];
 
   constructor(
     private fb: FormBuilder,
     private driverService: DriverService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
+    this.loadCountryCodes();
     this.initForm();
     this.loadDrivers();
   }
@@ -59,9 +70,13 @@ export class DriverComponent implements OnInit {
   }
 
   initForm(): void {
+    const codePattern = '^\\+\\d{1,4}$';
+    const numberPattern = '^\\d{10}$';
+
     this.driverForm = this.fb.group({
       name: ['', Validators.required],
-      phoneNumber: ['', Validators.required],
+      phoneCode: ['+91', [Validators.required, Validators.pattern(codePattern)]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(numberPattern)]],
       email: ['', [Validators.required, Validators.email]],
       licenseNumber: ['', Validators.required],
       licenseExpiryDate: ['', Validators.required],
@@ -99,10 +114,16 @@ export class DriverComponent implements OnInit {
     this.message = '';
     this.error = '';
 
-    const payload = this.driverForm.value as DriverPayload;
+    const formVal = this.driverForm.value;
+    const payload = {
+      ...formVal,
+      phoneNumber: (formVal.phoneCode || '') + (formVal.phoneNumber || '')
+    };
+    delete (payload as any).phoneCode;
+
     const request = this.isEditMode && this.editId
-      ? this.driverService.updateDriver(this.editId, payload)
-      : this.driverService.createDriver(payload);
+      ? this.driverService.updateDriver(this.editId, payload as any)
+      : this.driverService.createDriver(payload as any);
 
     request.subscribe({
       next: () => {
@@ -121,9 +142,11 @@ export class DriverComponent implements OnInit {
   edit(driver: any): void {
     this.isEditMode = true;
     this.editId = driver.id || driver.driverId;
+    const parsedPhone = this.parsePhoneNumber(driver.phoneNumber || '');
     this.driverForm.patchValue({
       name: driver.name || '',
-      phoneNumber: driver.phoneNumber || '',
+      phoneCode: parsedPhone.code,
+      phoneNumber: parsedPhone.number,
       email: driver.email || '',
       licenseNumber: driver.licenseNumber || '',
       licenseExpiryDate: driver.licenseExpiryDate || '',
@@ -172,6 +195,7 @@ export class DriverComponent implements OnInit {
 
   reset(): void {
     this.driverForm.reset({
+      phoneCode: '+91',
       experienceYears: 0,
       status: 'AVAILABLE',
       joiningDate: new Date().toISOString().slice(0, 10)
@@ -179,6 +203,13 @@ export class DriverComponent implements OnInit {
     this.isEditMode = false;
     this.editId = null;
     this.loadDrivers();
+  }
+
+  toggleForm(): void {
+    this.showForm = !this.showForm;
+    if (this.showForm) {
+      this.reset();
+    }
   }
 
   private extractList(response: any): any[] {
@@ -191,5 +222,50 @@ export class DriverComponent implements OnInit {
 
   private getApiError(error: any, fallback: string): string {
     return error?.error?.responseMessege || error?.error?.message || error?.message || fallback;
+  }
+
+  loadCountryCodes() {
+    this.http.get<any[]>('https://restcountries.com/v3.1/all?fields=name,idd,cca2').subscribe({
+      next: (countries) => {
+        if (Array.isArray(countries)) {
+          this.countryCodes = countries
+            .map(c => {
+              const root = c.idd?.root || '';
+              const suffix = c.idd?.suffixes?.[0] || '';
+              return {
+                name: c.name?.common || '',
+                code: root + suffix,
+                cca2: c.cca2 || ''
+              };
+            })
+            .filter(c => c.name && c.code)
+            .sort((a, b) => a.name.localeCompare(b.name));
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load country codes', err);
+      }
+    });
+  }
+
+  parsePhoneNumber(fullNo: string): { code: string, number: string } {
+    if (!fullNo) return { code: '+91', number: '' };
+    if (fullNo.startsWith('+')) {
+      const match = this.countryCodes.find(c => fullNo.startsWith(c.code));
+      if (match) {
+        return {
+          code: match.code,
+          number: fullNo.substring(match.code.length)
+        };
+      }
+      const matchRegex = fullNo.match(/^(\+\d{1,4})(\d+)$/);
+      if (matchRegex) {
+        return {
+          code: matchRegex[1],
+          number: matchRegex[2]
+        };
+      }
+    }
+    return { code: '+91', number: fullNo };
   }
 }

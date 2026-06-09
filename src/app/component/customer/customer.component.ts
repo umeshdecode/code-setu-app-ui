@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { CustomerModels } from 'src/app/models/customer-models';
 import { CompanyService } from 'src/app/services/company.service';
 import { CustomersService } from 'src/app/services/customers.service';
@@ -39,6 +40,8 @@ export class CustomerComponent implements OnInit {
   staffList: any[] = [];
   staffLoadError = '';
   companyList: any[] = [];
+  shiftingTypes: any[] = [];
+
   companyLoadError = '';
 
   // ── Create Form ─────────────────────────────────────────────────────
@@ -67,18 +70,41 @@ export class CustomerComponent implements OnInit {
   currentPageNumber = 0;
   totalPages = 0;
 
+  countryCodes: any[] = [
+    { name: 'India', code: '+91', cca2: 'IN' },
+    { name: 'USA', code: '+1', cca2: 'US' },
+    { name: 'UK', code: '+44', cca2: 'GB' },
+    { name: 'UAE', code: '+971', cca2: 'AE' }
+  ];
+
   constructor(
     private companyService: CompanyService,
     private customersService: CustomersService,
     private staffService: StaffuserServiceService,
     private templateService: TemplateService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private http: HttpClient
   ) { }
 
   ngOnInit(): void {
+    this.loadCountryCodes();
     this.loadCustomers();
     this.loadStaffList();
     this.loadCompanyList();
+    this.loadShiftingTypes();
+  }
+  loadShiftingTypes() {
+    this.customersService.getShiftType().subscribe({
+      next: response => {
+        const types = response?.data ?? response?.dataList ?? response;
+        this.shiftingTypes = Array.isArray(types) ? types : [];
+        console.log('Shifting types loaded:', this.shiftingTypes);
+      },
+      error: error => {
+        console.error('Failed to load shifting types:', error);
+        this.shiftingTypes = [];
+      }
+    });
   }
 
   get visiblePageNumbers(): number[] {
@@ -244,7 +270,7 @@ export class CustomerComponent implements OnInit {
     if (this.createStep === 0) {
       if (!this.newCustomer.firstName?.trim()) { this.showCreateSnackbar('First name is required', true); return false; }
       if (!this.newCustomer.lastName?.trim())  { this.showCreateSnackbar('Last name is required', true); return false; }
-      if (!this.newCustomer.mobileNo?.trim())  { this.showCreateSnackbar('Mobile number is required', true); return false; }
+      if (!this.newCustomer.mobileNumber?.trim())  { this.showCreateSnackbar('Mobile number is required', true); return false; }
       if (!this.newCustomer.email?.trim())     { this.showCreateSnackbar('Email is required', true); return false; }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.newCustomer.email)) { this.showCreateSnackbar('Enter a valid email address', true); return false; }
     }
@@ -301,6 +327,8 @@ export class CustomerComponent implements OnInit {
     this.isCreating = true;
     this.createMessage = '';
     this.createError = '';
+    this.newCustomer.mobileNo = (this.newCustomer.mobileCode || '') + (this.newCustomer.mobileNumber || '');
+    this.newCustomer.alternateMobileNo = (this.newCustomer.alternateMobileCode || '') + (this.newCustomer.alternateMobileNumber || '');
     this.customersService.createCustomer(this.newCustomer).subscribe({
       next: () => {
         this.isCreating = false;
@@ -339,10 +367,17 @@ export class CustomerComponent implements OnInit {
         const d = response?.data || response;
         if (!d) { this.updateError = 'Failed to load customer details.'; return; }
 
+        const parsedMobile = this.parsePhoneNumber(d.mobileNo || '');
+        const parsedAlternate = this.parsePhoneNumber(d.alternateMobileNo || '');
+
         this.customerToUpdate = {
           customerId: d.customerId,
           firstName: d.firstName || '',
           lastName: d.lastName || '',
+          mobileCode: parsedMobile.code,
+          mobileNumber: parsedMobile.number,
+          alternateMobileCode: parsedAlternate.code,
+          alternateMobileNumber: parsedAlternate.number,
           mobileNo: d.mobileNo || '',
           alternateMobileNo: d.alternateMobileNo || '',
           email: d.email || '',
@@ -420,7 +455,7 @@ export class CustomerComponent implements OnInit {
     if (this.updateStep === 0) {
       if (!this.customerToUpdate.firstName?.trim()) { this.showUpdateSnackbar('First name is required', true); return false; }
       if (!this.customerToUpdate.lastName?.trim())  { this.showUpdateSnackbar('Last name is required', true); return false; }
-      if (!this.customerToUpdate.mobileNo?.trim())  { this.showUpdateSnackbar('Mobile number is required', true); return false; }
+      if (!this.customerToUpdate.mobileNumber?.trim())  { this.showUpdateSnackbar('Mobile number is required', true); return false; }
       if (!this.customerToUpdate.email?.trim())     { this.showUpdateSnackbar('Email is required', true); return false; }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.customerToUpdate.email)) { this.showUpdateSnackbar('Enter a valid email address', true); return false; }
     }
@@ -476,8 +511,8 @@ export class CustomerComponent implements OnInit {
       customerId: this.customerToUpdate.customerId,
       firstName: this.customerToUpdate.firstName,
       lastName: this.customerToUpdate.lastName,
-      mobileNo: this.customerToUpdate.mobileNo,
-      alternateMobileNo: this.customerToUpdate.alternateMobileNo,
+      mobileNo: (this.customerToUpdate.mobileCode || '') + (this.customerToUpdate.mobileNumber || ''),
+      alternateMobileNo: (this.customerToUpdate.alternateMobileCode || '') + (this.customerToUpdate.alternateMobileNumber || ''),
       email: this.customerToUpdate.email,
       workEmail: this.customerToUpdate.workEmail,
       uuid: this.customerToUpdate.uuid,
@@ -688,6 +723,12 @@ export class CustomerComponent implements OnInit {
     document.body.appendChild(container);
     const pdfElement = container.querySelector<HTMLElement>('.page') || container;
 
+    if (pdfElement !== container) {
+      pdfElement.style.margin = '0';
+      pdfElement.style.boxShadow = 'none';
+      pdfElement.style.background = '#ffffff';
+    }
+
     try {
       await this.waitForPdfAssets(pdfElement);
 
@@ -791,6 +832,10 @@ export class CustomerComponent implements OnInit {
       customerId: null,
       firstName: '',
       lastName: '',
+      mobileCode: '+91',
+      mobileNumber: '',
+      alternateMobileCode: '+91',
+      alternateMobileNumber: '',
       mobileNo: '',
       alternateMobileNo: '',
       email: '',
@@ -799,4 +844,50 @@ export class CustomerComponent implements OnInit {
       shiftings: [this.getEmptyShiftingForm()]
     };
   }
+
+  loadCountryCodes() {
+    this.http.get<any[]>('https://restcountries.com/v3.1/all?fields=name,idd,cca2').subscribe({
+      next: (countries) => {
+        if (Array.isArray(countries)) {
+          this.countryCodes = countries
+            .map(c => {
+              const root = c.idd?.root || '';
+              const suffix = c.idd?.suffixes?.[0] || '';
+              return {
+                name: c.name?.common || '',
+                code: root + suffix,
+                cca2: c.cca2 || ''
+              };
+            })
+            .filter(c => c.name && c.code)
+            .sort((a, b) => a.name.localeCompare(b.name));
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load country codes', err);
+      }
+    });
+  }
+
+  parsePhoneNumber(fullNo: string): { code: string, number: string } {
+    if (!fullNo) return { code: '+91', number: '' };
+    if (fullNo.startsWith('+')) {
+      const match = this.countryCodes.find(c => fullNo.startsWith(c.code));
+      if (match) {
+        return {
+          code: match.code,
+          number: fullNo.substring(match.code.length)
+        };
+      }
+      const matchRegex = fullNo.match(/^(\+\d{1,4})(\d+)$/);
+      if (matchRegex) {
+        return {
+          code: matchRegex[1],
+          number: matchRegex[2]
+        };
+      }
+    }
+    return { code: '+91', number: fullNo };
+  }
 }
+

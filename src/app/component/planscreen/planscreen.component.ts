@@ -56,7 +56,7 @@ export class PlanscreenComponent implements OnInit {
   }
 
   loadPlans(): void {
-    this.planservice.getPlanList().subscribe({
+    this.planservice.getPublicPlanList().subscribe({
       next: (response: any) => {
         const rawPlans = response?.responseBody || (Array.isArray(response) ? response : []);
         this.plans = rawPlans.map((p: any) => ({

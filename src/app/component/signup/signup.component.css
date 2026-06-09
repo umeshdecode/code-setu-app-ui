@@ -393,6 +393,24 @@ label {
 }
 @media (max-height: 800px) {
     .signup-container {
-        transform: scale(0.9); /* Scales down the whole UI to fit */
+        transform: scale(0.9);
     }
+}
+
+.mobile-input-group {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+.mobile-input-group .code-select {
+    width: 90px;
+    flex: 0 0 90px;
+    min-width: 0;
+    padding-left: 12px;
+}
+
+.mobile-input-group .input-wrapper {
+    flex: 1;
+    min-width: 0;
 }

@@ -150,4 +150,21 @@
     align-items: center;
 }
 
+.mobile-field-container {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.mobile-code-field {
+  width: 90px;
+  flex: 0 0 90px;
+  min-width: 0;
+}
+
+.mobile-number-field {
+  flex: 1;
+  min-width: 0;
+}
+
 

@@ -45,10 +45,21 @@
         <!-- STEP 1: MOBILE -->
         <form *ngIf="!otpSent" (ngSubmit)="sendOtp()" class="form">
 
-          <mat-form-field appearance="outline" class="full">
-            <mat-label>Mobile Number</mat-label>
-            <input matInput type="tel" [(ngModel)]="otp.mobile" name="mobile" required>
-          </mat-form-field>
+          <div class="mobile-field-container">
+            <mat-form-field appearance="outline" class="mobile-code-field">
+              <mat-label>Code</mat-label>
+              <mat-select [(ngModel)]="otp.mobileCode" name="mobileCode">
+                <mat-option *ngFor="let c of countryCodes" [value]="c.code">
+                  {{c.cca2 ? c.cca2 + ' (' + c.code + ')' : c.code + ' (' + c.name + ')'}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="mobile-number-field">
+              <mat-label>Mobile Number</mat-label>
+              <input matInput type="tel" [(ngModel)]="otp.mobile" name="mobile" required>
+            </mat-form-field>
+          </div>
 
           <button mat-raised-button color="primary" class="btn">
             Send OTP

@@ -17,3 +17,37 @@
   background: linear-gradient(135deg, #f97316 0%, #db2777 100%);
   box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
 }
+
+.mobile-split-group {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.mobile-split-group select {
+  width: 100px;
+  flex: 0 0 100px;
+  min-width: 0;
+  height: 44px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0 8px;
+  font-size: 0.95rem;
+  color: #2d3748;
+  outline: none;
+  background: #f8f9fa;
+  box-sizing: border-box;
+}
+
+.mobile-split-group select:focus {
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.mobile-split-group input {
+  flex: 1;
+  min-width: 0;
+}
+
+

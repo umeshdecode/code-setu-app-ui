@@ -443,3 +443,47 @@ tbody tr:hover {
     width: 100%;
   }
 }
+
+.capacity-split-group {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.capacity-split-group input {
+  flex: 1;
+  min-width: 0;
+}
+
+.capacity-split-group select {
+  width: 80px;
+  flex: 0 0 80px;
+  min-width: 0;
+  height: 44px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0 8px;
+  font-size: 0.95rem;
+  color: #2d3748;
+  outline: none;
+  background: #f8f9fa;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.capacity-split-group select:focus {
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Hide spin-button counter increasers */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}

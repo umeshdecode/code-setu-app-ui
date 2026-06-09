@@ -77,3 +77,21 @@ margin-bottom:25px;
   font-size: 12px;
   font-weight: 700;
 }
+
+.mobile-field-container {
+  display: flex;
+  gap: 12px;
+  grid-column: span 1;
+  width: 100%;
+}
+
+.mobile-code-field {
+  width: 100px;
+  flex: 0 0 100px;
+  min-width: 0;
+}
+
+.mobile-number-field {
+  flex: 1;
+  min-width: 0;
+}

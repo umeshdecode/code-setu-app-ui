@@ -1,8 +1,7 @@
-// company.component.ts
-
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { HttpClient } from '@angular/common/http';
 import { CompanyService } from 'src/app/services/company.service';
 import { ShowpopupService } from 'src/app/services/showpopup.service';
 
@@ -29,20 +28,30 @@ export class CompanyComponent implements OnInit {
   pageSize = 5;
   addedAssets: { assetType: string; file: File; fileName: string }[] = [];
 
+  countryCodes: any[] = [
+    { name: 'India', code: '+91', cca2: 'IN' },
+    { name: 'USA', code: '+1', cca2: 'US' },
+    { name: 'UK', code: '+44', cca2: 'GB' },
+    { name: 'UAE', code: '+971', cca2: 'AE' }
+  ];
+
   constructor(
     private fb: FormBuilder,
     private companyService: CompanyService,
     private shoepopup: ShowpopupService,
     private dialog: MatDialog,
+    private http: HttpClient
   ) { }
 
   ngOnInit(): void {
+    this.loadCountryCodes();
     this.buildForm();
     this.loadCompanies();
   }
 
   buildForm() {
-    const mobilePattern = '^[6-9]\\d{9}$';
+    const codePattern = '^\\+\\d{1,4}$';
+    const numberPattern = '^\\d{10}$';
     const panPattern = '^[A-Z]{5}[0-9]{4}[A-Z]{1}$';
     // GST: 2 digits, 10 PAN chars, 1 entity digit, 'Z', 1 checksum char
     const gstPattern = '^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$';
@@ -50,9 +59,12 @@ export class CompanyComponent implements OnInit {
     this.companyForm = this.fb.group({
       companyName: ['', Validators.required],
       companyEmail: ['', [Validators.required, Validators.email]],
-      whatsappNumber: ['', [Validators.pattern(mobilePattern)]],
-      contactNo1: ['', [Validators.required, Validators.pattern(mobilePattern)]],
-      contactNo2: ['', [Validators.pattern(mobilePattern)]],
+      whatsappCode: ['+91', [Validators.pattern(codePattern)]],
+      whatsappNumber: ['', [Validators.pattern(numberPattern)]],
+      contactNo1Code: ['+91', [Validators.required, Validators.pattern(codePattern)]],
+      contactNo1Number: ['', [Validators.required, Validators.pattern(numberPattern)]],
+      contactNo2Code: ['+91', [Validators.pattern(codePattern)]],
+      contactNo2Number: ['', [Validators.pattern(numberPattern)]],
       landlineNo: [''],
       tollFreeNumber: [''],
       panNumber: ['', [Validators.pattern(panPattern)]],
@@ -139,7 +151,20 @@ export class CompanyComponent implements OnInit {
   editCompany(company: any) {
     this.showForm = true;
     this.isEditMode = true;
-    this.companyForm.patchValue(company);
+
+    const parsedWhatsapp = this.parsePhoneNumber(company.whatsappNumber || '');
+    const parsedContact1 = this.parsePhoneNumber(company.contactNo1 || '');
+    const parsedContact2 = this.parsePhoneNumber(company.contactNo2 || '');
+
+    this.companyForm.patchValue({
+      ...company,
+      whatsappCode: parsedWhatsapp.code,
+      whatsappNumber: parsedWhatsapp.number,
+      contactNo1Code: parsedContact1.code,
+      contactNo1Number: parsedContact1.number,
+      contactNo2Code: parsedContact2.code,
+      contactNo2Number: parsedContact2.number
+    });
     this.clearAssetFile();
     this.addedAssets = [];
   }
@@ -162,7 +187,10 @@ export class CompanyComponent implements OnInit {
   }
 
   private getCompanyPayload(): any {
-    const { assetFile, ...payload } = this.companyForm.value;
+    const { assetFile, whatsappCode, whatsappNumber, contactNo1Code, contactNo1Number, contactNo2Code, contactNo2Number, ...payload } = this.companyForm.value;
+    payload.whatsappNumber = whatsappNumber ? (whatsappCode || '') + whatsappNumber : '';
+    payload.contactNo1 = contactNo1Number ? (contactNo1Code || '') + contactNo1Number : '';
+    payload.contactNo2 = contactNo2Number ? (contactNo2Code || '') + contactNo2Number : '';
     return payload;
   }
 
@@ -302,4 +330,48 @@ export class CompanyComponent implements OnInit {
     });
   }
 
+  loadCountryCodes() {
+    this.http.get<any[]>('https://restcountries.com/v3.1/all?fields=name,idd,cca2').subscribe({
+      next: (countries) => {
+        if (Array.isArray(countries)) {
+          this.countryCodes = countries
+            .map(c => {
+              const root = c.idd?.root || '';
+              const suffix = c.idd?.suffixes?.[0] || '';
+              return {
+                name: c.name?.common || '',
+                code: root + suffix,
+                cca2: c.cca2 || ''
+              };
+            })
+            .filter(c => c.name && c.code)
+            .sort((a, b) => a.name.localeCompare(b.name));
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load country codes', err);
+      }
+    });
+  }
+
+  parsePhoneNumber(fullNo: string): { code: string, number: string } {
+    if (!fullNo) return { code: '+91', number: '' };
+    if (fullNo.startsWith('+')) {
+      const match = this.countryCodes.find(c => fullNo.startsWith(c.code));
+      if (match) {
+        return {
+          code: match.code,
+          number: fullNo.substring(match.code.length)
+        };
+      }
+      const matchRegex = fullNo.match(/^(\+\d{1,4})(\d+)$/);
+      if (matchRegex) {
+        return {
+          code: matchRegex[1],
+          number: matchRegex[2]
+        };
+      }
+    }
+    return { code: '+91', number: fullNo };
+  }
 }

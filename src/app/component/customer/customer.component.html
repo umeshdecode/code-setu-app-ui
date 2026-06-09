@@ -63,12 +63,25 @@
         </div>
         <div class="form-field">
           <label>Mobile Number <span class="req">*</span></label>
-          <input name="upMobileNo" placeholder="Mobile Number" [(ngModel)]="customerToUpdate.mobileNo">
+          <div class="mobile-split-container">
+            <select name="upMobileCode" class="mobile-code-select" [(ngModel)]="customerToUpdate.mobileCode">
+              <option *ngFor="let c of countryCodes" [value]="c.code">
+                {{c.cca2 ? c.cca2 + ' (' + c.code + ')' : c.code + ' (' + c.name + ')'}}
+              </option>
+            </select>
+            <input name="upMobileNo" placeholder="Mobile Number" [(ngModel)]="customerToUpdate.mobileNumber">
+          </div>
         </div>
         <div class="form-field">
           <label>Alternate Mobile</label>
-          <input name="upAlternateMobileNo" placeholder="Alternate Mobile"
-            [(ngModel)]="customerToUpdate.alternateMobileNo">
+          <div class="mobile-split-container">
+            <select name="upAlternateMobileCode" class="mobile-code-select" [(ngModel)]="customerToUpdate.alternateMobileCode">
+              <option *ngFor="let c of countryCodes" [value]="c.code">
+                {{c.cca2 ? c.cca2 + ' (' + c.code + ')' : c.code + ' (' + c.name + ')'}}
+              </option>
+            </select>
+            <input name="upAlternateMobileNo" placeholder="Alternate Mobile" [(ngModel)]="customerToUpdate.alternateMobileNumber">
+          </div>
         </div>
         <div class="form-field">
           <label>Email <span class="req">*</span></label>
@@ -114,16 +127,10 @@
           </div>
           <div class="form-field">
             <label>Shifting Type</label>
-            <input [name]="'upShiftingType_'+i" placeholder="e.g. Home, Office" [(ngModel)]="s.shiftingType">
-          </div>
-          <div class="form-field">
-            <label>Company Name</label>
-            <select class="browser-default" [name]="'upCompanyName_'+i" [(ngModel)]="s.companyId"
-              (ngModelChange)="setShiftingCompany(s, $event)">
-              <option [ngValue]="null">Select Company</option>
-              <option *ngFor="let company of companyList" [ngValue]="company.companyId">{{ getCompanyName(company) }}</option>
+            <select class="browser-default" [name]="'upShiftingType_'+i" [(ngModel)]="s.shiftingType">
+              <option [ngValue]="null">Select Type</option>
+              <option *ngFor="let st of shiftingTypes" [value]="st">{{ st }}</option>
             </select>
-            <small class="field-error" *ngIf="companyLoadError">{{ companyLoadError }}</small>
           </div>
           <div class="form-field">
             <label>Start Date</label>
@@ -298,11 +305,25 @@
         </div>
         <div class="form-field">
           <label>Mobile Number <span class="req">*</span></label>
-          <input name="mobileNo" placeholder="Mobile Number" [(ngModel)]="newCustomer.mobileNo">
+          <div class="mobile-split-container">
+            <select name="mobileCode" class="mobile-code-select" [(ngModel)]="newCustomer.mobileCode">
+              <option *ngFor="let c of countryCodes" [value]="c.code">
+                {{c.cca2 ? c.cca2 + ' (' + c.code + ')' : c.code + ' (' + c.name + ')'}}
+              </option>
+            </select>
+            <input name="mobileNo" placeholder="Mobile Number" [(ngModel)]="newCustomer.mobileNumber">
+          </div>
         </div>
         <div class="form-field">
           <label>Alternate Mobile</label>
-          <input name="alternateMobileNo" placeholder="Alternate Mobile" [(ngModel)]="newCustomer.alternateMobileNo">
+          <div class="mobile-split-container">
+            <select name="alternateMobileCode" class="mobile-code-select" [(ngModel)]="newCustomer.alternateMobileCode">
+              <option *ngFor="let c of countryCodes" [value]="c.code">
+                {{c.cca2 ? c.cca2 + ' (' + c.code + ')' : c.code + ' (' + c.name + ')'}}
+              </option>
+            </select>
+            <input name="alternateMobileNo" placeholder="Alternate Mobile" [(ngModel)]="newCustomer.alternateMobileNumber">
+          </div>
         </div>
         <div class="form-field">
           <label>Email <span class="req">*</span></label>
@@ -348,16 +369,10 @@
           </div>
           <div class="form-field">
             <label>Shifting Type</label>
-            <input [name]="'shiftingType_'+i" placeholder="e.g. Home, Office" [(ngModel)]="s.shiftingType">
-          </div>
-          <div class="form-field">
-            <label>Company Name</label>
-            <select class="browser-default" [name]="'companyName_'+i" [(ngModel)]="s.companyId"
-              (ngModelChange)="setShiftingCompany(s, $event)">
-              <option [ngValue]="null">Select Company</option>
-              <option *ngFor="let company of companyList" [ngValue]="company.companyId">{{ getCompanyName(company) }}</option>
+            <select class="browser-default" [name]="'shiftingType_'+i" [(ngModel)]="s.shiftingType">
+              <option [ngValue]="null">Select Type</option>
+              <option *ngFor="let st of shiftingTypes" [value]="st">{{ st }}</option>
             </select>
-            <small class="field-error" *ngIf="companyLoadError">{{ companyLoadError }}</small>
           </div>
           <div class="form-field">
             <label>Start Date</label>

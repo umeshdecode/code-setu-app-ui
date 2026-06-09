@@ -35,4 +35,7 @@ export class CustomersService {
   deleteCustomer(payload: any): Observable<any> {
     return this.http.delete<any>(`${this.BASE_URL}/api/v2/cargosetu/customer`, { body: payload });
   }
+getShiftType(): Observable<any> {
+  return this.http.get<any>(`${this.BASE_URL}/api/v2/cargosetu/shifts/shifting-types`);
+}
 }

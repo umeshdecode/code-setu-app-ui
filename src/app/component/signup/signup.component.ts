@@ -169,10 +169,10 @@ export class SignupComponent implements OnInit {
     this.submitting = true;
 
     this.staffService.createStaff(payload).pipe(
-      switchMap((response: GenericDataDTO) => {
+      switchMap((response: any) => {
 
         this.showpopupservice.showResponsePopup(
-          response.responseMessege,
+          response.responseMessege || response.responseMessage,
           response.responseCode
         );
 
@@ -182,19 +182,18 @@ export class SignupComponent implements OnInit {
 
         // 👉 Auto login after successful signup
         return this.loginService.generateToken({ email, password });
+      }),
+      switchMap((authResponse: AuthResponse) => {
+        return this.loginService.loginAndFetchUser(authResponse.accessToken);
       })
     ).subscribe({
-      next: (authResponse: AuthResponse) => {
-        const success = this.loginService.loginUser(authResponse.accessToken);
-
-        if (!success) {
-          throw new Error('Token storage failed');
-        }
-
+      next: (userDetails: any) => {
+        console.log('Auto login successful:', userDetails);
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
         console.error('Signup/Login flow error', err);
+        this.submitting = false;
       },
       complete: () => {
         this.submitting = false;

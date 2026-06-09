@@ -54,6 +54,11 @@ export class LoginService {
   loginUser(token: string): boolean {
     if (!token) return false;
 
+    // Clear old details immediately to prevent showing stale details
+    localStorage.removeItem('user_session');
+    localStorage.removeItem('staffInfo');
+    localStorage.removeItem('user');
+
     try {
       localStorage.setItem('token', token);
 
@@ -123,6 +128,9 @@ export class LoginService {
 
   logout() {
     localStorage.removeItem('token');
+    localStorage.removeItem('user_session');
+    localStorage.removeItem('staffInfo');
+    localStorage.removeItem('user');
     this.loggedInSubject.next(false);
     this.router.navigateByUrl("/login");
   }
@@ -132,15 +140,31 @@ export class LoginService {
   }
 
   loginAndFetchUser(token: string): Observable<any> {
+    // Clear old details immediately to prevent showing stale details
+    localStorage.removeItem('user_session');
+    localStorage.removeItem('staffInfo');
+    localStorage.removeItem('user');
+
     localStorage.setItem('token', token);
     const decoded: any = jwtDecode(token);
 
     if (decoded && decoded.sub) {
       return this.staffuserservice.getStaffById(decoded.sub).pipe(
-        // Explicitly type staffData to satisfy TypeScript strict mode
-        tap((staffData: any) => {
+        tap((res: any) => {
+          const data = res?.data || res;
+          if (data) {
+            localStorage.setItem('staffInfo', JSON.stringify(res));
+            const userSession = {
+              staffId: data.staffId,
+              uuid: data.uuid,
+              userName: data.userName,
+              firstName: data.firstName,
+              roles: data.roles || [],
+              permissions: this.extractPermissions(data)
+            };
+            localStorage.setItem('user_session', JSON.stringify(userSession));
+          }
           this.loggedInSubject.next(true);
-          localStorage.setItem('staffInfo', JSON.stringify(staffData));
         })
       );
     }

@@ -1,6 +1,7 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { AuthResponse } from 'src/app/models/authresponse';
 import { LoginService } from 'src/app/services/login.service';
 import { LoaderComponent } from '../loader/loader.component';
@@ -22,7 +23,7 @@ import { JwttokenService } from 'src/app/services/jwttoken.service';
     ])
   ]
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   isLoading = false; // Add this property
 
   credential = {
@@ -33,14 +34,27 @@ export class LoginComponent {
 
   hidePassword = true;
 
+  countryCodes: any[] = [
+    { name: 'India', code: '+91', cca2: 'IN' },
+    { name: 'USA', code: '+1', cca2: 'US' },
+    { name: 'UK', code: '+44', cca2: 'GB' },
+    { name: 'UAE', code: '+971', cca2: 'AE' }
+  ];
+
   constructor(
     private loginService: LoginService,
     private router: Router,
     private staffuserservice: StaffuserServiceService,
-    private jwtDecode: JwttokenService
+    private jwtDecode: JwttokenService,
+    private http: HttpClient
   ) { }
 
+  ngOnInit(): void {
+    this.loadCountryCodes();
+  }
+
   otp = {
+    mobileCode: '+91',
     mobile: '',
     code: ''
   };
@@ -54,22 +68,13 @@ export class LoginComponent {
     this.isLoading = true;
 
     this.loginService.generateToken(this.credential).pipe(
-      // 1. Success: Store the token first
-      tap((response: AuthResponse) => {
-        this.loginService.loginUser(response.accessToken);
-        this.router.navigate(['/dashboard']);
-
-      }),
-      // 2. Switch to the next API call (getById)
       switchMap((response: AuthResponse) => {
-        const decode = this.jwtDecode.getDecodedToken();
-
-        // Pass the userId (adjust property name based on your API)
-        return this.staffuserservice.getStaffById(decode?.sub);
+        return this.loginService.loginAndFetchUser(response.accessToken);
       })
     ).subscribe({
       next: (userDetails) => {
         console.log('User Details fetched:', userDetails);
+        this.router.navigate(['/dashboard']);
       },
       error: (err) => {
         console.error('API Error:', err);
@@ -101,6 +106,31 @@ export class LoginComponent {
       alert('Enter mobile number');
       return;
     }
+    console.log('Sending OTP to', (this.otp.mobileCode || '') + this.otp.mobile);
+  }
+
+  loadCountryCodes() {
+    this.http.get<any[]>('https://restcountries.com/v3.1/all?fields=name,idd,cca2').subscribe({
+      next: (countries) => {
+        if (Array.isArray(countries)) {
+          this.countryCodes = countries
+            .map(c => {
+              const root = c.idd?.root || '';
+              const suffix = c.idd?.suffixes?.[0] || '';
+              return {
+                name: c.name?.common || '',
+                code: root + suffix,
+                cca2: c.cca2 || ''
+              };
+            })
+            .filter(c => c.name && c.code)
+            .sort((a, b) => a.name.localeCompare(b.name));
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load country codes', err);
+      }
+    });
   }
 }
 

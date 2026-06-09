@@ -73,8 +73,15 @@
 
         <div class="form-group">
           <label>WhatsApp Number</label>
-          <input type="text" formControlName="whatsappNumber" placeholder="+91 XXXXX XXXXX">
-          <span class="validation-error" *ngIf="companyForm.get('whatsappNumber')?.invalid && companyForm.get('whatsappNumber')?.touched">
+          <div class="mobile-split-group">
+            <select class="code-select" formControlName="whatsappCode">
+              <option *ngFor="let c of countryCodes" [value]="c.code">
+                {{c.cca2 ? c.cca2 + ' (' + c.code + ')' : c.code + ' (' + c.name + ')'}}
+              </option>
+            </select>
+            <input type="text" formControlName="whatsappNumber" placeholder="WhatsApp Number">
+          </div>
+          <span class="validation-error" *ngIf="(companyForm.get('whatsappNumber')?.invalid || companyForm.get('whatsappCode')?.invalid) && companyForm.get('whatsappNumber')?.touched">
             Enter a valid 10-digit mobile number
           </span>
         </div>
@@ -82,17 +89,31 @@
         <!-- Row 2 -->
         <div class="form-group">
           <label>Contact No 1 *</label>
-          <input type="text" formControlName="contactNo1" placeholder="Primary contact">
-          <span class="validation-error" *ngIf="companyForm.get('contactNo1')?.invalid && companyForm.get('contactNo1')?.touched">
-            <span *ngIf="companyForm.get('contactNo1')?.errors?.['required']">Contact number is required</span>
-            <span *ngIf="companyForm.get('contactNo1')?.errors?.['pattern']">Enter a valid 10-digit mobile number</span>
+          <div class="mobile-split-group">
+            <select class="code-select" formControlName="contactNo1Code">
+              <option *ngFor="let c of countryCodes" [value]="c.code">
+                {{c.cca2 ? c.cca2 + ' (' + c.code + ')' : c.code + ' (' + c.name + ')'}}
+              </option>
+            </select>
+            <input type="text" formControlName="contactNo1Number" placeholder="Primary contact">
+          </div>
+          <span class="validation-error" *ngIf="(companyForm.get('contactNo1Number')?.invalid || companyForm.get('contactNo1Code')?.invalid) && companyForm.get('contactNo1Number')?.touched">
+            <span *ngIf="companyForm.get('contactNo1Number')?.errors?.['required']">Contact number is required</span>
+            <span *ngIf="companyForm.get('contactNo1Number')?.errors?.['pattern']">Enter a valid 10-digit mobile number</span>
           </span>
         </div>
 
         <div class="form-group">
           <label>Contact No 2</label>
-          <input type="text" formControlName="contactNo2" placeholder="Secondary contact">
-          <span class="validation-error" *ngIf="companyForm.get('contactNo2')?.invalid && companyForm.get('contactNo2')?.touched">
+          <div class="mobile-split-group">
+            <select class="code-select" formControlName="contactNo2Code">
+              <option *ngFor="let c of countryCodes" [value]="c.code">
+                {{c.cca2 ? c.cca2 + ' (' + c.code + ')' : c.code + ' (' + c.name + ')'}}
+              </option>
+            </select>
+            <input type="text" formControlName="contactNo2Number" placeholder="Secondary contact">
+          </div>
+          <span class="validation-error" *ngIf="(companyForm.get('contactNo2Number')?.invalid || companyForm.get('contactNo2Code')?.invalid) && companyForm.get('contactNo2Number')?.touched">
             Enter a valid 10-digit mobile number
           </span>
         </div>
