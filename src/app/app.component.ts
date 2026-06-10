@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -34,6 +35,7 @@ export class AppComponent implements OnInit {
     private loginService: LoginService,
     private staffuserservice: StaffuserServiceService,
     private accessMenuService: AccessMenuService,
+    private http: HttpClient,
   ) {}
 
   ngOnInit(): void {
@@ -64,6 +66,8 @@ export class AppComponent implements OnInit {
         this.showProfileMenu = false; // Close profile menu on route change
         this.closeSidebarOnMobile(); // Close sidebar on mobile after navigation
       });
+
+    this.startKeepAlive();
   }
 
   @HostListener('window:scroll')
@@ -203,6 +207,14 @@ export class AppComponent implements OnInit {
     this.closeProfileMenu();
     this.router.navigate(['/staffuser']);
     this.closeSidebarOnMobile();
+  }
+
+  private startKeepAlive(): void {
+    setInterval(() => {
+      this.http.get('https://code-setu-app.onrender.com/public/isAlive').subscribe({
+        error: () => {}
+      });
+    }, 600000);
   }
 
   private setLayout(url: string): void {
