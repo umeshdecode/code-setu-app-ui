@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -5,6 +6,9 @@ import { LoginService } from './services/login.service';
 import { StaffuserServiceService } from './services/staffuser-service';
 import { GenericDataDTO } from './models/generic-data-dto';
 import { AccessMenuItem, AccessMenuSection, AccessMenuService } from './services/access-menu.service';
+import { CompanyService } from './services/company.service';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogboxComponent } from './component/dialogbox/dialogbox.component';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +23,7 @@ export class AppComponent implements OnInit {
   showProfileMenu = false;
   menuSections: AccessMenuSection[] = [];
   expandedSections: { [key: string]: boolean } = {};
-  
+
   // Sidebar state
   isSidebarCollapsed = false;
   isMobileView = false;
@@ -34,6 +38,9 @@ export class AppComponent implements OnInit {
     private loginService: LoginService,
     private staffuserservice: StaffuserServiceService,
     private accessMenuService: AccessMenuService,
+    private companyService: CompanyService,
+    private dialog: MatDialog,
+    private http: HttpClient,
   ) {}
 
   ngOnInit(): void {
@@ -63,7 +70,14 @@ export class AppComponent implements OnInit {
         this.redirectLoggedInHome(event.urlAfterRedirects);
         this.showProfileMenu = false; // Close profile menu on route change
         this.closeSidebarOnMobile(); // Close sidebar on mobile after navigation
+        this.checkCompanyStatus(event.urlAfterRedirects);
       });
+
+    this.companyService.companyStatus$.subscribe(() => {
+      this.checkCompanyStatus(this.router.url);
+    });
+
+    this.startKeepAlive();
   }
 
   @HostListener('window:scroll')
@@ -81,7 +95,7 @@ export class AppComponent implements OnInit {
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
     const profileMenuWrap = document.querySelector('.profile-menu-wrap');
-    
+
     if (profileMenuWrap && !profileMenuWrap.contains(target)) {
       this.showProfileMenu = false;
     }
@@ -91,7 +105,7 @@ export class AppComponent implements OnInit {
   checkViewport() {
     const wasMobile = this.isMobileView;
     this.isMobileView = window.innerWidth <= 900;
-    
+
     // Auto-adjust sidebar state based on viewport change
     if (this.isMobileView !== wasMobile) {
       if (this.isMobileView) {
@@ -167,13 +181,14 @@ export class AppComponent implements OnInit {
   }
 
   logout(): void {
+    this.companyService.clearCompanyStatus();
     this.loginService.logout();
     this.closeProfileMenu();
   }
 
   goToStaffDetails(): void {
     console.log(this.userdata);
-    
+
     if (!this.userdata || !this.userdata.staffId) {
       console.error('No staff ID found in user session');
       this.closeProfileMenu();
@@ -205,11 +220,50 @@ export class AppComponent implements OnInit {
     this.closeSidebarOnMobile();
   }
 
+  private checkCompanyStatus(url: string): void {
+    if (!this.loginService.isLoggedIn()) return;
+
+    const path = this.getPath(url);
+    const skipRoutes = ['/company-create', '/company-edit', '/company-list', '/login', '/signup'];
+    if (skipRoutes.some(r => path.startsWith(r))) return;
+
+    if (this.companyService.getCompanyStatus() === false) {
+      setTimeout(() => this.showNoCompanyDialog(), 200);
+    }
+  }
+
+  private showNoCompanyDialog(): void {
+    const dialogRef = this.dialog.open(DialogboxComponent, {
+      width: '450px',
+      disableClose: true,
+      data: {
+        title: 'Create Your First Company',
+        message: 'It looks like you do not have any company associated with your account. Would you like to create one now?',
+        confirmText: 'Create Company',
+        cancelText: 'Skip'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.router.navigate(['/company-create']);
+      }
+    });
+  }
+
+  private startKeepAlive(): void {
+    setInterval(() => {
+      this.http.get('https://code-setu-app.onrender.com/public/isAlive').subscribe({
+        error: () => {}
+      });
+    }, 600000);
+  }
+
   private setLayout(url: string): void {
     const path = this.getPath(url);
 
     this.refreshAccessMenu();
-    this.isInternalApp = this.loginService.isLoggedIn() && 
+    this.isInternalApp = this.loginService.isLoggedIn() &&
                          this.internalRoutes.some(route => path.startsWith(route));
 
     const session = localStorage.getItem('user_session');

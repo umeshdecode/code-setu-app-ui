@@ -198,19 +198,23 @@ export class SignupComponent implements OnInit {
     ).subscribe({
       next: (userDetails: any) => {
         console.log('Auto login successful:', userDetails);
-        this.companyService.getCurrentCompany().subscribe({
-          next: (res) => {
-            if (res && res.responseCode === 200 && res.data) {
-              this.router.navigate(['/dashboard']);
-            } else {
-              this.showNoCompanyDialog();
+        this.router.navigate(['/dashboard']);
+
+        setTimeout(() => {
+          this.companyService.getCurrentCompany().subscribe({
+            next: (res) => {
+              if (res && res.responseCode === 200 && res.data) {
+                this.companyService.setCompanyStatus(true);
+              } else {
+                this.companyService.setCompanyStatus(false);
+              }
+            },
+            error: (err) => {
+              console.warn('getCurrentCompany failed, likely no company bound:', err);
+              this.companyService.setCompanyStatus(false);
             }
-          },
-          error: (err) => {
-            console.warn('getCurrentCompany failed, likely no company bound:', err);
-            this.showNoCompanyDialog();
-          }
-        });
+          });
+        }, 1500);
       },
       error: (err) => {
         console.error('Signup/Login flow error', err);

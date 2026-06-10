@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { ENV } from 'src/assets/env';
 
 @Injectable({
@@ -11,7 +11,29 @@ export class CompanyService {
   private BASE_URL =
     ENV.CARGO_SETU + '/api/v2/cargosetu/company';
 
+  private readonly COMPANY_STATUS_KEY = 'cargosetu_company_status';
+  private companyStatusSubject = new BehaviorSubject<boolean | null>(this.getCompanyStatus());
+
+  companyStatus$ = this.companyStatusSubject.asObservable();
+
   constructor(private http: HttpClient) {}
+
+  setCompanyStatus(exists: boolean): void {
+    localStorage.setItem(this.COMPANY_STATUS_KEY, exists ? 'true' : 'false');
+    this.companyStatusSubject.next(exists);
+  }
+
+  getCompanyStatus(): boolean | null {
+    const val = localStorage.getItem(this.COMPANY_STATUS_KEY);
+    if (val === 'true') return true;
+    if (val === 'false') return false;
+    return null;
+  }
+
+  clearCompanyStatus(): void {
+    localStorage.removeItem(this.COMPANY_STATUS_KEY);
+    this.companyStatusSubject.next(null);
+  }
 
   // Get All Companies
   getCompany(): Observable<any> {
