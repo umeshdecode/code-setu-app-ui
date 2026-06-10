@@ -6,6 +6,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
+import { HttpClient } from '@angular/common/http';
 import { InquiryService } from 'src/app/services/inquiry.service';
 import { ShowpopupService } from 'src/app/services/showpopup.service';
 
@@ -20,6 +22,7 @@ import { ShowpopupService } from 'src/app/services/showpopup.service';
     MatFormFieldModule, 
     MatInputModule, 
     MatButtonModule,
+    MatSelectModule,
     FormsModule
   ],
   styleUrls: ['./contect-us.component.css']
@@ -27,24 +30,58 @@ import { ShowpopupService } from 'src/app/services/showpopup.service';
 export class ContectUsComponent implements OnInit {
   contact = {
     fullName: '',
+    mobileCode: '+91',
     mobilenumber: '',
     email: '',
     message: ''
   };
 
+  countryCodes: any[] = [
+    { name: 'India', code: '+91', cca2: 'IN' },
+    { name: 'USA', code: '+1', cca2: 'US' },
+    { name: 'UK', code: '+44', cca2: 'GB' },
+    { name: 'UAE', code: '+971', cca2: 'AE' }
+  ];
+
   constructor(
     private inquiryService: InquiryService,
-    private showPopup: ShowpopupService
+    private showPopup: ShowpopupService,
+    private http: HttpClient
   ) { }
 
   ngOnInit(): void {
+    this.loadCountryCodes();
+  }
+
+  loadCountryCodes(): void {
+    this.http.get<any[]>('https://restcountries.com/v3.1/all?fields=name,idd,cca2').subscribe({
+      next: (countries) => {
+        if (Array.isArray(countries)) {
+          this.countryCodes = countries
+            .map(c => {
+              const root = c.idd?.root || '';
+              const suffix = c.idd?.suffixes?.[0] || '';
+              return {
+                name: c.name?.common || '',
+                code: root + suffix,
+                cca2: c.cca2 || ''
+              };
+            })
+            .filter(c => c.name && c.code)
+            .sort((a, b) => a.name.localeCompare(b.name));
+        }
+      },
+      error: (err) => {
+        console.error("Error loading country codes:", err);
+      }
+    });
   }
 
   sendMessage(): void {
     const payload = {
       name: this.contact.fullName,
       email: this.contact.email,
-      phone: this.contact.mobilenumber,
+      phone: (this.contact.mobileCode || '') + this.contact.mobilenumber,
       subject: "Inquiry from CargoSetu Website",
       message: this.contact.message
     };
@@ -57,6 +94,7 @@ export class ContectUsComponent implements OnInit {
         // Reset the form
         this.contact = {
           fullName: '',
+          mobileCode: '+91',
           mobilenumber: '',
           email: '',
           message: ''

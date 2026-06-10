@@ -14,26 +14,43 @@
             </mat-card-header>
             <mat-card-content>
                 <form class="contact-form" (ngSubmit)="sendMessage()" #contactForm="ngForm">
-                    <mat-form-field appearance="outline">
-                        <mat-label>Full Name</mat-label>
-                        <input matInput name="fullName" placeholder="John Doe" [(ngModel)]="contact.fullName" required>
-                        <mat-icon matSuffix>person</mat-icon>
-                    </mat-form-field>
-                    <mat-form-field appearance="outline">
-                        <mat-label>Mobile Number</mat-label>
-                        <input matInput name="mobilenumber" placeholder="1234567890" [(ngModel)]="contact.mobilenumber" required>
-                        <mat-icon matSuffix>mobile</mat-icon>
-                    </mat-form-field>
+                    <!-- Row 1: Name + Email -->
+                    <div class="form-row">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Full Name</mat-label>
+                            <input matInput name="fullName" placeholder="John Doe" [(ngModel)]="contact.fullName" required>
+                            <mat-icon matSuffix>person</mat-icon>
+                        </mat-form-field>
 
-                    <mat-form-field appearance="outline">
-                        <mat-label>Email Address</mat-label>
-                        <input matInput name="email" type="email" placeholder="you@example.com" [(ngModel)]="contact.email" required>
-                        <mat-icon matSuffix>email</mat-icon>
-                    </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Email Address</mat-label>
+                            <input matInput name="email" type="email" placeholder="you@example.com" [(ngModel)]="contact.email" required>
+                            <mat-icon matSuffix>email</mat-icon>
+                        </mat-form-field>
+                    </div>
 
+                    <!-- Row 2: Mobile Number (split) -->
+                    <div class="mobile-field-container">
+                        <mat-form-field appearance="outline" class="mobile-code-field">
+                            <mat-label>Code</mat-label>
+                            <mat-select [(ngModel)]="contact.mobileCode" name="mobileCode" required>
+                                <mat-option *ngFor="let c of countryCodes" [value]="c.code">
+                                    {{c.cca2 ? c.cca2 + ' (' + c.code + ')' : c.code + ' (' + c.name + ')'}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="mobile-number-field">
+                            <mat-label>Mobile Number</mat-label>
+                            <input matInput type="tel" name="mobilenumber" placeholder="1234567890" [(ngModel)]="contact.mobilenumber" required>
+                            <mat-icon matSuffix>phone</mat-icon>
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Row 3: Message -->
                     <mat-form-field appearance="outline">
                         <mat-label>Message</mat-label>
-                        <textarea matInput name="message" rows="4" [(ngModel)]="contact.message" required></textarea>
+                        <textarea matInput name="message" rows="3" [(ngModel)]="contact.message" required></textarea>
                     </mat-form-field>
 
                     <button mat-raised-button color="primary" class="submit-btn btn" type="submit" [disabled]="contactForm.invalid">

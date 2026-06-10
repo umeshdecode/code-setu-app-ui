@@ -4,6 +4,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
 import { CompanyService } from 'src/app/services/company.service';
 import { ShowpopupService } from 'src/app/services/showpopup.service';
+import { LoginService } from 'src/app/services/login.service';
+import { AuthResponse } from 'src/app/models/authresponse';
 
 @Component({
   selector: 'app-company',
@@ -38,6 +40,7 @@ export class CompanyComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private companyService: CompanyService,
+    private loginService: LoginService,
     private shoepopup: ShowpopupService,
     private dialog: MatDialog,
     private http: HttpClient
@@ -85,7 +88,7 @@ export class CompanyComponent implements OnInit {
   loadCompanies() {
     this.companyService.getCompany().subscribe({
       next: (res: any) => {
-        this.companyList = res.dataList || res.data || [];
+        this.companyList = res.dataList || (Array.isArray(res.data) ? res.data : res.data ? [res.data] : []);
         this.syncCurrentPage();
       },
       error: (err) => {
@@ -126,7 +129,7 @@ export class CompanyComponent implements OnInit {
       this.companyService.updateCompany(payload).subscribe({
         next: (response: any) => {
           this.shoepopup.showResponsePopup(response.responseMessege, response.responseCode)
-
+          this.companyService.setCompanyStatus(true);
           this.loadCompanies();
           this.cancelForm();
         },
@@ -139,8 +142,19 @@ export class CompanyComponent implements OnInit {
       this.companyService.createCompany(payload).subscribe({
         next: (response: any) => {
           this.shoepopup.showResponsePopup(response.responseMessege, response.responseCode)
+          this.companyService.setCompanyStatus(true);
           this.loadCompanies();
           this.cancelForm();
+
+          this.loginService.refreshToken().subscribe({
+            next: (res: any) => {
+              const newToken = res.accessToken || res.data?.accessToken || res.token;
+              if (newToken) {
+                this.loginService.loginAndFetchUser(newToken).subscribe();
+              }
+            },
+            error: () => {}
+          });
         },
         error: err => console.error(err)
       });
