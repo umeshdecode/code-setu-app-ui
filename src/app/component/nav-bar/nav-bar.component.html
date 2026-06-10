@@ -47,7 +47,7 @@
         <!-- Profile Menu Button for Desktop - REMOVED EXTRA LOGOUT BUTTON -->
         <button *ngIf="loggedIn" mat-button [matMenuTriggerFor]="profileMenuDesktop" class="profile-button">
             <mat-icon>person</mat-icon>
-            <span class="user-name">{{ username }}</span>
+            <span class="user-name">{{ displayName }}</span>
             <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
         </button>
     </div>
@@ -66,7 +66,7 @@
             <mat-icon>account_circle</mat-icon>
         </div>
         <div class="user-info">
-            <div class="user-name-header">{{ username }}</div>
+            <div class="user-name-header">{{ displayName }}</div>
             <!-- <div class="user-id">ID: {{ userId }}</div> -->
         </div>
     </div>
@@ -161,7 +161,7 @@
         <!-- Profile Menu for Mobile -->
         <button *ngIf="loggedIn" mat-button [matMenuTriggerFor]="profileMenuMobile" class="profile-button">
             <mat-icon>person</mat-icon>
-            <span class="user-name">{{ username }}</span>
+            <span class="user-name">{{ displayName }}</span>
             <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
         </button>
     </div>
@@ -175,7 +175,7 @@
             <mat-icon>account_circle</mat-icon>
         </div>
         <div class="user-info">
-            <div class="user-name-header">{{ username }}</div>
+            <div class="user-name-header">{{ displayName }}</div>
             <div class="user-id">ID: {{ userId }}</div>
         </div>
     </div>

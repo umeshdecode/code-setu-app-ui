@@ -247,6 +247,31 @@ searchQuery = '';
 filteredPlans: Plandto[] = [];
 isRefreshing = false;
 
+currentPageNumber = 0;
+pageSize = 5;
+
+get totalRecords(): number {
+  return this.filteredPlans.length;
+}
+
+get totalPages(): number {
+  return Math.ceil(this.totalRecords / this.pageSize);
+}
+
+get paginatedPlans(): Plandto[] {
+  const start = this.currentPageNumber * this.pageSize;
+  return this.filteredPlans.slice(start, start + this.pageSize);
+}
+
+goToPage(pageNumber: number): void {
+  this.currentPageNumber = pageNumber;
+}
+
+changePageSize(newSize: number): void {
+  this.pageSize = newSize;
+  this.currentPageNumber = 0;
+}
+
 // Update loadPlans to also set filteredPlans
 loadPlans(): void {
   this.isRefreshing = true;
@@ -255,6 +280,7 @@ loadPlans(): void {
       const plansList = response?.responseBody || (Array.isArray(response) ? response : []);
       this.plans = plansList;
       this.filterPlans(); // keep filter in sync
+      this.currentPageNumber = 0;
       this.isRefreshing = false;
     },
     error: (err) => {
@@ -285,6 +311,7 @@ filterPlans(): void {
         p.plannCategory?.toLowerCase().includes(q)
       )
     : [...this.plans];
+  this.currentPageNumber = 0;
 }
 }
 

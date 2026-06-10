@@ -29,10 +29,10 @@ export class AccessMenuService {
       icon: 'dashboard',
       items: [
         { id: 'dashboard', label: 'Dashboard', subtitle: 'Role based workspace', icon: 'dashboard', route: '/dashboard', accent: 'blue' },
-        { id: 'customers', label: 'Customers', subtitle: 'Create and manage CRM entries', icon: 'groups', route: '/customers', accent: 'blue', permissions: ['CUSTOMER', 'CUSTOMER_VIEW', 'CUSTOMER_CREATE', 'MANAGE_CUSTOMER'] },
-        { id: 'vehicles', label: 'Vehicles', subtitle: 'Fleet tracking', icon: 'local_shipping', route: '/vehicle', accent: 'orange', permissions: ['VEHICLE', 'VEHICLE_VIEW', 'MANAGE_VEHICLE'] },
-        { id: 'staff', label: 'Staff', subtitle: 'Staff profiles and access', icon: 'badge', route: '/staffdetails', accent: 'green', permissions: ['STAFF', 'STAFF_VIEW', 'USER', 'USER_VIEW', 'MANAGE_STAFF'] },
-        { id: 'company', label: 'Company', subtitle: 'Company profile and setup', icon: 'corporate_fare', route: '/company-list', accent: 'blue', permissions: ['COMPANY', 'COMPANY_VIEW', 'MANAGE_COMPANY'] },
+        { id: 'customers', label: 'Customers', subtitle: 'Create and manage CRM entries', icon: 'groups', route: '/customers', accent: 'blue' },
+        { id: 'vehicles', label: 'Vehicles', subtitle: 'Fleet tracking', icon: 'local_shipping', route: '/vehicle', accent: 'orange' },
+        { id: 'staff', label: 'Staff', subtitle: 'Staff profiles and access', icon: 'badge', route: '/staffdetails', accent: 'green' },
+        { id: 'company', label: 'Company', subtitle: 'Company profile and setup', icon: 'corporate_fare', route: '/company-list', accent: 'blue'},
         { id: 'plans', label: 'Plans', subtitle: 'Subscription plans', icon: 'category', route: '/plan', accent: 'pink', permissions: ['PLAN', 'PLAN_VIEW', 'MANAGE_PLAN'] },
         { id: 'reports', label: 'Reports', subtitle: 'Business reports', icon: 'bar_chart', accent: 'green', comingSoon: true, permissions: ['REPORT', 'REPORT_VIEW', 'VIEW_REPORTS'] }
       ]

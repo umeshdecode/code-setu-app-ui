@@ -8,6 +8,9 @@ import { LoaderComponent } from '../loader/loader.component';
 import { switchMap, tap } from 'rxjs';
 import { StaffuserServiceService } from 'src/app/services/staffuser-service';
 import { JwttokenService } from 'src/app/services/jwttoken.service';
+import { CompanyService } from 'src/app/services/company.service';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogboxComponent } from '../dialogbox/dialogbox.component';
 
 @Component({
   selector: 'app-login',
@@ -44,9 +47,9 @@ export class LoginComponent implements OnInit {
   constructor(
     private loginService: LoginService,
     private router: Router,
-    private staffuserservice: StaffuserServiceService,
-    private jwtDecode: JwttokenService,
-    private http: HttpClient
+    private http: HttpClient,
+    private companyService: CompanyService,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -74,7 +77,19 @@ export class LoginComponent implements OnInit {
     ).subscribe({
       next: (userDetails) => {
         console.log('User Details fetched:', userDetails);
-        this.router.navigate(['/dashboard']);
+        this.companyService.getCurrentCompany().subscribe({
+          next: (res) => {
+            if (res && res.responseCode === 200 && res.data) {
+              this.router.navigate(['/dashboard']);
+            } else {
+              this.showNoCompanyDialog();
+            }
+          },
+          error: (err) => {
+            console.warn('getCurrentCompany failed, likely no company bound:', err);
+            this.showNoCompanyDialog();
+          }
+        });
       },
       error: (err) => {
         console.error('API Error:', err);
@@ -83,6 +98,27 @@ export class LoginComponent implements OnInit {
       },
       complete: () => {
         this.isLoading = false;
+      }
+    });
+  }
+
+  showNoCompanyDialog() {
+    const dialogRef = this.dialog.open(DialogboxComponent, {
+      width: '450px',
+      disableClose: true,
+      data: {
+        title: 'Create Your First Company',
+        message: 'It looks like you do not have any company associated with your account. Would you like to create one now?',
+        confirmText: 'Create Company',
+        cancelText: 'Skip'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.router.navigate(['/company-create']);
+      } else {
+        this.router.navigate(['/dashboard']);
       }
     });
   }
