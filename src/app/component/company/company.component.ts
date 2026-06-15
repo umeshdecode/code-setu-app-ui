@@ -6,7 +6,6 @@ import { CompanyService } from 'src/app/services/company.service';
 import { ShowpopupService } from 'src/app/services/showpopup.service';
 import { LoginService } from 'src/app/services/login.service';
 import { ViewcomponentComponent } from '../viewcomponent/viewcomponent.component';
-import { LoginService } from 'src/app/services/login.service';
 import { AuthResponse } from 'src/app/models/authresponse';
 
 @Component({
@@ -48,7 +47,6 @@ export class CompanyComponent implements OnInit {
     private shoepopup: ShowpopupService,
     private dialog: MatDialog,
     private http: HttpClient,
-    private loginService: LoginService
   ) { }
 
   ngOnInit(): void {
