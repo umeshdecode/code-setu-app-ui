@@ -1,0 +1,58 @@
+<div class="view-dialog-container">
+  <div class="gradient-line"></div>
+  <h2 mat-dialog-title class="dialog-title">
+    <span class="title-text">{{ data.title || 'Details' }}</span>
+    <button mat-icon-button class="close-btn" mat-dialog-close>
+      <mat-icon>close</mat-icon>
+    </button>
+  </h2>
+  
+  <mat-dialog-content class="dialog-content">
+    <div class="details-grid">
+      <div class="detail-item" *ngFor="let item of data.details">
+        <span class="detail-label">{{ item.label }}</span>
+        <div class="detail-value-wrap">
+          <!-- Status / Badge Type -->
+          <ng-container *ngIf="item.type === 'status'">
+            <span class="status-badge" [class.active]="item.value === 'Active' || item.value === true || item.value === 'ACTIVE'" [class.inactive]="item.value === 'Inactive' || item.value === false || item.value === 'INACTIVE'">
+              <mat-icon class="status-icon">{{ (item.value === 'Active' || item.value === true || item.value === 'ACTIVE') ? 'check_circle' : 'cancel' }}</mat-icon>
+              {{ (item.value === 'Active' || item.value === true || item.value === 'ACTIVE') ? 'Active' : 'Inactive' }}
+            </span>
+          </ng-container>
+
+          <!-- Email Type -->
+          <ng-container *ngIf="item.type === 'email'">
+            <a href="mailto:{{ item.value }}" class="value-link email-link" *ngIf="item.value; else emptyVal">
+              <mat-icon class="link-icon">mail</mat-icon> {{ item.value }}
+            </a>
+          </ng-container>
+
+          <!-- Link/URL Type -->
+          <ng-container *ngIf="item.type === 'link'">
+            <a href="{{ item.value }}" target="_blank" rel="noopener noreferrer" class="value-link website-link" *ngIf="item.value; else emptyVal">
+              <mat-icon class="link-icon">open_in_new</mat-icon> {{ item.value }}
+            </a>
+          </ng-container>
+
+          <!-- Default Text Type -->
+          <ng-container *ngIf="!item.type || (item.type !== 'status' && item.type !== 'email' && item.type !== 'link')">
+            <span class="value-text" *ngIf="item.value !== null && item.value !== undefined && item.value !== ''; else emptyVal">
+              {{ item.value }}
+            </span>
+          </ng-container>
+
+          <!-- Empty Fallback template -->
+          <ng-template #emptyVal>
+            <span class="value-empty">—</span>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button mat-raised-button color="primary" class="close-dialog-btn" mat-dialog-close>
+      Close
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -129,24 +129,60 @@ export class LoginComponent implements OnInit {
 
 
 
-  verifyOtp() {
-    if (!this.otp.code || this.otp.code.length !== 6) {
-      alert('Invalid OTP');
-      return;
-    }
-
-
-    // CALL BACKEND HERE
-    console.log('OTP sent to', this.otp.mobile);
-    this.otpSent = true;
-
-  }
   sendOtp() {
     if (!this.otp.mobile) {
       alert('Enter mobile number');
       return;
     }
-    console.log('Sending OTP to', (this.otp.mobileCode || '') + this.otp.mobile);
+    this.isLoading = true;
+    this.loginService.sendOtp(this.otp.mobile).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        this.otpSent = true;
+        alert('Your mockOtp is : ' + res.mockOtp);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Send OTP failed', err);
+        alert(err.error?.message || 'Failed to send OTP. Is the number registered?');
+      }
+    });
+  }
+
+  verifyOtp() {
+    if (!this.otp.code || this.otp.code.length !== 6) {
+      alert('Invalid OTP');
+      return;
+    }
+    this.isLoading = true;
+    this.loginService.verifyOtp(this.otp.mobile, this.otp.code).pipe(
+      switchMap((response: AuthResponse) => {
+        return this.loginService.loginAndFetchUser(response.accessToken);
+      })
+    ).subscribe({
+      next: (userDetails) => {
+        this.isLoading = false;
+        console.log('User Details fetched:', userDetails);
+        this.companyService.getCurrentCompany().subscribe({
+          next: (res) => {
+            if (res && res.responseCode === 200 && res.data) {
+              this.router.navigate(['/dashboard']);
+            } else {
+              this.showNoCompanyDialog();
+            }
+          },
+          error: (err) => {
+            console.warn('getCurrentCompany failed, likely no company bound:', err);
+            this.showNoCompanyDialog();
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Verify OTP failed', err);
+        alert(err.error?.message || 'Invalid or expired OTP');
+        this.isLoading = false;
+      }
+    });
   }
 
   loadCountryCodes() {

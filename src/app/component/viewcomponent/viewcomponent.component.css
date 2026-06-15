@@ -1,0 +1,196 @@
+.view-dialog-container {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.gradient-line {
+    height: 4px;
+    background: var(--app-action-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+}
+
+.dialog-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px 10px;
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--app-text, #2d3748);
+    border-bottom: 1px solid var(--app-border, #e2e8f0);
+}
+
+.title-text {
+    background: var(--app-action-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.close-btn {
+    color: var(--app-muted-text, #718096);
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    transform: rotate(90deg);
+    color: #f5576c;
+}
+
+.dialog-content {
+    padding: 24px !important;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: var(--app-surface-muted, #f8fafc);
+    border: 1px solid var(--app-border, #e2e8f0);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.detail-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    background: #ffffff;
+    border-color: var(--app-primary, #667eea);
+}
+
+.detail-label {
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--app-muted-text, #718096);
+    font-weight: 600;
+}
+
+.detail-value-wrap {
+    font-size: 1rem;
+    color: var(--app-text, #2d3748);
+    font-weight: 500;
+}
+
+/* Links style */
+.value-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--app-primary, #667eea) !important;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    word-break: break-all;
+}
+
+.value-link:hover {
+    color: var(--app-secondary, #764ba2) !important;
+    text-decoration: underline;
+}
+
+.link-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* Status Badge */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.status-badge.active {
+    background-color: rgba(72, 187, 120, 0.15);
+    color: #2f855a;
+}
+
+.status-badge.inactive {
+    background-color: rgba(245, 101, 101, 0.15);
+    color: #c53030;
+}
+
+.status-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+.value-text {
+    word-break: break-all;
+}
+
+.value-empty {
+    color: var(--app-muted-text, #718096);
+    font-style: italic;
+}
+
+.dialog-actions {
+    padding: 16px 24px !important;
+    border-top: 1px solid var(--app-border, #e2e8f0);
+}
+
+.close-dialog-btn {
+    border-radius: 8px !important;
+    padding: 8px 24px !important;
+    background: var(--app-action-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%)) !important;
+    color: white !important;
+    font-weight: 600 !important;
+}
+
+/* Dark Theme support */
+:host-context(body.app-dark-theme) .dialog-title {
+    color: #ffffff;
+    border-bottom-color: #2d3748;
+}
+
+:host-context(body.app-dark-theme) .dialog-content {
+    background-color: var(--app-bg, #1a202c);
+}
+
+:host-context(body.app-dark-theme) .detail-item {
+    background: #2d3748;
+    border-color: #4a5568;
+}
+
+:host-context(body.app-dark-theme) .detail-item:hover {
+    background: #3a475d;
+    border-color: var(--app-primary, #667eea);
+}
+
+:host-context(body.app-dark-theme) .detail-value-wrap {
+    color: #e2e8f0;
+}
+
+:host-context(body.app-dark-theme) .dialog-actions {
+    background-color: var(--app-bg, #1a202c);
+    border-top-color: #2d3748;
+}
+
+/* Responsive grid */
+@media (max-width: 600px) {
+    .details-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .dialog-content {
+        padding: 16px !important;
+    }
+}

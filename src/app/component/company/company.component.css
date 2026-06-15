@@ -486,6 +486,15 @@ tbody tr:hover {
   background: rgba(229, 62, 62, 0.2);
 }
 
+.view-btn {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.view-btn:hover {
+  background: rgba(16, 185, 129, 0.2);
+}
+
 .table-btn .material-icons {
   font-size: 18px;
 }
