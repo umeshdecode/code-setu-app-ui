@@ -13,11 +13,11 @@
 
       <!-- EMAIL LOGIN -->
       <mat-tab label="Email">
-        <form (ngSubmit)="loginWithEmail()" class="form">
+        <form #loginForm="ngForm" (ngSubmit)="loginWithEmail()" class="form">
 
           <mat-form-field appearance="outline" class="full">
             <mat-label>Email</mat-label>
-            <input matInput [(ngModel)]="credential.email" name="email" required>
+            <input matInput type="email" [(ngModel)]="credential.email" name="email" required>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="full">
@@ -29,7 +29,7 @@
             </button>
           </mat-form-field>
 
-          <button mat-raised-button color="primary" class="btn">Login</button>
+          <button mat-raised-button color="primary" class="btn" [disabled]="loginForm.invalid">Login</button>
         </form>
         <!-- <a href=""></a> -->
         <button class="mat-mdc-stroked-button google-btn">

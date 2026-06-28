@@ -40,6 +40,9 @@ export class AppComponent implements OnInit {
     // Load user data
     try {
       this.userdata = JSON.parse(localStorage.getItem('user_session') || '{}');
+      if (this.userdata && (this.userdata.firstName || this.userdata.userName)) {
+        this.username = this.userdata.firstName || this.userdata.userName;
+      }
     } catch (error) {
       console.error('Error parsing user session:', error);
       this.userdata = {};
@@ -216,7 +219,7 @@ export class AppComponent implements OnInit {
     if (session) {
       try {
         const user = JSON.parse(session);
-        this.username = user.userName || user.firstName || this.username;
+        this.username = user.firstName || user.userName || this.username;
       } catch (error) {
         console.error('Error parsing user session in setLayout:', error);
       }

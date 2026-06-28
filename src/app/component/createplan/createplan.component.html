@@ -92,11 +92,11 @@
         </thead>
         <tbody>
           <tr
-            *ngFor="let plan of filteredPlans; let i = index"
+            *ngFor="let plan of paginatedPlans; let i = index"
             [class.active-row]="selectedPlan?.planId === plan.planId"
             (click)="selectPlan(plan)"
           >
-            <td class="index-cell">{{ i + 1 }}</td>
+            <td class="index-cell">{{ (currentPageNumber * pageSize) + i + 1 }}</td>
 
             <td>
               <div class="plan-name-wrapper">
@@ -151,6 +151,17 @@
           </tr>
         </tbody>
       </table>
+
+      <app-shared-pagination
+        *ngIf="filteredPlans.length > 0"
+        [currentPage]="currentPageNumber"
+        [totalPages]="totalPages"
+        [totalRecords]="totalRecords"
+        [pageSize]="pageSize"
+        [pageRecords]="paginatedPlans.length"
+        (pageChange)="goToPage($event)"
+        (sizeChange)="changePageSize($event)">
+      </app-shared-pagination>
 
     </div>
   </div>

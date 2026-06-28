@@ -18,6 +18,11 @@ export class CompanyService {
     return this.http.get<any>(this.BASE_URL);
   }
 
+  // Get Current Company
+  getCurrentCompany(): Observable<any> {
+    return this.http.get<any>(`${this.BASE_URL}/currentCompany`);
+  }
+
   // Create Company
   createCompany(payload: FormData): Observable<any> {
     return this.http.post<any>(this.BASE_URL, payload);

@@ -1,0 +1,32 @@
+<div class="view-dialog">
+  <div class="view-header">
+    <h2>{{ data.title }}</h2>
+    <button mat-icon-button (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="view-body">
+    <div class="detail-row" *ngFor="let item of data.details">
+      <span class="detail-label">{{ item.label }}</span>
+      <span class="detail-value">
+        <ng-container [ngSwitch]="item.type">
+          <a *ngSwitchCase="'email'" [href]="'mailto:' + item.value">{{ item.value || '—' }}</a>
+          <a *ngSwitchCase="'link'" [href]="item.value" target="_blank" rel="noopener">{{ item.value || '—' }}</a>
+          <span *ngSwitchCase="'status'" [class]="item.value === 'Active' ? 'badge-active' : 'badge-inactive'">
+            {{ item.value || '—' }}
+          </span>
+          <span *ngSwitchDefault>{{ item.value || '—' }}</span>
+        </ng-container>
+      </span>
+    </div>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="view-footer">
+    <button mat-raised-button color="primary" (click)="close()">Close</button>
+  </div>
+</div>

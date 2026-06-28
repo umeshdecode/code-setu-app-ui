@@ -7,7 +7,6 @@ import { StaffuserServiceService } from 'src/app/services/staffuser-service';
 import { TemplateService } from 'src/app/services/template.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogboxComponent } from '../dialogbox/dialogbox.component';
-import html2pdf from 'html2pdf.js';
 
 type ConnectionStatus = 'Online' | 'Offline';
 type CustomerRow = CustomerModels & {
@@ -36,7 +35,9 @@ export class CustomerComponent implements OnInit {
   isDeleting = false;
   deleteMessage = '';
   deleteError = '';
+  private messageTimer: any;
   downloadingQuotationId: number | string | null = null;
+  isGeneratingDocument = false;
   staffList: any[] = [];
   staffLoadError = '';
   companyList: any[] = [];
@@ -661,15 +662,82 @@ export class CustomerComponent implements OnInit {
       this.customersService.deleteCustomer(payload).subscribe({
         next: () => {
           this.isDeleting = false;
-          this.deleteMessage = 'Customer deleted successfully.';
+          this.showMessage('Customer deleted successfully.');
           this.loadCustomers();
         },
         error: error => {
           console.error('Delete customer failed:', error);
           this.isDeleting = false;
-          this.deleteError = error.error?.responseMessege || error.error?.message || 'Unable to delete customer.';
+          this.showError(error.error?.responseMessege || error.error?.message || 'Unable to delete customer.');
         }
       });
+    });
+  }
+
+  generateQuotation(customer: CustomerRow): void {
+    this.downloadCustomerQuotation(customer);
+  }
+
+  generateInvoice(customer: CustomerRow): void {
+    const shiftingId = this.getCustomerShiftingId(customer);
+    if (!shiftingId) { this.showError('No shifting id found for this customer.'); return; }
+    this.downloadingQuotationId = shiftingId;
+    this.isGeneratingDocument = true;
+    this.templateService.getInvoicePdf(shiftingId).subscribe({
+      next: (blob) => {
+        this.downloadBlob(blob, `invoice-${shiftingId}.pdf`);
+        this.showMessage('Invoice PDF downloaded successfully.');
+        this.downloadingQuotationId = null;
+        this.isGeneratingDocument = false;
+      },
+      error: (error) => {
+        console.error('Invoice PDF download failed:', error);
+        this.showError('Unable to generate invoice PDF.');
+        this.downloadingQuotationId = null;
+        this.isGeneratingDocument = false;
+      }
+    });
+  }
+
+  generateLRCopy(customer: CustomerRow): void {
+    const shiftingId = this.getCustomerShiftingId(customer);
+    if (!shiftingId) { this.showError('No shifting id found for this customer.'); return; }
+    this.downloadingQuotationId = shiftingId;
+    this.isGeneratingDocument = true;
+    this.templateService.getLRCopyPdf(shiftingId).subscribe({
+      next: (blob) => {
+        this.downloadBlob(blob, `lr-copy-${shiftingId}.pdf`);
+        this.showMessage('LR Copy downloaded successfully.');
+        this.downloadingQuotationId = null;
+        this.isGeneratingDocument = false;
+      },
+      error: (error) => {
+        console.error('LR Copy download failed:', error);
+        this.showError('Unable to generate LR Copy.');
+        this.downloadingQuotationId = null;
+        this.isGeneratingDocument = false;
+      }
+    });
+  }
+
+  generateItemList(customer: CustomerRow): void {
+    const shiftingId = this.getCustomerShiftingId(customer);
+    if (!shiftingId) { this.showError('No shifting id found for this customer.'); return; }
+    this.downloadingQuotationId = shiftingId;
+    this.isGeneratingDocument = true;
+    this.templateService.getItemListPdf(shiftingId).subscribe({
+      next: (blob) => {
+        this.downloadBlob(blob, `item-list-${shiftingId}.pdf`);
+        this.showMessage('Item List downloaded successfully.');
+        this.downloadingQuotationId = null;
+        this.isGeneratingDocument = false;
+      },
+      error: (error) => {
+        console.error('Item List download failed:', error);
+        this.showError('Unable to generate Item List.');
+        this.downloadingQuotationId = null;
+        this.isGeneratingDocument = false;
+      }
     });
   }
 
@@ -680,27 +748,24 @@ export class CustomerComponent implements OnInit {
     this.deleteError = '';
 
     if (!shiftingId) {
-      this.deleteError = 'No shifting id found for this customer.';
+      this.showError('No shifting id found for this customer.');
       return;
     }
 
     this.downloadingQuotationId = shiftingId;
+    this.isGeneratingDocument = true;
     this.templateService.getQuotationPdf(shiftingId).subscribe({
-      next: async (html) => {
-        try {
-          await this.downloadHtmlAsPdf(html, `quotation-${shiftingId}.pdf`);
-          this.deleteMessage = 'Quotation PDF downloaded successfully.';
-        } catch (error) {
-          console.error('Quotation PDF conversion failed:', error);
-          this.deleteError = 'Unable to generate quotation PDF.';
-        } finally {
-          this.downloadingQuotationId = null;
-        }
+      next: (blob) => {
+        this.downloadBlob(blob, `quotation-${shiftingId}.pdf`);
+        this.showMessage('Quotation PDF downloaded successfully.');
+        this.downloadingQuotationId = null;
+        this.isGeneratingDocument = false;
       },
       error: (error) => {
         console.error('Quotation PDF download failed:', error);
-        this.deleteError = 'Unable to generate quotation PDF.';
+        this.showError('Unable to generate quotation PDF.');
         this.downloadingQuotationId = null;
+        this.isGeneratingDocument = false;
       }
     });
   }
@@ -718,76 +783,27 @@ export class CustomerComponent implements OnInit {
       || null;
   }
 
-  private async downloadHtmlAsPdf(html: string, fileName: string): Promise<void> {
-    const container = this.createPdfRenderContainer(html);
-    document.body.appendChild(container);
-    const pdfElement = container.querySelector<HTMLElement>('.page') || container;
-
-    if (pdfElement !== container) {
-      pdfElement.style.margin = '0';
-      pdfElement.style.boxShadow = 'none';
-      pdfElement.style.background = '#ffffff';
-    }
-
-    try {
-      await this.waitForPdfAssets(pdfElement);
-
-      await html2pdf()
-        .set({
-          filename: fileName,
-          margin: 0,
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: {
-            scale: 2,
-            useCORS: true,
-            backgroundColor: '#ffffff'
-          },
-          jsPDF: {
-            unit: 'mm',
-            format: 'a4',
-            orientation: 'portrait'
-          }
-        })
-        .from(pdfElement)
-        .save(fileName);
-    } finally {
-      document.body.removeChild(container);
-    }
+  private downloadBlob(blob: Blob, fileName: string): void {
+    const url = window.URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.click();
+    window.URL.revokeObjectURL(url);
   }
 
-  private createPdfRenderContainer(html: string): HTMLElement {
-    const parsedDocument = new DOMParser().parseFromString(html, 'text/html');
-    const container = document.createElement('div');
-    const styles = Array.from(parsedDocument.head.querySelectorAll('style, link[rel="stylesheet"]'))
-      .map(node => node.cloneNode(true));
-
-    styles.forEach(styleNode => container.appendChild(styleNode));
-    container.appendChild(parsedDocument.body.cloneNode(true));
-
-    container.style.position = 'absolute';
-    container.style.left = '0';
-    container.style.top = '0';
-    container.style.width = '210mm';
-    container.style.backgroundColor = '#ffffff';
-    container.style.pointerEvents = 'none';
-    container.style.zIndex = '-1';
-
-    return container;
+  private showMessage(msg: string): void {
+    this.deleteMessage = msg;
+    this.deleteError = '';
+    clearTimeout(this.messageTimer);
+    this.messageTimer = setTimeout(() => this.deleteMessage = '', 3000);
   }
 
-  private async waitForPdfAssets(element: HTMLElement): Promise<void> {
-    const fontReady = 'fonts' in document
-      ? (document as Document & { fonts: FontFaceSet }).fonts.ready
-      : Promise.resolve();
-
-    const imageReady = Array.from(element.querySelectorAll('img'))
-      .filter(image => !image.complete)
-      .map(image => new Promise<void>(resolve => {
-        image.onload = () => resolve();
-        image.onerror = () => resolve();
-      }));
-
-    await Promise.all([fontReady, ...imageReady]);
+  private showError(msg: string): void {
+    this.deleteError = msg;
+    this.deleteMessage = '';
+    clearTimeout(this.messageTimer);
+    this.messageTimer = setTimeout(() => this.deleteError = '', 3000);
   }
 
   private getEmptyShiftingForm(): any {

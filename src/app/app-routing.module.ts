@@ -27,6 +27,7 @@ import { DriverComponent } from './component/driver/driver.component';
 import { AssignmentComponent } from './component/assignment/assignment.component';
 import { SyetemconfigurationComponent } from './component/syetemconfiguration/syetemconfiguration.component';
 import { QuotaionComponent } from './component/quotaion/quotaion.component';
+import { TripComponent } from './component/trip/trip.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },
@@ -62,6 +63,7 @@ const routes: Routes = [
 { path: 'vehicle-management/assignments', component: AssignmentComponent, pathMatch: 'full', canActivate: [AuthGuard] },
 { path: 'system-configuration', component: SyetemconfigurationComponent, pathMatch: 'full', canActivate: [AuthGuard] },
 { path: 'quotations', component: QuotaionComponent, pathMatch: 'full', canActivate: [AuthGuard] },
+{ path: 'trips', component: TripComponent, pathMatch: 'full', canActivate: [AuthGuard] },
 
 ];
 

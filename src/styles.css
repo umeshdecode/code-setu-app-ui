@@ -31,6 +31,115 @@ body {
 
 
 html, body { height: 100%; }
+
+/* ── Document actions popover ──────────────────────────────────────────────
+   All colours come from CSS variables so it inherits light/dark theme.       */
+
+.doc-actions-panel.mat-menu-panel,
+.doc-actions-panel.mat-mdc-menu-panel {
+  min-width: 240px !important;
+  max-width: 240px !important;
+  border-radius: 8px !important;
+  box-shadow:
+    0 4px 6px -1px rgba(45, 55, 72, 0.08),
+    0 10px 28px -4px rgba(45, 55, 72, 0.14) !important;
+  border: 1px solid var(--app-border) !important;
+  background: var(--app-surface) !important;
+  overflow: hidden !important;
+}
+
+/* gradient accent bar — mirrors the .panel::before stripe */
+.doc-actions-panel.mat-menu-panel::before,
+.doc-actions-panel.mat-mdc-menu-panel::before {
+  content: '';
+  display: block;
+  height: 3px;
+  background: var(--app-header-gradient);
+}
+
+.doc-actions-panel .mat-menu-content,
+.doc-actions-panel .mat-mdc-menu-content {
+  padding: 0 !important;
+}
+
+/* ── header label (non-interactive) */
+.doc-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 14px 8px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.doc-panel-header span {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--app-muted-text) !important;
+}
+
+.doc-panel-header mat-icon {
+  font-size: 14px !important;
+  width: 14px !important;
+  height: 14px !important;
+  line-height: 14px !important;
+  color: var(--app-primary) !important;
+}
+
+/* ── divider */
+.doc-actions-panel mat-divider {
+  border-top-color: var(--app-border) !important;
+  margin: 0 !important;
+}
+
+/* ── menu items */
+.doc-actions-panel button[mat-menu-item],
+.doc-actions-panel .mat-menu-item,
+.doc-actions-panel .mat-mdc-menu-item {
+  height: 46px !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  color: var(--app-text) !important;
+  background: transparent !important;
+  padding: 0 14px !important;
+  transition: background 0.13s, color 0.13s !important;
+}
+
+/* ── icons inside items */
+.doc-actions-panel button[mat-menu-item] mat-icon,
+.doc-actions-panel button[mat-menu-item] .mat-icon,
+.doc-actions-panel .mat-menu-item .mat-icon {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  line-height: 18px !important;
+  margin-right: 11px !important;
+  flex-shrink: 0;
+  color: var(--app-primary) !important;
+  vertical-align: middle;
+}
+
+/* ── hover */
+.doc-actions-panel button[mat-menu-item]:hover,
+.doc-actions-panel .mat-menu-item:hover,
+.doc-actions-panel .mat-mdc-menu-item:hover {
+  background: var(--app-primary-soft) !important;
+  color: var(--app-primary) !important;
+}
+
+.doc-actions-panel button[mat-menu-item]:hover mat-icon,
+.doc-actions-panel button[mat-menu-item]:hover .mat-icon,
+.doc-actions-panel .mat-menu-item:hover .mat-icon {
+  color: var(--app-primary) !important;
+}
+
+/* ── left accent bar on hover */
+.doc-actions-panel button[mat-menu-item]:hover {
+  border-left: 3px solid var(--app-primary) !important;
+  padding-left: 11px !important;
+}
 body { margin: 0;
      font-family: var(--app-font-family) !important; }
 

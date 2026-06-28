@@ -8,6 +8,9 @@ import { ShowpopupService } from 'src/app/services/showpopup.service';
 import { GenericDataDTO } from 'src/app/models/generic-data-dto';
 import { LoginService } from 'src/app/services/login.service';
 import { AuthResponse } from 'src/app/models/authresponse';
+import { CompanyService } from 'src/app/services/company.service';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogboxComponent } from '../dialogbox/dialogbox.component';
 
 @Component({
   selector: 'app-signup',
@@ -41,7 +44,9 @@ export class SignupComponent implements OnInit {
     private staffService: StaffuserServiceService,
     private router: Router,
     private showpopupservice: ShowpopupService,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private companyService: CompanyService,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -185,11 +190,27 @@ export class SignupComponent implements OnInit {
       }),
       switchMap((authResponse: AuthResponse) => {
         return this.loginService.loginAndFetchUser(authResponse.accessToken);
+      }),
+      switchMap((userDetails: any) => {
+        this.loginService.setUserData(userDetails);
+        return of(userDetails);
       })
     ).subscribe({
       next: (userDetails: any) => {
         console.log('Auto login successful:', userDetails);
-        this.router.navigate(['/dashboard']);
+        this.companyService.getCurrentCompany().subscribe({
+          next: (res) => {
+            if (res && res.responseCode === 200 && res.data) {
+              this.router.navigate(['/dashboard']);
+            } else {
+              this.showNoCompanyDialog();
+            }
+          },
+          error: (err) => {
+            console.warn('getCurrentCompany failed, likely no company bound:', err);
+            this.showNoCompanyDialog();
+          }
+        });
       },
       error: (err) => {
         console.error('Signup/Login flow error', err);
@@ -197,6 +218,27 @@ export class SignupComponent implements OnInit {
       },
       complete: () => {
         this.submitting = false;
+      }
+    });
+  }
+
+  showNoCompanyDialog() {
+    const dialogRef = this.dialog.open(DialogboxComponent, {
+      width: '450px',
+      disableClose: true,
+      data: {
+        title: 'Create Your First Company',
+        message: 'It looks like you do not have any company associated with your account. Would you like to create one now?',
+        confirmText: 'Create Company',
+        cancelText: 'Skip'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.router.navigate(['/company-create']);
+      } else {
+        this.router.navigate(['/dashboard']);
       }
     });
   }

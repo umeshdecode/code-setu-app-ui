@@ -27,6 +27,7 @@ export class NavBarComponent implements OnInit {
   loggedIn: boolean = false;
   userId: string = '';
   username: string = '';
+  displayName: string = '';
   staffData: any = null;
   userRolesDisplay: string = '';
   statusDisplay: string = '';
@@ -45,8 +46,12 @@ ngOnInit(): void {
 
     if (status && this.userdata) {
       this.username = this.userdata.userName || this.userdata.firstName || '';
+      const first = this.userdata.firstName || '';
+      const last = this.userdata.lastName || '';
+      this.displayName = (first) ? `${first}`.trim() : this.username;
     } else {
       this.username = '';
+      this.displayName = '';
     }
   });
 }

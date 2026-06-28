@@ -1,3 +1,4 @@
+<app-loader [isLoading]="isGeneratingDocument"></app-loader>
 <div class="postpaid-page">
   <section class="panel action-panel">
     <div class="panel-header">
@@ -596,11 +597,32 @@
                 <!-- <button type="button" title="Billing"><i class="material-icons">receipt</i></button> -->
                 <button type="button" title="Edit" (click)="openUpdateForm(customer)"><i
                     class="material-icons">edit</i></button>
-                <button type="button" title="Download Quotation" (click)="downloadCustomerQuotation(customer)"
-                  [disabled]="isQuotationDownloading(customer)">
-                  <i class="material-icons">{{ isQuotationDownloading(customer) ? 'hourglass_empty' : 'description'
-                    }}</i>
+                <button type="button" title="Documents" [matMenuTriggerFor]="docMenu">
+                  <i class="material-icons">apps</i>
                 </button>
+                <mat-menu #docMenu="matMenu" panelClass="doc-actions-panel" [overlapTrigger]="false">
+                  <div class="doc-panel-header" (click)="$event.stopPropagation()">
+                    <mat-icon>folder_open</mat-icon>
+                    <span>Documents</span>
+                  </div>
+                  <mat-divider></mat-divider>
+                  <button mat-menu-item (click)="generateQuotation(customer)">
+                    <mat-icon>receipt_long</mat-icon>
+                    <span>Generate Quotation</span>
+                  </button>
+                  <button mat-menu-item (click)="generateInvoice(customer)">
+                    <mat-icon>request_quote</mat-icon>
+                    <span>Generate Invoice</span>
+                  </button>
+                  <button mat-menu-item (click)="generateLRCopy(customer)">
+                    <mat-icon>local_shipping</mat-icon>
+                    <span>LR Copy</span>
+                  </button>
+                  <button mat-menu-item (click)="generateItemList(customer)">
+                    <mat-icon>list_alt</mat-icon>
+                    <span>Item List</span>
+                  </button>
+                </mat-menu>
                 <button type="button" title="Location"><i class="material-icons">hub</i></button>
                 <button type="button" title="Delete" (click)="deleteCustomer(customer)" [disabled]="isDeleting">
                   <i class="material-icons">delete</i>

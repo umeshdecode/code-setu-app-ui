@@ -4,6 +4,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
 import { CompanyService } from 'src/app/services/company.service';
 import { ShowpopupService } from 'src/app/services/showpopup.service';
+import { LoginService } from 'src/app/services/login.service';
+import { ViewcomponentComponent } from '../viewcomponent/viewcomponent.component';
 
 @Component({
   selector: 'app-company',
@@ -13,9 +15,11 @@ import { ShowpopupService } from 'src/app/services/showpopup.service';
 
 export class CompanyComponent implements OnInit {
   @ViewChild('confirmDialog') confirmDialogTemplate!: TemplateRef<any>;
+  @ViewChild('viewDialog') viewDialogTemplate!: TemplateRef<any>;
 
   companyList: any[] = [];
-  assetTypes: string[] = ['LOGO', 'SEAL', 'Signature', 'STAMP'];
+  selectedCompany: any = null;
+  assetTypes: string[] = ['LOGO', 'SEAL/Signature', 'STAMP'];
   companyForm!: FormGroup;
 
   showForm = false;
@@ -40,7 +44,8 @@ export class CompanyComponent implements OnInit {
     private companyService: CompanyService,
     private shoepopup: ShowpopupService,
     private dialog: MatDialog,
-    private http: HttpClient
+    private http: HttpClient,
+    private loginService: LoginService
   ) { }
 
   ngOnInit(): void {
@@ -57,6 +62,7 @@ export class CompanyComponent implements OnInit {
     const gstPattern = '^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$';
 
     this.companyForm = this.fb.group({
+      companyId: [null],
       companyName: ['', Validators.required],
       companyEmail: ['', [Validators.required, Validators.email]],
       whatsappCode: ['+91', [Validators.pattern(codePattern)]],
@@ -100,6 +106,9 @@ export class CompanyComponent implements OnInit {
     this.companyForm.reset();
     this.companyForm.patchValue({
       country: 'India',
+      whatsappCode: '+91',
+      contactNo1Code: '+91',
+      contactNo2Code: '+91',
       isActive: true
     });
     this.clearAssetFile();
@@ -139,6 +148,18 @@ export class CompanyComponent implements OnInit {
       this.companyService.createCompany(payload).subscribe({
         next: (response: any) => {
           this.shoepopup.showResponsePopup(response.responseMessege, response.responseCode)
+          
+          // Refresh JWT token after company creation
+          this.loginService.refereseToken().subscribe({
+            next: (tokenResponse: any) => {
+              console.log('Token refreshed successfully', tokenResponse);
+              if (tokenResponse?.token) {
+                localStorage.setItem('token', tokenResponse.token);
+              }
+            },
+            error: (err) => console.error('Token refresh failed:', err)
+          });
+          
           this.loadCompanies();
           this.cancelForm();
         },
@@ -149,24 +170,33 @@ export class CompanyComponent implements OnInit {
   }
 
   editCompany(company: any) {
-    this.showForm = true;
-    this.isEditMode = true;
+    console.log("Editing company:", company);
+    if (!company || !this.companyForm) {
+      console.warn("Company object or companyForm is not defined.");
+      return;
+    }
+    try {
+      this.showForm = true;
+      this.isEditMode = true;
 
-    const parsedWhatsapp = this.parsePhoneNumber(company.whatsappNumber || '');
-    const parsedContact1 = this.parsePhoneNumber(company.contactNo1 || '');
-    const parsedContact2 = this.parsePhoneNumber(company.contactNo2 || '');
+      const parsedWhatsapp = this.parsePhoneNumber(company.whatsappNumber);
+      const parsedContact1 = this.parsePhoneNumber(company.contactNo1);
+      const parsedContact2 = this.parsePhoneNumber(company.contactNo2);
 
-    this.companyForm.patchValue({
-      ...company,
-      whatsappCode: parsedWhatsapp.code,
-      whatsappNumber: parsedWhatsapp.number,
-      contactNo1Code: parsedContact1.code,
-      contactNo1Number: parsedContact1.number,
-      contactNo2Code: parsedContact2.code,
-      contactNo2Number: parsedContact2.number
-    });
-    this.clearAssetFile();
-    this.addedAssets = [];
+      this.companyForm.patchValue({
+        ...company,
+        whatsappCode: parsedWhatsapp.code,
+        whatsappNumber: parsedWhatsapp.number,
+        contactNo1Code: parsedContact1.code,
+        contactNo1Number: parsedContact1.number,
+        contactNo2Code: parsedContact2.code,
+        contactNo2Number: parsedContact2.number
+      });
+      this.clearAssetFile();
+      this.addedAssets = [];
+    } catch (e) {
+      console.error("Error patching company form:", e);
+    }
   }
 
   onAssetFileChange(event: Event): void {
@@ -330,6 +360,35 @@ export class CompanyComponent implements OnInit {
     });
   }
 
+  viewCompany(company: any) {
+    if (!company) {
+      return;
+    }
+    this.selectedCompany = company;
+    this.dialog.open(ViewcomponentComponent, {
+      width: '600px',
+      data: {
+        title: 'Company Details',
+        details: [
+          { label: 'Name', value: company.companyName },
+          { label: 'Email', value: company.companyEmail, type: 'email' },
+          { label: 'WhatsApp', value: company.whatsappNumber },
+          { label: 'Contact 1', value: company.contactNo1 },
+          { label: 'Contact 2', value: company.contactNo2 },
+          { label: 'City', value: company.city },
+          { label: 'State', value: company.state },
+          { label: 'Country', value: company.country },
+          { label: 'Branch', value: company.branch },
+          { label: 'Main Branch', value: company.mainBranch },
+          { label: 'PAN', value: company.panNumber },
+          { label: 'GST', value: company.gstNumber },
+          { label: 'Website', value: company.website, type: 'link' },
+          { label: 'Status', value: company.isActive ? 'Active' : 'Inactive', type: 'status' }
+        ]
+      }
+    });
+  }
+
   loadCountryCodes() {
     this.http.get<any[]>('https://restcountries.com/v3.1/all?fields=name,idd,cca2').subscribe({
       next: (countries) => {
@@ -354,17 +413,19 @@ export class CompanyComponent implements OnInit {
     });
   }
 
-  parsePhoneNumber(fullNo: string): { code: string, number: string } {
-    if (!fullNo) return { code: '+91', number: '' };
-    if (fullNo.startsWith('+')) {
-      const match = this.countryCodes.find(c => fullNo.startsWith(c.code));
+  parsePhoneNumber(fullNo: any): { code: string, number: string } {
+    if (fullNo === null || fullNo === undefined) return { code: '+91', number: '' };
+    const str = fullNo.toString().trim();
+    if (!str) return { code: '+91', number: '' };
+    if (str.startsWith('+')) {
+      const match = this.countryCodes.find(c => c.code && typeof c.code === 'string' && str.startsWith(c.code));
       if (match) {
         return {
           code: match.code,
-          number: fullNo.substring(match.code.length)
+          number: str.substring(match.code.length)
         };
       }
-      const matchRegex = fullNo.match(/^(\+\d{1,4})(\d+)$/);
+      const matchRegex = str.match(/^(\+\d{1,4})(\d+)$/);
       if (matchRegex) {
         return {
           code: matchRegex[1],
@@ -372,6 +433,6 @@ export class CompanyComponent implements OnInit {
         };
       }
     }
-    return { code: '+91', number: fullNo };
+    return { code: '+91', number: str };
   }
 }

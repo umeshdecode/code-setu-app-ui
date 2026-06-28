@@ -71,6 +71,8 @@ import { SyetemconfigurationComponent } from './component/syetemconfiguration/sy
 import { QuotaionComponent } from './component/quotaion/quotaion.component';
 import { ThemeCustomizerComponent } from './component/theme-customizer/theme-customizer.component';
 import { ThemeService } from './services/theme.service';
+import { ViewcomponentComponent } from './component/viewcomponent/viewcomponent.component';
+import { TripComponent } from './component/trip/trip.component';
 
 // import { DownloadscreenComponent } from './component/downloadscreen/downloadscreen.component';
 
@@ -82,10 +84,10 @@ import { ThemeService } from './services/theme.service';
     SignupComponent,
     ServicesComponent,
     FooterComponent,
+    StaffuserComponent,
     UpdateroleComponent,
     RolesDetailsComponent,
     DepartmentComponent,
-    StaffuserComponent,
     StaffDetailsComponent,
     ImageCropperComponent,
     CreateplanComponent,
@@ -95,6 +97,8 @@ import { ThemeService } from './services/theme.service';
     SyetemconfigurationComponent,
     QuotaionComponent,
     ThemeCustomizerComponent,
+    ViewcomponentComponent,
+    TripComponent,
   ],
   imports: [
     BrowserModule,
@@ -117,24 +121,30 @@ import { ThemeService } from './services/theme.service';
     CommonModule,
     MatTableModule,
     MatDialogModule,
-    DialogboxComponent,
     MatStepperModule,
-    MatDatepickerModule, MatMenuModule,
-    MatNativeDateModule, MatPaginatorModule,
-    MatAutocompleteModule, MatSnackBarModule, MatDividerModule, MatTooltipModule,
-    FormsModule,
-    FormsModule,ImageCropperModule,
-    // standaload Component
-    PlanscreenComponent,
-    ContectUsComponent,
+    MatDatepickerModule,
+    MatMenuModule,
+    MatNativeDateModule,
+    MatPaginatorModule,
+    MatAutocompleteModule,
+    MatSnackBarModule,
+    MatDividerModule,
+    MatTooltipModule,
+    ImageCropperModule,
+    GoogleMapsModule,
+    // Standalone components
     HomeComponent,
-    DownloadscreenComponent,
-    LoaderComponent,
+    DashboardComponent,
     AboutComponent,
+    ContectUsComponent,
+    LoaderComponent,
+    PlanscreenComponent,
+    DownloadscreenComponent,
     FeaturescreenComponent,
     VehicleManagementComponent,
+    DriverLocationComponent,
     PaginationComponent,
-
+    DialogboxComponent,
   ],
   providers: [
     {

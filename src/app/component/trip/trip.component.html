@@ -1,0 +1,520 @@
+<div class="trip-page">
+
+  <!-- ── Action panel ─────────────────────────────────────────────────── -->
+  <section class="panel action-panel">
+    <div class="panel-header">
+      <h1>Trip Management</h1>
+      <button class="collapse-button" type="button">
+        <i class="material-icons">remove</i>
+      </button>
+    </div>
+    <div class="quick-actions">
+      <button class="quick-action" type="button" [class.active]="showCreateForm" (click)="openCreateForm()">
+        <i class="material-icons">add_road</i>
+        <span>Create Trip</span>
+      </button>
+      <button class="quick-action" type="button" [class.active]="!showCreateForm && !showDetailPanel"
+        (click)="closeCreateForm(); closeDetailPanel()">
+        <i class="material-icons">route</i>
+        <span>All Trips</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ── Create panel ─────────────────────────────────────────────────── -->
+  <section class="panel create-panel" *ngIf="showCreateForm">
+    <div class="panel-header">
+      <h2>Create Trip</h2>
+      <button class="collapse-button" type="button" (click)="closeCreateForm()">
+        <i class="material-icons">remove</i>
+      </button>
+    </div>
+
+    <!-- Step bar -->
+    <div class="stepper-bar">
+      <ng-container *ngFor="let step of createSteps; let i = index">
+        <div class="stepper-node">
+          <div class="stepper-circle" [class.active]="i === createStep" [class.done]="i < createStep">
+            <i class="material-icons" *ngIf="i < createStep" style="font-size:16px;">check</i>
+            <span *ngIf="i >= createStep">{{ i + 1 }}</span>
+          </div>
+          <span class="stepper-label" [class.active]="i === createStep" [class.done]="i < createStep">{{ step }}</span>
+        </div>
+        <div *ngIf="i < createSteps.length - 1" class="stepper-line" [class.done]="i < createStep"></div>
+      </ng-container>
+    </div>
+
+    <!-- Step 0: Trip Info -->
+    <div *ngIf="createStep === 0" class="stepper-body">
+      <h3 class="step-section-title">Trip Information</h3>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Customer <span class="req">*</span></label>
+          <select class="browser-default" name="customerId" [(ngModel)]="newTrip.customerId" (ngModelChange)="onCustomerChange()">
+            <option [ngValue]="null">Select Customer</option>
+            <option *ngFor="let c of customerList" [ngValue]="c.customerId || c.id">
+              {{ c.firstName || c.name || '' }} {{ c.lastName || '' }}
+              <ng-container *ngIf="c.mobileNo || c.mobileNumber"> — {{ c.mobileNo || c.mobileNumber }}</ng-container>
+            </option>
+          </select>
+          <small class="field-error" *ngIf="customerLoadError">{{ customerLoadError }}</small>
+        </div>
+
+        <div class="form-field" *ngIf="newTrip.customerShiftings?.length > 0">
+          <label>Shifting</label>
+          <select class="browser-default" name="shiftingId" [(ngModel)]="newTrip.shiftingId" (ngModelChange)="onShiftingChange()">
+            <option [ngValue]="null">Select Shifting</option>
+            <option *ngFor="let s of newTrip.customerShiftings" [ngValue]="s.shiftingId || s.id">
+              {{ s.shiftFromCity || '?' }} → {{ s.shiftToCity || '?' }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label>Planned Start</label>
+          <input name="plannedStartTime" type="datetime-local" [(ngModel)]="newTrip.plannedStartTime">
+        </div>
+
+        <div class="form-field">
+          <label>Planned End</label>
+          <input name="plannedEndTime" type="datetime-local" [(ngModel)]="newTrip.plannedEndTime">
+        </div>
+
+        <div class="form-field">
+          <label>Planned Distance (km)</label>
+          <input name="plannedDistanceKm" type="number" min="0" placeholder="0" [(ngModel)]="newTrip.plannedDistanceKm">
+        </div>
+
+        <div class="form-field full-width">
+          <label>Remarks</label>
+          <input name="remarks" placeholder="Optional remarks" [(ngModel)]="newTrip.remarks">
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 1: Assign Driver & Vehicle -->
+    <div *ngIf="createStep === 1" class="stepper-body">
+      <h3 class="step-section-title">Assign Driver &amp; Vehicle</h3>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Driver</label>
+          <select class="browser-default" name="driverId" [(ngModel)]="newTrip.driverId">
+            <option [ngValue]="null">Select Driver (optional)</option>
+            <option *ngFor="let d of driverList" [ngValue]="d.id">
+              {{ d.name || d.firstName + ' ' + (d.lastName || '') }} {{ d.mobileNumber ? '— ' + d.mobileNumber : '' }}
+            </option>
+          </select>
+          <small class="field-error" *ngIf="driverLoadError">{{ driverLoadError }}</small>
+        </div>
+
+        <div class="form-field">
+          <label>Vehicle</label>
+          <select class="browser-default" name="vehicleId" [(ngModel)]="newTrip.vehicleId">
+            <option [ngValue]="null">Select Vehicle (optional)</option>
+            <option *ngFor="let v of vehicleList" [ngValue]="v.id">
+              {{ v.registrationNumber || v.vehicleNumber }} — {{ v.vehicleType || v.type || '' }}
+            </option>
+          </select>
+          <small class="field-error" *ngIf="vehicleLoadError">{{ vehicleLoadError }}</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Review -->
+    <div *ngIf="createStep === 2" class="stepper-body">
+      <h3 class="step-section-title">Review &amp; Create</h3>
+      <p class="charges-subtitle" style="margin-top:0">Trip Details</p>
+      <div class="review-grid">
+        <div class="review-row">
+          <span class="review-label">Customer</span>
+          <span class="review-val">{{ getCustomerLabelById(newTrip.customerId) }}</span>
+        </div>
+        <div class="review-row"><span class="review-label">Shifting</span><span class="review-val">{{ getShiftingLabel(newTrip.shiftingId) }}</span></div>
+        <div class="review-row"><span class="review-label">Route</span><span class="review-val">{{ newTrip.sourceCity || '—' }} → {{ newTrip.destinationCity || '—' }}</span></div>
+        <div class="review-row"><span class="review-label">Planned Start</span><span class="review-val">{{ newTrip.plannedStartTime || '—' }}</span></div>
+        <div class="review-row"><span class="review-label">Planned End</span><span class="review-val">{{ newTrip.plannedEndTime || '—' }}</span></div>
+        <div class="review-row"><span class="review-label">Planned Distance</span><span class="review-val">{{ newTrip.plannedDistanceKm ? newTrip.plannedDistanceKm + ' km' : '—' }}</span></div>
+        <div class="review-row">
+          <span class="review-label">Driver</span>
+          <span class="review-val">{{ newTrip.driverId ? getDriverById(newTrip.driverId) : '—' }}</span>
+        </div>
+        <div class="review-row">
+          <span class="review-label">Vehicle</span>
+          <span class="review-val">{{ newTrip.vehicleId ? getVehicleById(newTrip.vehicleId) : '—' }}</span>
+        </div>
+        <div class="review-row"><span class="review-label">Remarks</span><span class="review-val">{{ newTrip.remarks || '—' }}</span></div>
+      </div>
+
+      <p class="api-message" *ngIf="createMessage">{{ createMessage }}</p>
+      <p class="api-message error" *ngIf="createError">{{ createError }}</p>
+    </div>
+
+    <!-- Nav buttons -->
+    <div class="stepper-nav">
+      <button class="clear-button" type="button" *ngIf="!isFirstCreateStep" (click)="prevCreateStep()">← Back</button>
+      <button class="clear-button" type="button" *ngIf="isFirstCreateStep" (click)="resetCreateForm()">Reset</button>
+      <button class="export-button" type="button" *ngIf="!isLastCreateStep" (click)="nextCreateStep()">Next →</button>
+      <button class="export-button" type="button" *ngIf="isLastCreateStep" [disabled]="isCreating" (click)="createTrip()">
+        {{ isCreating ? 'Creating...' : 'Create Trip' }}
+      </button>
+    </div>
+
+    <div class="create-snackbar" [class.visible]="createSnackbar.visible" [class.snack-error]="createSnackbar.error">
+      {{ createSnackbar.message }}
+    </div>
+  </section>
+
+  <!-- ── Detail panel ─────────────────────────────────────────────────── -->
+  <section class="panel detail-panel" *ngIf="showDetailPanel && selectedTrip">
+    <div class="panel-header">
+      <h2>
+        Trip {{ selectedTrip.tripNumber || '#' + selectedTrip.tripId }}
+        <span class="trip-route-badge">{{ selectedTrip.sourceCity }} → {{ selectedTrip.destinationCity }}</span>
+      </h2>
+      <button class="collapse-button" type="button" (click)="closeDetailPanel()">
+        <i class="material-icons">remove</i>
+      </button>
+    </div>
+
+    <!-- Interruption banner -->
+    <div class="interruption-banner" *ngIf="isInterruptionStatus(selectedTrip.status)"
+      [ngClass]="getInterruptionClass(selectedTrip.status)">
+      <i class="material-icons">warning</i>
+      <span>Trip is {{ formatStatus(selectedTrip.status) }}</span>
+      <span class="banner-sub" *ngIf="selectedTrip.previousActiveStatus">
+        — will resume from {{ formatStatus(selectedTrip.previousActiveStatus) }}
+      </span>
+    </div>
+
+    <!-- Status progression bar -->
+    <div class="status-bar-wrap">
+      <div class="status-bar">
+        <ng-container *ngFor="let s of mainSequence; let i = index">
+          <div class="status-node" [ngClass]="getStatusNodeClass(s)">
+            <div class="status-dot">
+              <i class="material-icons" *ngIf="getStatusNodeClass(s) === 'done'">check</i>
+              <i class="material-icons" *ngIf="getStatusNodeClass(s) === 'active'">radio_button_checked</i>
+            </div>
+            <span class="status-label">{{ formatStatus(s) }}</span>
+          </div>
+          <div *ngIf="i < mainSequence.length - 1" class="status-line"
+            [class.done]="getStatusNodeClass(mainSequence[i + 1]) !== 'pending'"></div>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- Transition buttons -->
+    <div class="transition-section">
+      <p class="charges-subtitle" style="margin-top:0">Available Actions</p>
+
+      <div *ngIf="!transitionTarget" class="transition-buttons">
+        <button *ngFor="let t of getAllowedTransitions(selectedTrip)"
+          [ngClass]="getTransitionButtonClass(t)"
+          (click)="selectTransition(t)">
+          {{ getTransitionLabel(t) }}
+        </button>
+        <span *ngIf="getAllowedTransitions(selectedTrip).length === 0" class="no-transitions">
+          No transitions available for current status.
+        </span>
+      </div>
+
+      <div *ngIf="transitionTarget" class="transition-confirm-box">
+        <p>Confirm: <strong>{{ getTransitionLabel(transitionTarget) }}</strong></p>
+        <div class="form-field" style="max-width:480px;">
+          <label>Remarks (optional)</label>
+          <input placeholder="Add remarks..." [(ngModel)]="transitionRemarks">
+        </div>
+        <div class="transition-confirm-actions">
+          <button class="export-button" type="button" [disabled]="isTransitioning" (click)="confirmTransition()">
+            {{ isTransitioning ? 'Updating...' : 'Confirm' }}
+          </button>
+          <button class="clear-button" type="button" (click)="cancelTransition()">Cancel</button>
+        </div>
+        <p class="api-message error" *ngIf="transitionError">{{ transitionError }}</p>
+      </div>
+    </div>
+
+    <!-- Trip meta info -->
+    <div class="detail-meta-grid">
+      <div class="meta-item"><span class="meta-label">Customer</span><span class="meta-val">{{ getCustomerName(selectedTrip) }}</span></div>
+      <div class="meta-item"><span class="meta-label">Driver</span><span class="meta-val">{{ getDriverName(selectedTrip) }}</span></div>
+      <div class="meta-item"><span class="meta-label">Vehicle</span><span class="meta-val">{{ getVehicleReg(selectedTrip) }}</span></div>
+      <div class="meta-item"><span class="meta-label">Planned Start</span><span class="meta-val">{{ formatDateTime(selectedTrip.plannedStartTime) }}</span></div>
+      <div class="meta-item"><span class="meta-label">Actual Start</span><span class="meta-val">{{ formatDateTime(selectedTrip.actualStartTime) }}</span></div>
+      <div class="meta-item"><span class="meta-label">Actual End</span><span class="meta-val">{{ formatDateTime(selectedTrip.actualEndTime) }}</span></div>
+      <div class="meta-item"><span class="meta-label">Planned Dist.</span><span class="meta-val">{{ selectedTrip.plannedDistanceKm ? selectedTrip.plannedDistanceKm + ' km' : '—' }}</span></div>
+      <div class="meta-item"><span class="meta-label">Actual Dist.</span><span class="meta-val">{{ selectedTrip.actualDistanceKm ? selectedTrip.actualDistanceKm + ' km' : '—' }}</span></div>
+      <div class="meta-item"><span class="meta-label">Total Expense</span><span class="meta-val">₹{{ totalExpenseAmount | number:'1.0-0' }}</span></div>
+    </div>
+
+    <!-- Expenses section -->
+    <div class="expenses-section">
+      <p class="charges-subtitle">Expenses</p>
+
+      <p class="api-message" *ngIf="expenseMessage">{{ expenseMessage }}</p>
+      <p class="api-message error" *ngIf="expenseError">{{ expenseError }}</p>
+
+      <div class="table-wrap" *ngIf="!isLoadingExpenses">
+        <table *ngIf="expenses.length > 0">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Amount</th>
+              <th>Bill #</th>
+              <th>Date</th>
+              <th>Description</th>
+              <th>Approved</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let exp of expenses">
+              <td>{{ exp.expenseType || '—' }}</td>
+              <td>₹{{ exp.amount | number:'1.0-2' }}</td>
+              <td>{{ exp.billNumber || '—' }}</td>
+              <td>{{ exp.expenseDate || '—' }}</td>
+              <td>{{ exp.description || '—' }}</td>
+              <td>
+                <span *ngIf="exp.approved === true" class="expense-approved-chip">
+                  <i class="material-icons" style="font-size:14px;vertical-align:middle;">check_circle</i>
+                  Approved
+                  <span *ngIf="exp.approvedBy" class="expense-approved-by">by {{ exp.approvedBy }}</span>
+                </span>
+                <span *ngIf="exp.approved !== true" class="expense-pending-chip">Pending</span>
+              </td>
+              <td>
+                <div class="action-cell">
+                  <button type="button" title="Approve" *ngIf="exp.approved !== true" (click)="approveExpense(exp)">
+                    <i class="material-icons">check_circle_outline</i>
+                  </button>
+                  <button type="button" title="Delete" (click)="deleteExpense(exp)">
+                    <i class="material-icons">delete</i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr class="expense-total-row">
+              <td><strong>Total</strong></td>
+              <td><strong>₹{{ totalExpenseAmount | number:'1.0-2' }}</strong></td>
+              <td colspan="5"></td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="empty-state" *ngIf="expenses.length === 0">No expenses recorded.</p>
+      </div>
+      <p class="api-message" *ngIf="isLoadingExpenses">Loading expenses...</p>
+
+      <!-- Add expense form -->
+      <div class="add-expense-form">
+        <p class="charges-subtitle" style="margin-top:1rem">Add Expense</p>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Expense Type <span class="req">*</span></label>
+            <select class="browser-default" name="expType" [(ngModel)]="newExpense.expenseType">
+              <option value="">Select Type</option>
+              <option *ngFor="let t of expenseTypes" [value]="t">{{ t }}</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Amount <span class="req">*</span></label>
+            <input name="expAmount" type="number" min="0" placeholder="0.00" [(ngModel)]="newExpense.amount">
+          </div>
+          <div class="form-field">
+            <label>Bill Number</label>
+            <input name="expBillNo" placeholder="Bill / Receipt #" [(ngModel)]="newExpense.billNumber">
+          </div>
+          <div class="form-field">
+            <label>Expense Date</label>
+            <input name="expDate" type="date" [(ngModel)]="newExpense.expenseDate">
+          </div>
+          <div class="form-field">
+            <label>Receipt URL</label>
+            <input name="expReceiptUrl" placeholder="https://..." [(ngModel)]="newExpense.receiptUrl">
+          </div>
+          <div class="form-field full-width">
+            <label>Description</label>
+            <input name="expDescription" placeholder="Optional note" [(ngModel)]="newExpense.description">
+          </div>
+        </div>
+        <div class="stepper-nav" style="margin-top:0.5rem;">
+          <button class="export-button" type="button" [disabled]="isAddingExpense" (click)="addExpense()">
+            {{ isAddingExpense ? 'Adding...' : 'Add Expense' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Documents section -->
+    <div class="documents-section">
+      <p class="charges-subtitle">Documents</p>
+
+      <p class="api-message error" *ngIf="documentError">{{ documentError }}</p>
+      <p class="api-message" *ngIf="documentMessage">{{ documentMessage }}</p>
+      <p class="api-message" *ngIf="isLoadingDocuments">Loading documents...</p>
+
+      <div class="table-wrap" *ngIf="!isLoadingDocuments && documents.length > 0">
+        <table>
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>File Name</th>
+              <th>Uploaded At</th>
+              <th>Uploaded By</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let doc of documents">
+              <td>{{ doc.documentType || '—' }}</td>
+              <td>{{ doc.fileName || '—' }}</td>
+              <td>{{ formatDateTime(doc.uploadedAt) }}</td>
+              <td>{{ doc.uploadedBy || '—' }}</td>
+              <td>
+                <div class="action-cell">
+                  <button type="button" title="Download" (click)="downloadDocument(doc)">
+                    <i class="material-icons">download</i>
+                  </button>
+                  <button type="button" title="Delete" (click)="deleteDocument(doc)">
+                    <i class="material-icons">delete</i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="empty-state" *ngIf="!isLoadingDocuments && documents.length === 0">No documents uploaded.</p>
+
+      <!-- Upload form -->
+      <div class="upload-doc-form">
+        <p class="charges-subtitle" style="margin-top:1rem">Upload Document</p>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Document Type <span class="req">*</span></label>
+            <select class="browser-default" [(ngModel)]="newDocument.documentType">
+              <option value="">Select Type</option>
+              <option *ngFor="let t of documentTypes" [value]="t">{{ t }}</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>File <span class="req">*</span></label>
+            <div class="file-upload-row">
+              <input type="file" #docFileInput style="display:none" (change)="onDocFileSelected($event)">
+              <span class="file-name-display">{{ newDocument.fileName || 'No file chosen' }}</span>
+              <button class="clear-button" type="button" (click)="docFileInput.click()">Choose File</button>
+            </div>
+          </div>
+        </div>
+        <div class="stepper-nav" style="margin-top:0.5rem;">
+          <button class="export-button" type="button" [disabled]="isUploadingDocument" (click)="uploadDocument()">
+            {{ isUploadingDocument ? 'Uploading...' : 'Upload' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status history timeline -->
+    <div class="history-section">
+      <p class="charges-subtitle">Status History</p>
+      <p class="api-message" *ngIf="isLoadingHistory">Loading history...</p>
+      <div class="timeline" *ngIf="!isLoadingHistory">
+        <div class="timeline-entry" *ngFor="let entry of statusHistory">
+          <div class="timeline-dot" [ngClass]="getHistoryDotClass(entry)"></div>
+          <div class="timeline-content">
+            <div class="timeline-header">
+              <span class="timeline-status">
+                <ng-container *ngIf="entry.oldStatus">{{ formatStatus(entry.oldStatus) }} → </ng-container>
+                <strong>{{ formatStatus(entry.newStatus) }}</strong>
+              </span>
+              <span class="timeline-time">{{ formatDateTime(entry.changedAt) }}</span>
+            </div>
+            <div class="timeline-meta" *ngIf="entry.changedBy">
+              <span *ngIf="entry.changedBy">By: {{ entry.changedBy }}</span>
+            </div>
+          </div>
+        </div>
+        <p class="empty-state" *ngIf="statusHistory.length === 0">No history yet.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── List panel ───────────────────────────────────────────────────── -->
+  <section class="panel list-panel">
+    <div class="panel-header">
+      <h2>Trip List</h2>
+      <button class="collapse-button" type="button">
+        <i class="material-icons">remove</i>
+      </button>
+    </div>
+
+    <div class="table-wrap">
+      <p class="api-message" *ngIf="isLoading">Loading trips...</p>
+      <p class="api-message error" *ngIf="loadError">{{ loadError }}</p>
+
+      <table *ngIf="!isLoading">
+        <thead>
+          <tr>
+            <th>S.No.</th>
+            <th>Trip #</th>
+            <th>Customer</th>
+            <th>Route</th>
+            <th>Driver</th>
+            <th>Vehicle</th>
+            <th>Status</th>
+            <th>Planned Start</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let trip of trips; let i = index">
+            <td class="sno-cell">{{ currentPageNumber * pageSize + i + 1 }}</td>
+            <td>{{ trip.tripNumber || '—' }}</td>
+            <td class="name-cell">{{ getCustomerName(trip) }}</td>
+            <td>{{ trip.sourceCity || '—' }} → {{ trip.destinationCity || '—' }}</td>
+            <td>{{ getDriverName(trip) }}</td>
+            <td>{{ getVehicleReg(trip) }}</td>
+            <td>
+              <span class="trip-status-chip" [ngClass]="getTripStatusClass(trip.status)">
+                {{ formatStatus(trip.status || 'CREATED') }}
+              </span>
+            </td>
+            <td>{{ formatDateTime(trip.plannedStartTime) }}</td>
+            <td>
+              <div class="action-cell">
+                <button type="button" title="View Details" (click)="openDetailPanel(trip)">
+                  <i class="material-icons">visibility</i>
+                </button>
+                <button type="button" title="Delete" (click)="deleteTrip(trip)">
+                  <i class="material-icons">delete</i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="trips.length === 0 && !isLoading">
+            <td colspan="9" class="empty-state">No trips found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination-row" *ngIf="getDisplayTotalPages() > 0">
+      <span class="pagination-summary">
+        Page {{ getDisplayCurrentPage() }} of {{ getDisplayTotalPages() }}
+        | {{ getDisplayTotalRecords() }} records
+      </span>
+      <button type="button" [disabled]="currentPageNumber === 0" (click)="goToPage(currentPageNumber - 1)">&laquo;</button>
+      <button type="button" *ngFor="let page of visiblePageNumbers"
+        [class.active]="page === getDisplayCurrentPage()" (click)="goToPage(page - 1)">
+        {{ page }}
+      </button>
+      <button type="button" [disabled]="currentPageNumber >= getDisplayTotalPages() - 1"
+        (click)="goToPage(currentPageNumber + 1)">&raquo;</button>
+      <select class="page-size browser-default" [(ngModel)]="pageSize" (change)="changePageSize()">
+        <option [ngValue]="5">5</option>
+        <option [ngValue]="10">10</option>
+        <option [ngValue]="25">25</option>
+      </select>
+    </div>
+  </section>
+
+</div>

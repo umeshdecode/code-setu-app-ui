@@ -15,9 +15,20 @@ export class TemplateService {
     return this.http.post<any>(this.BASE_URL, payload);
   }
 
-  getQuotationPdf(shiftingId: number | string): Observable<string> {
-    return this.http.get(`${this.BASE_URL}/quotation/${shiftingId}/pdf`, {
-      responseType: 'text'
-    });
+  getQuotationPdf(shiftingId: number | string): Observable<Blob> {
+    return this.http.get(`${this.BASE_URL}/quotation/${shiftingId}/pdf`, { responseType: 'blob' });
   }
+
+  getInvoicePdf(shiftingId: number | string): Observable<Blob> {
+    return this.http.get(`${this.BASE_URL}/${shiftingId}/invoice`, { responseType: 'blob' });
+  }
+
+  getLRCopyPdf(shiftingId: number | string): Observable<Blob> {
+    return this.http.get(`${this.BASE_URL}/lr-copy/${shiftingId}/pdf`, { responseType: 'blob' });
+  }
+
+  getItemListPdf(shiftingId: number | string): Observable<Blob> {
+    return this.http.get(`${this.BASE_URL}/item-list/${shiftingId}/pdf`, { responseType: 'blob' });
+  }
+
 }

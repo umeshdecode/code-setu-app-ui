@@ -33,7 +33,7 @@
   <div class="container">
     <div class="row">
       <!-- Loop through plans using *ngFor -->
-      <div class="col" *ngFor="let plan of paginatedPlans; let i = index">
+      <div class="col" *ngFor="let plan of plans; let i = index">
         <div class="card">
           <div class="card-content">
             <span class="card-title">{{ plan.name }}</span>
@@ -58,15 +58,7 @@
       </div>
     </div>
 
-    <app-shared-pagination
-      [currentPage]="currentPageNumber"
-      [totalPages]="totalPages"
-      [totalRecords]="totalRecords"
-      [pageSize]="pageSize"
-      [pageRecords]="pageRecords"
-      (pageChange)="goToPage($event)"
-      (sizeChange)="changePageSize($event)">
-    </app-shared-pagination>
+
   </div>
 </div>
 

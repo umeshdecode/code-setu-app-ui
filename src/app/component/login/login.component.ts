@@ -8,6 +8,9 @@ import { LoaderComponent } from '../loader/loader.component';
 import { switchMap, tap } from 'rxjs';
 import { StaffuserServiceService } from 'src/app/services/staffuser-service';
 import { JwttokenService } from 'src/app/services/jwttoken.service';
+import { CompanyService } from 'src/app/services/company.service';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogboxComponent } from '../dialogbox/dialogbox.component';
 
 @Component({
   selector: 'app-login',
@@ -44,9 +47,9 @@ export class LoginComponent implements OnInit {
   constructor(
     private loginService: LoginService,
     private router: Router,
-    private staffuserservice: StaffuserServiceService,
-    private jwtDecode: JwttokenService,
-    private http: HttpClient
+    private http: HttpClient,
+    private companyService: CompanyService,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -74,7 +77,19 @@ export class LoginComponent implements OnInit {
     ).subscribe({
       next: (userDetails) => {
         console.log('User Details fetched:', userDetails);
-        this.router.navigate(['/dashboard']);
+        this.companyService.getCurrentCompany().subscribe({
+          next: (res) => {
+            if (res && res.responseCode === 200 && res.data) {
+              this.router.navigate(['/dashboard']);
+            } else {
+              this.showNoCompanyDialog();
+            }
+          },
+          error: (err) => {
+            console.warn('getCurrentCompany failed, likely no company bound:', err);
+            this.showNoCompanyDialog();
+          }
+        });
       },
       error: (err) => {
         console.error('API Error:', err);
@@ -87,26 +102,83 @@ export class LoginComponent implements OnInit {
     });
   }
 
+  showNoCompanyDialog() {
+    const dialogRef = this.dialog.open(DialogboxComponent, {
+      width: '450px',
+      disableClose: true,
+      data: {
+        title: 'Create Your First Company',
+        message: 'It looks like you do not have any company associated with your account. Would you like to create one now?',
+        confirmText: 'Create Company',
+        cancelText: 'Skip'
+      }
+    });
 
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.router.navigate(['/company-create']);
+      } else {
+        this.router.navigate(['/dashboard']);
+      }
+    });
+  }
+
+
+
+  sendOtp() {
+    if (!this.otp.mobile) {
+      alert('Enter mobile number');
+      return;
+    }
+    this.isLoading = true;
+    this.loginService.sendOtp(this.otp.mobile).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        this.otpSent = true;
+        alert('Your mockOtp is : ' + res.mockOtp);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Send OTP failed', err);
+        alert(err.error?.message || 'Failed to send OTP. Is the number registered?');
+      }
+    });
+  }
 
   verifyOtp() {
     if (!this.otp.code || this.otp.code.length !== 6) {
       alert('Invalid OTP');
       return;
     }
-
-
-    // CALL BACKEND HERE
-    console.log('OTP sent to', this.otp.mobile);
-    this.otpSent = true;
-
-  }
-  sendOtp() {
-    if (!this.otp.mobile) {
-      alert('Enter mobile number');
-      return;
-    }
-    console.log('Sending OTP to', (this.otp.mobileCode || '') + this.otp.mobile);
+    this.isLoading = true;
+    this.loginService.verifyOtp(this.otp.mobile, this.otp.code).pipe(
+      switchMap((response: AuthResponse) => {
+        return this.loginService.loginAndFetchUser(response.accessToken);
+      })
+    ).subscribe({
+      next: (userDetails) => {
+        this.isLoading = false;
+        console.log('User Details fetched:', userDetails);
+        this.companyService.getCurrentCompany().subscribe({
+          next: (res) => {
+            if (res && res.responseCode === 200 && res.data) {
+              this.router.navigate(['/dashboard']);
+            } else {
+              this.showNoCompanyDialog();
+            }
+          },
+          error: (err) => {
+            console.warn('getCurrentCompany failed, likely no company bound:', err);
+            this.showNoCompanyDialog();
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Verify OTP failed', err);
+        alert(err.error?.message || 'Invalid or expired OTP');
+        this.isLoading = false;
+      }
+    });
   }
 
   loadCountryCodes() {
