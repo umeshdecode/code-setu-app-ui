@@ -1,0 +1,180 @@
+<div class="quotation-dialog">
+  <!-- Header -->
+  <div class="dialog-header">
+    <div class="header-content">
+      <i class="material-icons header-icon">receipt_long</i>
+      <div>
+        <h2>Generate Quotation</h2>
+        <p class="header-subtitle">{{ customerName }}</p>
+      </div>
+    </div>
+    <button class="close-btn" (click)="cancel()" title="Close">
+      <i class="material-icons">close</i>
+    </button>
+  </div>
+
+  <!-- Step indicator -->
+  <div class="step-indicator">
+    <div class="step" [class.active]="currentStep === 1" [class.done]="currentStep > 1">
+      <div class="step-circle">
+        <i class="material-icons" *ngIf="currentStep > 1" style="font-size:16px">check</i>
+        <span *ngIf="currentStep <= 1">1</span>
+      </div>
+      <span class="step-label">Choose Template</span>
+    </div>
+    <div class="step-line" [class.done]="currentStep > 1"></div>
+    <div class="step" [class.active]="currentStep === 2">
+      <div class="step-circle">
+        <span>2</span>
+      </div>
+      <span class="step-label">Select Shifting</span>
+    </div>
+  </div>
+
+  <!-- Error message -->
+  <div class="error-banner" *ngIf="errorMessage">
+    <i class="material-icons">error_outline</i>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <!-- Step 1: Template Selection -->
+  <div class="dialog-body" *ngIf="currentStep === 1">
+    <p class="step-description">Select a template for the quotation. Star a template to make it the default.</p>
+
+    <div class="loading-state" *ngIf="isLoadingTemplates">
+      <mat-spinner diameter="36"></mat-spinner>
+      <span>Loading templates...</span>
+    </div>
+
+    <div class="template-grid" *ngIf="!isLoadingTemplates">
+      <div *ngFor="let tmpl of templates"
+           class="template-card"
+           [class.selected]="isTemplateSelected(tmpl)"
+           (click)="selectTemplate(tmpl)">
+        <div class="card-top">
+          <div class="card-thumbnail-wrapper">
+            <div class="card-icon" *ngIf="!tmpl.thumbnailHtml">
+              <i class="material-icons">description</i>
+            </div>
+            <div class="thumbnail-iframe-container" *ngIf="tmpl.thumbnailHtml">
+              <iframe [srcdoc]="tmpl.thumbnailHtml" scrolling="no" tabindex="-1" class="thumbnail-iframe"></iframe>
+              <div class="thumbnail-overlay"></div>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="preview-btn" (click)="previewTemplate(tmpl, $event)" title="Preview Template" [disabled]="isPreviewing">
+              <i class="material-icons">visibility</i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <h4>{{ tmpl.name || 'Untitled Template' }}</h4>
+          <span class="card-type">{{ tmpl.type }}</span>
+        </div>
+        <div class="card-footer" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+          <div>
+            <span class="badge" *ngIf="tmpl.favoriteTemplate">Default</span>
+            <button class="set-default-text-btn" *ngIf="!tmpl.favoriteTemplate" (click)="toggleDefaultTemplate(tmpl, $event)">Set as Default</button>
+          </div>
+          <i class="material-icons check-icon" *ngIf="isTemplateSelected(tmpl)">check_circle</i>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="!isLoadingTemplates && templates.length === 0">
+      <i class="material-icons">folder_open</i>
+      <p>No quotation templates found.</p>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-row" *ngIf="templateTotalPages > 1">
+      <span class="pagination-info">Page {{ templatePage + 1 }} of {{ templateTotalPages }} ({{ templateTotalElements }} templates)</span>
+      <div class="pagination-controls">
+        <button [disabled]="templatePage === 0" (click)="goTemplatePage(templatePage - 1)">&laquo;</button>
+        <button *ngFor="let p of templateVisiblePages"
+                [class.active]="p === templatePage + 1"
+                (click)="goTemplatePage(p - 1)">{{ p }}</button>
+        <button [disabled]="templatePage >= templateTotalPages - 1" (click)="goTemplatePage(templatePage + 1)">&raquo;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Shifting Selection -->
+  <div class="dialog-body" *ngIf="currentStep === 2">
+    <p class="step-description">Select the shifting for which you want to generate the quotation.</p>
+
+    <div class="loading-state" *ngIf="isLoadingShiftings">
+      <mat-spinner diameter="36"></mat-spinner>
+      <span>Loading shiftings...</span>
+    </div>
+
+    <div class="shifting-table-wrap" *ngIf="!isLoadingShiftings && shiftings.length > 0">
+      <table class="shifting-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Route</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Completed By</th>
+            <th>Token Money</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let s of shiftings"
+              [class.selected]="isShiftingSelected(s)"
+              (click)="selectShifting(s)">
+            <td>
+              <div class="radio-circle" [class.checked]="isShiftingSelected(s)"></div>
+            </td>
+            <td class="route-cell">
+              <span class="from-city">{{ s.shiftFromCity || '—' }}</span>
+              <i class="material-icons arrow-icon">arrow_forward</i>
+              <span class="to-city">{{ s.shiftToCity || '—' }}</span>
+            </td>
+            <td>{{ s.shiftingType || '—' }}</td>
+            <td>{{ s.shiftingStartDate || '—' }}</td>
+            <td>{{ s.shiftCompletedBy || '—' }}</td>
+            <td>{{ s.tokenMoney ? '₹' + s.tokenMoney : '—' }}</td>
+            <td>
+              <span class="status-badge" [class.completed]="s.shiftCompleted">{{ s.shiftCompleted ? 'Completed' : 'Pending' }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-state" *ngIf="!isLoadingShiftings && shiftings.length === 0">
+      <i class="material-icons">local_shipping</i>
+      <p>No shiftings found for this customer.</p>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-row" *ngIf="shiftingTotalPages > 1">
+      <span class="pagination-info">Page {{ shiftingPage + 1 }} of {{ shiftingTotalPages }} ({{ shiftingTotalElements }} shiftings)</span>
+      <div class="pagination-controls">
+        <button [disabled]="shiftingPage === 0" (click)="goShiftingPage(shiftingPage - 1)">&laquo;</button>
+        <button *ngFor="let p of shiftingVisiblePages"
+                [class.active]="p === shiftingPage + 1"
+                (click)="goShiftingPage(p - 1)">{{ p }}</button>
+        <button [disabled]="shiftingPage >= shiftingTotalPages - 1" (click)="goShiftingPage(shiftingPage + 1)">&raquo;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="dialog-footer">
+    <button class="btn-secondary" *ngIf="currentStep === 1" (click)="cancel()">Cancel</button>
+    <button class="btn-secondary" *ngIf="currentStep === 2" (click)="backToTemplates()">← Back</button>
+    <button class="btn-primary" *ngIf="currentStep === 1"
+            [disabled]="!selectedTemplate"
+            (click)="proceedToShiftings()">Next →</button>
+    <button class="btn-primary" *ngIf="currentStep === 2"
+            [disabled]="!selectedShifting || isGenerating"
+            (click)="generateQuotation()">
+      <span *ngIf="!isGenerating">Generate Quotation</span>
+      <span *ngIf="isGenerating">Generating...</span>
+    </button>
+  </div>
+</div>

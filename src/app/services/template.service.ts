@@ -15,8 +15,26 @@ export class TemplateService {
     return this.http.post<any>(this.BASE_URL, payload);
   }
 
-  getQuotationPdf(shiftingId: number | string): Observable<Blob> {
-    return this.http.get(`${this.BASE_URL}/quotation/${shiftingId}/pdf`, { responseType: 'blob' });
+  getTemplatesByType(type: string, pageNumber: number = 0, pageSize: number = 5): Observable<any> {
+    return this.http.get<any>(`${this.BASE_URL}/by-type`, {
+      params: { type, pageNumber: pageNumber.toString(), pageSize: pageSize.toString() }
+    });
+  }
+
+  setDefaultTemplate(templateId: number): Observable<any> {
+    return this.http.put<any>(`${this.BASE_URL}/${templateId}/default`, {});
+  }
+
+  getTemplateHtml(templateId: number): Observable<string> {
+    return this.http.get(`${this.BASE_URL}/${templateId}/preview-html`, { responseType: 'text' });
+  }
+
+  getQuotationPdf(shiftingId: number | string, templateId?: number): Observable<Blob> {
+    let url = `${this.BASE_URL}/quotation/${shiftingId}/pdf`;
+    if (templateId) {
+      url += `?templateId=${templateId}`;
+    }
+    return this.http.get(url, { responseType: 'blob' });
   }
 
   getInvoicePdf(shiftingId: number | string): Observable<Blob> {

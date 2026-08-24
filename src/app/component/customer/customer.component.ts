@@ -8,6 +8,7 @@ import { StaffuserServiceService } from 'src/app/services/staffuser-service';
 import { TemplateService } from 'src/app/services/template.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogboxComponent } from '../dialogbox/dialogbox.component';
+import { QuotationDialogComponent } from '../quotation-dialog/quotation-dialog.component';
 
 type ConnectionStatus = 'Online' | 'Offline';
 type CustomerRow = CustomerModels & {
@@ -686,7 +687,23 @@ export class CustomerComponent implements OnInit {
   }
 
   generateQuotation(customer: CustomerRow): void {
-    this.downloadCustomerQuotation(customer);
+    const dialogRef = this.dialog.open(QuotationDialogComponent, {
+      width: '720px',
+      maxHeight: '90vh',
+      disableClose: false,
+      panelClass: 'quotation-dialog-container',
+      data: {
+        customerId: customer.customerId,
+        customerName: this.getCustomerName(customer)
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result?.blob) {
+        this.downloadBlob(result.blob, `quotation-${result.shiftingId}.pdf`);
+        this.showMessage('Quotation PDF downloaded successfully.');
+      }
+    });
   }
 
   generateInvoice(customer: CustomerRow): void {
@@ -831,6 +848,7 @@ export class CustomerComponent implements OnInit {
       shiftReachedDate: '',
       shiftCompletedBy: '',
       shiftCompletedById: null,
+      tokenMoney: 0,
       customerId: null,
       charges: {
         transportCharge: 0,

@@ -40,6 +40,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatDialogModule } from '@angular/material/dialog';
 import { DialogboxComponent } from './component/dialogbox/dialogbox.component';
+import { QuotationDialogComponent } from './component/quotation-dialog/quotation-dialog.component';
+import { TemplatePreviewDialogComponent } from './component/template-preview-dialog/template-preview-dialog.component';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -125,6 +127,7 @@ import { HasPermissionDirective } from './directives/has-permission.directive';
     WsDocumentsComponent,
     WsTimelineComponent,
     WsDetailsComponent,
+    QuotationDialogComponent
   ],
   imports: [
     BrowserModule,

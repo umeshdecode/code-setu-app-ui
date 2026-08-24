@@ -38,4 +38,10 @@ export class CustomersService {
 getShiftType(): Observable<any> {
   return this.http.get<any>(`${this.BASE_URL}/api/v2/cargosetu/shifts/shifting-types`);
 }
+
+  getShiftingsByCustomer(customerId: number, pageNumber: number = 0, pageSize: number = 5): Observable<any> {
+    return this.http.get<any>(`${this.BASE_URL}/api/v2/cargosetu/shifts/customer/${customerId}`, {
+      params: { pageNumber: pageNumber.toString(), pageSize: pageSize.toString() }
+    });
+  }
 }

@@ -806,3 +806,9 @@ body.app-dark-theme .expired-status {
     opacity: 1;
   }
 }
+
+.quotation-dialog-container .mat-dialog-container {
+  padding: 0 !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+}

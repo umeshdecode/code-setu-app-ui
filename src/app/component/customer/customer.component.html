@@ -150,6 +150,10 @@
             </select>
             <small class="field-error" *ngIf="staffLoadError">{{ staffLoadError }}</small>
           </div>
+          <div class="form-field">
+            <label>Token Money</label>
+            <input type="number" min="0" [name]="'upTokenMoney_'+i" placeholder="Token Money" [(ngModel)]="s.tokenMoney">
+          </div>
           <div class="form-field full-width">
             <label class="checkbox-label">
               <input type="checkbox" [name]="'upIsCompleted_'+i" [(ngModel)]="s.isShiftCompleted">
@@ -391,6 +395,10 @@
               <option *ngFor="let staff of staffList" [ngValue]="staff.staffId">{{ getStaffName(staff) }}</option>
             </select>
             <small class="field-error" *ngIf="staffLoadError">{{ staffLoadError }}</small>
+          </div>
+          <div class="form-field">
+            <label>Token Money</label>
+            <input type="number" min="0" [name]="'tokenMoney_'+i" placeholder="Token Money" [(ngModel)]="s.tokenMoney">
           </div>
           <div class="form-field full-width">
             <label class="checkbox-label">
