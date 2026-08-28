@@ -34,6 +34,7 @@ export class QuotationDialogComponent implements OnInit {
 
   // Generation state
   isGenerating = false;
+  isSending = false;
   errorMessage = '';
 
   public customerId: number;
@@ -159,7 +160,9 @@ export class QuotationDialogComponent implements OnInit {
     const current = this.templatePage + 1;
     const start = Math.max(1, current - 2);
     const end = Math.min(total, start + 4);
-    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+    const pages = [];
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
   }
 
   proceedToShiftings(): void {
@@ -180,11 +183,17 @@ export class QuotationDialogComponent implements OnInit {
         this.shiftings = pageData?.content || [];
         this.shiftingTotalPages = pageData?.totalPages || 0;
         this.shiftingTotalElements = pageData?.totalElements || 0;
+        
+        // Auto-select first shifting if only one
+        if (this.shiftings.length === 1) {
+          this.selectedShifting = this.shiftings[0];
+        }
+        
         this.isLoadingShiftings = false;
       },
       error: (err: any) => {
         console.error('Failed to load shiftings:', err);
-        this.errorMessage = 'Failed to load shiftings.';
+        this.errorMessage = 'Failed to load customer shiftings.';
         this.isLoadingShiftings = false;
       }
     });
@@ -208,7 +217,9 @@ export class QuotationDialogComponent implements OnInit {
     const current = this.shiftingPage + 1;
     const start = Math.max(1, current - 2);
     const end = Math.min(total, start + 4);
-    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+    const pages = [];
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
   }
 
   backToTemplates(): void {
@@ -231,6 +242,24 @@ export class QuotationDialogComponent implements OnInit {
         console.error('PDF generation failed:', err);
         this.errorMessage = 'Failed to generate quotation PDF.';
         this.isGenerating = false;
+      }
+    });
+  }
+
+  generateAndSendQuotation(): void {
+    if (!this.selectedTemplate || !this.selectedShifting) return;
+    this.isSending = true;
+    this.errorMessage = '';
+
+    this.templateService.generateAndSendQuotation(this.selectedShifting.shiftingId, this.selectedTemplate.id).subscribe({
+      next: (res: any) => {
+        this.isSending = false;
+        this.dialogRef.close({ action: 'sent', message: res.responseMessege || 'Quotation generated and sent successfully' });
+      },
+      error: (err: any) => {
+        console.error('API call failed:', err);
+        this.errorMessage = 'Failed to generate and send quotation.';
+        this.isSending = false;
       }
     });
   }

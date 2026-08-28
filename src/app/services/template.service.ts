@@ -37,6 +37,14 @@ export class TemplateService {
     return this.http.get(url, { responseType: 'blob' });
   }
 
+  generateAndSendQuotation(shiftingId: number | string, templateId?: number): Observable<any> {
+    let url = `${this.BASE_URL}/quotation/${shiftingId}/send`;
+    if (templateId) {
+      url += `?templateId=${templateId}`;
+    }
+    return this.http.post<any>(url, {});
+  }
+
   getInvoicePdf(shiftingId: number | string): Observable<Blob> {
     return this.http.get(`${this.BASE_URL}/${shiftingId}/invoice`, { responseType: 'blob' });
   }

@@ -702,6 +702,8 @@ export class CustomerComponent implements OnInit {
       if (result?.blob) {
         this.downloadBlob(result.blob, `quotation-${result.shiftingId}.pdf`);
         this.showMessage('Quotation PDF downloaded successfully.');
+      } else if (result?.action === 'sent') {
+        this.showMessage(result.message || 'Quotation generated and sent to customer successfully.');
       }
     });
   }

@@ -166,15 +166,25 @@
   <!-- Footer -->
   <div class="dialog-footer">
     <button class="btn-secondary" *ngIf="currentStep === 1" (click)="cancel()">Cancel</button>
-    <button class="btn-secondary" *ngIf="currentStep === 2" (click)="backToTemplates()">← Back</button>
+    <button class="btn-secondary" *ngIf="currentStep === 2" (click)="backToTemplates()">Back</button>
     <button class="btn-primary" *ngIf="currentStep === 1"
             [disabled]="!selectedTemplate"
-            (click)="proceedToShiftings()">Next →</button>
-    <button class="btn-primary" *ngIf="currentStep === 2"
-            [disabled]="!selectedShifting || isGenerating"
-            (click)="generateQuotation()">
-      <span *ngIf="!isGenerating">Generate Quotation</span>
-      <span *ngIf="isGenerating">Generating...</span>
-    </button>
+            (click)="proceedToShiftings()">Next &rarr;</button>
+    
+    <div class="action-buttons-row" *ngIf="currentStep === 2" style="display: flex; gap: 12px; align-items: center;">
+      <button class="btn-secondary"
+              [disabled]="!selectedShifting || isGenerating || isSending"
+              (click)="generateQuotation()" style="color: #6b7280; border-color: #d1d5db;">
+        <span *ngIf="!isGenerating">Generate PDF Only</span>
+        <span *ngIf="isGenerating">Generating...</span>
+      </button>
+      <button class="btn-primary"
+              [disabled]="!selectedShifting || isGenerating || isSending"
+              (click)="generateAndSendQuotation()" style="display: flex; align-items: center; gap: 6px;">
+        <span *ngIf="!isSending">Generate & Send to Customer</span>
+        <span *ngIf="isSending">Sending...</span>
+        <i class="material-icons" *ngIf="!isSending" style="font-size: 16px;">send</i>
+      </button>
+    </div>
   </div>
 </div>
