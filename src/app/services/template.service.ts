@@ -57,4 +57,20 @@ export class TemplateService {
     return this.http.get(`${this.BASE_URL}/item-list/${shiftingId}/pdf`, { responseType: 'blob' });
   }
 
+  getPackingListPdf(shiftingId: number | string, templateId?: number): Observable<Blob> {
+    let url = `${this.BASE_URL}/packing-list/${shiftingId}/pdf`;
+    if (templateId) {
+      url += `?templateId=${templateId}`;
+    }
+    return this.http.get(url, { responseType: 'blob' });
+  }
+
+  generateAndSendPackingList(shiftingId: number | string, templateId?: number): Observable<any> {
+    let url = `${this.BASE_URL}/packing-list/${shiftingId}/send`;
+    if (templateId) {
+      url += `?templateId=${templateId}`;
+    }
+    return this.http.post<any>(url, {});
+  }
+
 }
