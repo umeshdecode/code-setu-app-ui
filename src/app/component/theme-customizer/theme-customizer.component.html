@@ -3,7 +3,7 @@
     <mat-icon>palette</mat-icon>
     <div>
       <h3>Theme</h3>
-      <p>Colors and font</p>
+      <p>Appearance and font</p>
     </div>
   </div>
 
@@ -25,21 +25,13 @@
     </div>
   </div>
 
-  <div class="field-grid">
-    <label class="color-field">
-      <span>Primary</span>
-      <input type="color" [(ngModel)]="settings.primaryColor" (input)="updateTheme()">
-    </label>
-
-    <label class="color-field">
-      <span>Secondary</span>
-      <input type="color" [(ngModel)]="settings.secondaryColor" (input)="updateTheme()">
-    </label>
-
-    <label class="color-field">
-      <span>Accent</span>
-      <input type="color" [(ngModel)]="settings.accentColor" (input)="updateTheme()">
-    </label>
+  <div class="field-group">
+    <label>Palette</label>
+    <div class="palette-strip">
+      <span class="swatch" *ngFor="let swatch of paletteSwatches"
+            [style.background]="swatch.hex"
+            [title]="swatch.label + ' · ' + swatch.hex"></span>
+    </div>
   </div>
 
   <label class="select-field">
@@ -48,11 +40,6 @@
       <option *ngFor="let font of fontOptions" [ngValue]="font.value">{{ font.label }}</option>
     </select>
   </label>
-
-  <!-- <div class="preview-box">
-    <span class="preview-chip">Preview</span>
-    <strong>Cargo Setu</strong>
-  </div> -->
 
   <button type="button" class="reset-btn" (click)="resetTheme(); keepMenuOpen($event)">
     <span class="material-icons">restart_alt</span>

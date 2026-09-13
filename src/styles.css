@@ -4,22 +4,101 @@
 @import "@fontsource/roboto/400.css";
 @import "@fontsource/roboto/500.css";
 
+/* =========================================================
+   DESIGN TOKENS — solid-colour palette ("Web light blue")
+   Source palette: #c8d9ed #e1f1fd #c1d8f0 #4663ac #d2deeb
+   #4663ac is the only strong colour, so it carries brand/primary;
+   the tints form the surface ramp. Text and dark-mode shades are
+   derived from it.
+
+   CSS owns the palette. ThemeService only toggles the theme class
+   and the font — it must never write colour vars onto :root, or
+   those inline styles would shadow everything below.
+   ========================================================= */
 :root {
-  --app-primary: #667eea;
-  --app-secondary: #764ba2;
-  --app-accent: #e94e77;
-  --app-font-family: Roboto, "Helvetica Neue", sans-serif;
-  --app-header-gradient: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #e94e77 100%);
-  --app-sidebar-gradient: linear-gradient(180deg, #667eea, #764ba2, #e94e77);
-  --app-action-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --app-primary-soft: rgba(102, 126, 234, 0.1);
-  --app-primary-shadow: rgba(102, 126, 234, 0.35);
-  --app-bg: #f4f6f9;
+  --app-primary: #4663ac;
+  --app-primary-hover: #3a5490;
+  --app-primary-contrast: #ffffff;
+  --app-primary-soft: #e1f1fd;
+  --app-primary-shadow: rgba(70, 99, 172, 0.28);
+
+  --app-bg: #e1f1fd;
   --app-surface: #ffffff;
-  --app-surface-muted: #f8fafc;
-  --app-text: #2d3748;
-  --app-muted-text: #718096;
-  --app-border: #e2e8f0;
+  --app-surface-muted: #d2deeb;
+  --app-border: #c8d9ed;
+  --app-border-strong: #c1d8f0;
+  --app-text: #16233d;
+  --app-muted-text: #5a6a86;
+
+  --app-success: #1b7f4b;
+  --app-success-soft: #e6f4ec;
+  --app-error: #c02626;
+  --app-error-soft: #fbeaea;
+  --app-warning: #b4690e;
+  --app-warning-soft: #fdf3e3;
+  --app-info: #4663ac;
+  --app-info-soft: #e1f1fd;
+  --app-permission: #5b46ac;
+  --app-permission-soft: #ebe8f7;
+
+  /* The sidebar is a large filled surface, so it gets its own token rather than
+     reusing --app-primary: in dark mode primary lightens for contrast on dark,
+     which would otherwise turn the whole sidebar into a bright blue slab. */
+  --app-sidebar-bg: #4663ac;
+  --app-sidebar-text: #ffffff;
+  --app-sidebar-active-bg: #ffffff;
+  --app-sidebar-active-text: #16233d;
+
+  --app-font-family: Roboto, "Helvetica Neue", sans-serif;
+
+  /* Kept under their original names so the ~21 existing consumers across
+     nav-bar, app.component, createplan and syetemconfiguration resolve to a
+     flat fill without being edited. They are no longer gradients. */
+  --app-header-gradient: var(--app-primary);
+  --app-sidebar-gradient: var(--app-sidebar-bg);
+  --app-action-gradient: var(--app-primary);
+
+  /* The palette is single-hue now; these aliases keep out-of-scope screens
+     (e.g. syetemconfiguration) resolving rather than falling back to unset. */
+  --app-secondary: var(--app-primary);
+  --app-accent: var(--app-primary);
+}
+
+/* Also matched on :root — html itself paints --app-bg, so tokens defined only on
+   body would leave the page root showing the light background in dark mode. */
+:root.app-dark-theme,
+body.app-dark-theme {
+  --app-primary: #7d9ad8;
+  --app-primary-hover: #94aee2;
+  --app-primary-contrast: #0e1524;
+  --app-primary-soft: rgba(125, 154, 216, 0.16);
+  --app-primary-shadow: rgba(125, 154, 216, 0.35);
+
+  --app-bg: #0e1524;
+  --app-surface: #16203a;
+  --app-surface-muted: #1e2b49;
+  --app-border: #2b3a5e;
+  --app-border-strong: #3a4c78;
+  --app-text: #e1f1fd;
+  --app-muted-text: #a8bcd8;
+
+  --app-success: #4ade80;
+  --app-success-soft: rgba(74, 222, 128, 0.15);
+  --app-error: #f87171;
+  --app-error-soft: rgba(248, 113, 113, 0.15);
+  --app-warning: #fbbf24;
+  --app-warning-soft: rgba(251, 191, 36, 0.15);
+  --app-info: #9db8e4;
+  --app-info-soft: rgba(157, 184, 228, 0.15);
+  --app-permission: #a78bfa;
+  --app-permission-soft: rgba(167, 139, 250, 0.15);
+
+  /* Not --app-surface: the sidebar already sits at that value in dark mode,
+     so the active pill would be invisible against it. */
+  --app-sidebar-bg: #16203a;
+  --app-sidebar-text: #e1f1fd;
+  --app-sidebar-active-bg: #2b3a5e;
+  --app-sidebar-active-text: #ffffff;
 }
 
 html,
@@ -211,8 +290,8 @@ html {
 .mat-raised-button.mat-primary,
 .mat-fab.mat-primary,
 .mat-mini-fab.mat-primary {
-  background: var(--app-action-gradient) !important;
-  color: #fff !important;
+  background: var(--app-primary) !important;
+  color: var(--app-primary-contrast) !important;
 }
 
 input,
@@ -318,7 +397,9 @@ body.app-dark-theme .section-title *,
 body.app-dark-theme .toolbar-title *,
 body.app-dark-theme .card-header *,
 body.app-dark-theme .form-header *,
-body.app-dark-theme .module-card *,
+/* The accent bubble is excluded: it carries a status/primary token colour that
+   this blanket white would otherwise flatten in dark mode. */
+body.app-dark-theme .module-card *:not(.icon-wrapper):not(.icon-wrapper *),
 body.app-dark-theme .profile-menu * {
   color: #ffffff !important;
 }
@@ -349,9 +430,8 @@ body.app-dark-theme .category-badge {
   color: #ffffff !important;
 }
 
-body.app-dark-theme .icon-wrapper {
-  background: var(--app-surface-muted) !important;
-}
+/* .icon-wrapper intentionally has no dark override — its background and colour
+   come from the status/primary tokens, which already redefine under .app-dark-theme. */
 
 body.app-dark-theme .cdk-overlay-pane .mat-select-panel,
 body.app-dark-theme .cdk-overlay-pane .mat-mdc-select-panel,
@@ -655,7 +735,7 @@ body.app-dark-theme input:-webkit-autofill:focus {
   transition: background-color 9999s ease-out;
 }
 
-/* Consistent status colors across light and dark themes. */
+/* Status pills read from the status tokens, so light/dark needs no separate block. */
 .status-badge.active,
 .status-badge.available,
 .status-badge.online,
@@ -663,9 +743,9 @@ body.app-dark-theme input:-webkit-autofill:focus {
 .status-pill.available,
 .status-pill.online,
 .active-status {
-  background: #dcfce7 !important;
-  color: #166534 !important;
-  border-color: #86efac !important;
+  background: var(--app-success-soft) !important;
+  color: var(--app-success) !important;
+  border-color: var(--app-success) !important;
 }
 
 .status-badge.inactive,
@@ -674,32 +754,9 @@ body.app-dark-theme input:-webkit-autofill:focus {
 .status-pill.offline,
 .inactive-status,
 .expired-status {
-  background: #fee2e2 !important;
-  color: #991b1b !important;
-  border-color: #fca5a5 !important;
-}
-
-body.app-dark-theme .status-badge.active,
-body.app-dark-theme .status-badge.available,
-body.app-dark-theme .status-badge.online,
-body.app-dark-theme .status-pill.active,
-body.app-dark-theme .status-pill.available,
-body.app-dark-theme .status-pill.online,
-body.app-dark-theme .active-status {
-  background: rgba(34, 197, 94, 0.22) !important;
-  color: #bbf7d0 !important;
-  border-color: rgba(74, 222, 128, 0.55) !important;
-}
-
-body.app-dark-theme .status-badge.inactive,
-body.app-dark-theme .status-badge.offline,
-body.app-dark-theme .status-pill.inactive,
-body.app-dark-theme .status-pill.offline,
-body.app-dark-theme .inactive-status,
-body.app-dark-theme .expired-status {
-  background: rgba(239, 68, 68, 0.22) !important;
-  color: #fecaca !important;
-  border-color: rgba(248, 113, 113, 0.55) !important;
+  background: var(--app-error-soft) !important;
+  color: var(--app-error) !important;
+  border-color: var(--app-error) !important;
 }
 /* =========================================================
    RESPONSE POPUPS (snackbar) — success / error / info
@@ -806,44 +863,46 @@ body.app-dark-theme .expired-status {
 
 /* --- Per-state accents --- */
 .pop-success {
-  --pop-accent: #16a34a;
-  --pop-accent-soft: rgba(22, 163, 74, 0.12);
+  --pop-accent: var(--app-success);
+  --pop-accent-soft: var(--app-success-soft);
   --pop-icon: 'check_circle';
 }
 
 .pop-error {
-  --pop-accent: #dc2626;
-  --pop-accent-soft: rgba(220, 38, 38, 0.12);
+  --pop-accent: var(--app-error);
+  --pop-accent-soft: var(--app-error-soft);
   --pop-icon: 'error';
 }
 
 .pop-warning {
-  --pop-accent: #d97706;
-  --pop-accent-soft: rgba(217, 119, 6, 0.12);
+  --pop-accent: var(--app-warning);
+  --pop-accent-soft: var(--app-warning-soft);
   --pop-icon: 'warning';
 }
 
 .pop-info {
-  --pop-accent: #2563eb;
-  --pop-accent-soft: rgba(37, 99, 235, 0.12);
+  --pop-accent: var(--app-info);
+  --pop-accent-soft: var(--app-info-soft);
   --pop-icon: 'info';
 }
 
 .pop-permission {
-  --pop-accent: #7c3aed;
-  --pop-accent-soft: rgba(124, 58, 237, 0.12);
+  --pop-accent: var(--app-permission);
+  --pop-accent-soft: var(--app-permission-soft);
   --pop-icon: 'lock';
 }
 
 /* --- Dark theme --- */
+/* Only the surface needs restating here — the per-state accents already flip,
+   because --app-success/-error/-warning/-info are redefined on .app-dark-theme. */
 body.app-dark-theme .pop-success,
 body.app-dark-theme .pop-error,
 body.app-dark-theme .pop-warning,
 body.app-dark-theme .pop-info,
 body.app-dark-theme .pop-permission {
-  background-color: #1e293b !important;
-  color: #e2e8f0 !important;
-  border-color: rgba(148, 163, 184, 0.28) !important;
+  background-color: var(--app-surface) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
   border-left-color: var(--pop-accent) !important;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.45),
               0 4px 6px -4px rgba(0, 0, 0, 0.4) !important;
@@ -854,14 +913,8 @@ body.app-dark-theme .pop-error .mat-simple-snackbar > span,
 body.app-dark-theme .pop-warning .mat-simple-snackbar > span,
 body.app-dark-theme .pop-info .mat-simple-snackbar > span,
 body.app-dark-theme .pop-permission .mat-simple-snackbar > span {
-  color: #e2e8f0 !important;
+  color: var(--app-text) !important;
 }
-
-body.app-dark-theme .pop-success    { --pop-accent: #4ade80; --pop-accent-soft: rgba(74, 222, 128, 0.18); }
-body.app-dark-theme .pop-error      { --pop-accent: #f87171; --pop-accent-soft: rgba(248, 113, 113, 0.18); }
-body.app-dark-theme .pop-warning    { --pop-accent: #fbbf24; --pop-accent-soft: rgba(251, 191, 36, 0.18); }
-body.app-dark-theme .pop-info       { --pop-accent: #60a5fa; --pop-accent-soft: rgba(96, 165, 250, 0.18); }
-body.app-dark-theme .pop-permission { --pop-accent: #a78bfa; --pop-accent-soft: rgba(167, 139, 250, 0.18); }
 
 @keyframes popSlideIn {
   from {

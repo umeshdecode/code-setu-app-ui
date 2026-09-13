@@ -10,6 +10,7 @@ import { ENV } from 'src/assets/env';
 import { AuthResponse } from '../models/authresponse';
 import { GenericDataDTO } from '../models/generic-data-dto';
 import { Router } from '@angular/router';
+import { ThemeService } from './theme.service';
 
 // import { url } from 'inspector';
 
@@ -30,6 +31,7 @@ export class LoginService {
     private jwtdecode: JwttokenService,
     private staffuserservice: StaffuserServiceService,
     private router: Router,
+    private themeService: ThemeService,
   ) { }
 
   private hasToken(): boolean {
@@ -152,6 +154,7 @@ export class LoginService {
       }
 
       this.loggedInSubject.next(true);
+      this.themeService.hydrateFromServer();
       return true;
 
     } catch (error) {
@@ -172,6 +175,7 @@ export class LoginService {
     localStorage.removeItem('user_session');
     localStorage.removeItem('staffInfo');
     localStorage.removeItem('user');
+    this.themeService.clearLocalTheme();
     this.loggedInSubject.next(false);
     this.router.navigateByUrl("/login");
   }
@@ -206,6 +210,7 @@ export class LoginService {
             localStorage.setItem('user_session', JSON.stringify(userSession));
           }
           this.loggedInSubject.next(true);
+          this.themeService.hydrateFromServer();
         })
       );
     }

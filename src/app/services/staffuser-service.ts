@@ -56,4 +56,19 @@ export class StaffuserServiceService {
     );
   }
 
+  /** The signed-in user's own UI preferences, so their theme follows them across devices. */
+  getMyPreferences(): Observable<GenericDataDTO> {
+    return this.http.get<GenericDataDTO>(
+      `${this.BASE_URL}/api/v2/cargosetu/staff/myprofile/preferences`,
+    );
+  }
+
+  /** PUT, not PATCH — PATCH is missing from the backend's CORS allowed-methods list. */
+  updateMyPreferences(payload: any): Observable<GenericDataDTO> {
+    return this.http.put<GenericDataDTO>(
+      `${this.BASE_URL}/api/v2/cargosetu/staff/myprofile/preferences`,
+      payload,
+    );
+  }
+
 }

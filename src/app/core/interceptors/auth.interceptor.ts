@@ -11,13 +11,14 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ShowpopupService } from 'src/app/services/showpopup.service';
+import { ThemeService } from 'src/app/services/theme.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
   private isRefreshing = false;
 
-  constructor(private http: HttpClient, private router: Router, private showPopup: ShowpopupService) {}
+  constructor(private http: HttpClient, private router: Router, private showPopup: ShowpopupService, private themeService: ThemeService) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = localStorage.getItem('token');
@@ -92,6 +93,7 @@ export class AuthInterceptor implements HttpInterceptor {
     localStorage.removeItem('user_session');
     localStorage.removeItem('staffInfo');
     localStorage.removeItem('user');
+    this.themeService.clearLocalTheme();
     if (reason) {
       this.showPopup.showPermissionDenied(reason);
     }

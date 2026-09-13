@@ -6,6 +6,20 @@
         </div>
     </header>
 
+    <div class="stat-grid" *ngIf="stats.length > 0">
+        <article class="stat-card" *ngFor="let stat of stats" [ngClass]="'tone-' + stat.tone">
+            <span class="stat-icon">
+                <mat-icon>{{ stat.icon }}</mat-icon>
+            </span>
+            <div class="stat-body">
+                <span class="stat-label">{{ stat.label }}</span>
+                <span class="stat-value skeleton" *ngIf="stat.loading"></span>
+                <span class="stat-value unavailable" *ngIf="!stat.loading && stat.failed">&mdash;</span>
+                <span class="stat-value" *ngIf="!stat.loading && !stat.failed">{{ stat.value }}</span>
+            </div>
+        </article>
+    </div>
+
     <ng-container *ngIf="dashboardSections.length > 0; else emptyDashboard">
         <section class="module-section" *ngFor="let section of dashboardSections">
             <div class="section-title">

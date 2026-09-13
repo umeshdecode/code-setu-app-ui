@@ -11,6 +11,15 @@ import { CommonModule } from '@angular/common';
 export class ThemeCustomizerComponent implements OnInit, OnDestroy {
   settings!: AppThemeSettings;
 
+  /** Read-only: the palette is fixed in styles.css and is not user-editable. */
+  readonly paletteSwatches = [
+    { label: 'Primary', hex: '#4663ac' },
+    { label: 'Surface tint', hex: '#e1f1fd' },
+    { label: 'Muted', hex: '#d2deeb' },
+    { label: 'Border', hex: '#c8d9ed' },
+    { label: 'Border strong', hex: '#c1d8f0' }
+  ];
+
   readonly fontOptions = [
     { label: 'Roboto', value: 'Roboto, "Helvetica Neue", sans-serif' },
     { label: 'Arial', value: 'Arial, "Helvetica Neue", sans-serif' },

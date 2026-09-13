@@ -1,21 +1,20 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { StaffuserServiceService } from './staffuser-service';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
 
+/**
+ * The colour palette is fixed in styles.css and is no longer user-selectable —
+ * a user chooses only how the app resolves light vs dark, and the font.
+ */
 export interface AppThemeSettings {
   mode: ThemeMode;
-  primaryColor: string;
-  secondaryColor: string;
-  accentColor: string;
   fontFamily: string;
 }
 
 export const DEFAULT_THEME_SETTINGS: AppThemeSettings = {
-  mode: 'light',
-  primaryColor: '#667eea',
-  secondaryColor: '#764ba2',
-  accentColor: '#e94e77',
+  mode: 'system',
   fontFamily: 'Roboto, "Helvetica Neue", sans-serif'
 };
 
@@ -28,29 +27,86 @@ export class ThemeService {
   private readonly settingsSubject = new BehaviorSubject<AppThemeSettings>(this.getStoredSettings());
   readonly settings$ = this.settingsSubject.asObservable();
 
+  constructor(private readonly staffService: StaffuserServiceService) {}
+
+  /**
+   * Runs from APP_INITIALIZER, before any token exists, so it applies the locally
+   * cached choice only. The server copy is pulled later by hydrateFromServer().
+   */
   initialize(): void {
     this.applyTheme(this.settingsSubject.value);
+
+    if (window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: dark)')
+        .addEventListener('change', () => {
+          if (this.settingsSubject.value.mode === 'system') {
+            this.applyTheme(this.settingsSubject.value);
+          }
+        });
+    }
   }
 
   get settings(): AppThemeSettings {
     return this.settingsSubject.value;
   }
 
+  /**
+   * Applies and caches immediately so the UI never waits on the network, then
+   * persists to the backend so the choice follows the user to other devices.
+   */
   updateTheme(partial: Partial<AppThemeSettings>): void {
     const nextSettings = {
       ...this.settingsSubject.value,
       ...partial
     };
 
-    this.settingsSubject.next(nextSettings);
-    localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(nextSettings));
-    this.applyTheme(nextSettings);
+    this.setLocal(nextSettings);
+
+    this.staffService.updateMyPreferences(nextSettings).subscribe({
+      error: (error) => console.warn('Unable to save theme preference to the server:', error)
+    });
   }
 
   resetTheme(): void {
+    this.updateTheme(DEFAULT_THEME_SETTINGS);
+  }
+
+  /**
+   * Pulls the signed-in user's stored preference after login. The server copy wins,
+   * so a second device adopts the choice made on the first. A failure here is silent:
+   * the locally cached theme stays in effect rather than snapping back to defaults.
+   */
+  hydrateFromServer(): void {
+    this.staffService.getMyPreferences().subscribe({
+      next: (response: any) => {
+        const stored = response?.data;
+        if (!stored) {
+          return;
+        }
+        this.setLocal({
+          mode: this.isValidMode(stored.mode) ? stored.mode : this.settingsSubject.value.mode,
+          fontFamily: stored.fontFamily || this.settingsSubject.value.fontFamily
+        });
+      },
+      error: (error) => console.warn('Unable to load theme preference from the server:', error)
+    });
+  }
+
+  /** Called on logout so the next user on this machine does not inherit the previous theme. */
+  clearLocalTheme(): void {
     localStorage.removeItem(THEME_STORAGE_KEY);
     this.settingsSubject.next(DEFAULT_THEME_SETTINGS);
     this.applyTheme(DEFAULT_THEME_SETTINGS);
+  }
+
+  private setLocal(settings: AppThemeSettings): void {
+    this.settingsSubject.next(settings);
+    localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(settings));
+    this.applyTheme(settings);
+  }
+
+  private isValidMode(mode: unknown): mode is ThemeMode {
+    return mode === 'light' || mode === 'dark' || mode === 'system';
   }
 
   private getStoredSettings(): AppThemeSettings {
@@ -60,9 +116,12 @@ export class ThemeService {
         return DEFAULT_THEME_SETTINGS;
       }
 
+      // Reading field by field also discards the primary/secondary/accent keys
+      // written by the previous free-colour version of this service.
+      const parsed = JSON.parse(storedValue);
       return {
-        ...DEFAULT_THEME_SETTINGS,
-        ...JSON.parse(storedValue)
+        mode: this.isValidMode(parsed?.mode) ? parsed.mode : DEFAULT_THEME_SETTINGS.mode,
+        fontFamily: parsed?.fontFamily || DEFAULT_THEME_SETTINGS.fontFamily
       };
     } catch (error) {
       console.error('Unable to load saved theme settings:', error);
@@ -70,31 +129,23 @@ export class ThemeService {
     }
   }
 
+  /**
+   * Colours live entirely in styles.css (:root and .app-dark-theme). This only
+   * flips which of those two token sets applies, plus the font — writing colour vars
+   * onto :root here would shadow the stylesheet.
+   */
   private applyTheme(settings: AppThemeSettings): void {
     const root = document.documentElement;
-    const resolvedMode = this.resolveMode(settings.mode);
-    const isDark = resolvedMode === 'dark';
+    const isDark = this.resolveMode(settings.mode) === 'dark';
 
-    root.style.setProperty('--app-primary', settings.primaryColor);
-    root.style.setProperty('--app-secondary', settings.secondaryColor);
-    root.style.setProperty('--app-accent', settings.accentColor);
     root.style.setProperty('--app-font-family', settings.fontFamily);
     root.style.setProperty('--mat-font-family', settings.fontFamily);
     root.style.setProperty('--mat-app-font-family', settings.fontFamily);
     root.style.setProperty('--mdc-typography-font-family', settings.fontFamily);
-    root.style.setProperty('--app-header-gradient', `linear-gradient(90deg, ${settings.primaryColor} 0%, ${settings.secondaryColor} 50%, ${settings.accentColor} 100%)`);
-    root.style.setProperty('--app-sidebar-gradient', `linear-gradient(180deg, ${settings.primaryColor}, ${settings.secondaryColor}, ${settings.accentColor})`);
-    root.style.setProperty('--app-action-gradient', `linear-gradient(135deg, ${settings.primaryColor} 0%, ${settings.secondaryColor} 100%)`);
-    root.style.setProperty('--app-primary-soft', this.hexToRgba(settings.primaryColor, 0.1));
-    root.style.setProperty('--app-primary-shadow', this.hexToRgba(settings.primaryColor, 0.35));
 
-    root.style.setProperty('--app-bg', isDark ? '#111827' : '#f4f6f9');
-    root.style.setProperty('--app-surface', isDark ? '#1f2937' : '#ffffff');
-    root.style.setProperty('--app-surface-muted', isDark ? '#273449' : '#f8fafc');
-    root.style.setProperty('--app-text', isDark ? '#f9fafb' : '#2d3748');
-    root.style.setProperty('--app-muted-text', isDark ? '#cbd5e1' : '#718096');
-    root.style.setProperty('--app-border', isDark ? '#374151' : '#e2e8f0');
-
+    // Mirrored onto <html> so the root element picks up the dark tokens too;
+    // the body class is what the existing app-dark-theme rules key off.
+    root.classList.toggle('app-dark-theme', isDark);
     document.body.classList.toggle('app-dark-theme', isDark);
     document.body.classList.toggle('app-light-theme', !isDark);
     document.body.style.fontFamily = settings.fontFamily;
@@ -106,18 +157,5 @@ export class ThemeService {
     }
 
     return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  }
-
-  private hexToRgba(hex: string, opacity: number): string {
-    const normalized = hex.replace('#', '');
-    const fullHex = normalized.length === 3
-      ? normalized.split('').map((char) => char + char).join('')
-      : normalized;
-
-    const red = parseInt(fullHex.substring(0, 2), 16);
-    const green = parseInt(fullHex.substring(2, 4), 16);
-    const blue = parseInt(fullHex.substring(4, 6), 16);
-
-    return `rgba(${red}, ${green}, ${blue}, ${opacity})`;
   }
 }
