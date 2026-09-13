@@ -1,0 +1,355 @@
+<div class="lp">
+
+  <!-- ============ 1. HERO ============ -->
+  <section class="lp-hero" aria-labelledby="lp-hero-title">
+    <svg class="lp-hero-art" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs>
+        <pattern id="lpDots" width="28" height="28" patternUnits="userSpaceOnUse">
+          <circle cx="1.5" cy="1.5" r="1.5" fill="currentColor" />
+        </pattern>
+        <linearGradient id="lpRouteA" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#4663ac" stop-opacity="0" />
+          <stop offset="45%" stop-color="#6f8fd8" stop-opacity="1" />
+          <stop offset="100%" stop-color="#2fbf87" stop-opacity="0.9" />
+        </linearGradient>
+        <linearGradient id="lpRouteB" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#2fbf87" stop-opacity="0" />
+          <stop offset="60%" stop-color="#4663ac" stop-opacity="0.8" />
+          <stop offset="100%" stop-color="#8fa9e0" stop-opacity="0.6" />
+        </linearGradient>
+      </defs>
+
+      <rect width="1200" height="700" fill="url(#lpDots)" class="lp-hero-dots" />
+
+      <path class="lp-route lp-route-a" d="M-40 520 C 220 520, 260 300, 470 300 S 760 470, 900 380 S 1130 150, 1260 170"
+            fill="none" stroke="url(#lpRouteA)" stroke-width="2.5" stroke-linecap="round" />
+      <path class="lp-route lp-route-b" d="M-40 250 C 180 250, 300 120, 520 160 S 820 320, 1000 250 S 1180 190, 1260 220"
+            fill="none" stroke="url(#lpRouteB)" stroke-width="2" stroke-linecap="round" />
+
+      <circle class="lp-node" cx="470" cy="300" r="5" />
+      <circle class="lp-node" cx="900" cy="380" r="5" />
+      <circle class="lp-node" cx="520" cy="160" r="4" />
+      <circle class="lp-node" cx="1000" cy="250" r="4" />
+    </svg>
+
+    <div class="lp-shell lp-hero-inner">
+      <p class="lp-eyebrow">Transport &amp; Logistics Software</p>
+      <h1 id="lp-hero-title" class="lp-hero-title">
+        Run your entire transport business from one screen.
+      </h1>
+      <p class="lp-hero-sub">
+        Cargo Setu brings quotations, trips, bilty, invoicing, fleet and live tracking together in a
+        single workspace &mdash; so the paperwork keeps up with the trucks instead of holding them back.
+      </p>
+      <div class="lp-hero-cta">
+        <a routerLink="/signup" class="lp-btn lp-btn-primary">
+          Get Started Free
+          <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+        </a>
+        <a routerLink="/login" class="lp-btn lp-btn-ghost">Login</a>
+      </div>
+    </div>
+
+    <a href="#lp-pillars" class="lp-scroll-cue">
+      <span>Scroll</span>
+      <mat-icon aria-hidden="true">keyboard_arrow_down</mat-icon>
+    </a>
+  </section>
+
+  <!-- ============ 2. TRUST STRIP ============ -->
+  <div class="lp-trust">
+    <div class="lp-shell lp-trust-row">
+      <span><mat-icon aria-hidden="true">description</mat-icon> 10,000+ documents generated</span>
+      <span><mat-icon aria-hidden="true">local_shipping</mat-icon> 500+ vehicles managed</span>
+      <span><mat-icon aria-hidden="true">headset_mic</mat-icon> 24&times;7 support</span>
+      <span><mat-icon aria-hidden="true">verified</mat-icon> GST-ready invoicing</span>
+    </div>
+  </div>
+
+  <!-- ============ 3. THREE PILLARS ============ -->
+  <section id="lp-pillars" class="lp-section" aria-labelledby="lp-pillars-title">
+    <div class="lp-shell">
+      <header class="lp-head">
+        <p class="lp-kicker">What Cargo Setu covers</p>
+        <h2 id="lp-pillars-title">Three jobs, one system of record</h2>
+      </header>
+
+      <div class="lp-pillars">
+        <article class="lp-card lp-reveal" appScrollReveal *ngFor="let p of pillars; let i = index"
+                 [style.transition-delay.ms]="i * 110">
+          <mat-icon class="lp-card-icon" aria-hidden="true">{{ p.icon }}</mat-icon>
+          <h3>{{ p.title }}</h3>
+          <p>{{ p.body }}</p>
+          <a [href]="p.target" class="lp-inline-link">
+            <span aria-hidden="true">&#9656;</span> Learn more
+          </a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4. STAT COUNTERS ============ -->
+  <section class="lp-stats" aria-labelledby="lp-stats-title">
+    <div class="lp-shell">
+      <h2 id="lp-stats-title" class="lp-stats-title">Built to carry the load</h2>
+      <div class="lp-stat-grid">
+        <div class="lp-stat" *ngFor="let s of stats">
+          <span class="lp-stat-value" appScrollReveal [appRevealCount]="s.value" [appRevealSuffix]="s.suffix">
+            {{ s.value | number }}{{ s.suffix }}
+          </span>
+          <span class="lp-stat-label">{{ s.label }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5. FEATURE DEEP-DIVE ============ -->
+  <section class="lp-section" aria-labelledby="lp-features-title">
+    <div class="lp-shell">
+      <header class="lp-head">
+        <p class="lp-kicker">Inside the product</p>
+        <h2 id="lp-features-title">From enquiry to payment, without retyping anything</h2>
+      </header>
+
+      <!-- 5a. Operations -->
+      <div id="lp-feature-operations" class="lp-row lp-reveal" appScrollReveal>
+        <div class="lp-row-text">
+          <p class="lp-kicker">Operations</p>
+          <h3>Quote it, run it, close it</h3>
+          <p>
+            Price a load against your own rate logic and send the quotation the same hour the enquiry
+            lands. Approve it and the trip is already created &mdash; customer, route and vehicle carried
+            straight over, nothing keyed in twice.
+          </p>
+          <ul class="lp-ticks">
+            <li><mat-icon aria-hidden="true">check</mat-icon> Dynamic quotations with line items and taxes</li>
+            <li><mat-icon aria-hidden="true">check</mat-icon> Trip lifecycle from assignment to delivery</li>
+            <li><mat-icon aria-hidden="true">check</mat-icon> Vehicle and driver assignment in one step</li>
+          </ul>
+        </div>
+        <div class="lp-row-art" aria-hidden="true">
+          <div class="lp-mock">
+            <div class="lp-mock-bar"><span></span><span></span><span></span></div>
+            <div class="lp-mock-body">
+              <div class="lp-mock-head">
+                <strong>Quotation #QT-2041</strong>
+                <em class="lp-pill lp-pill-warn">Draft</em>
+              </div>
+              <div class="lp-mock-meta">Delhi &rarr; Jaipur &middot; 9 T &middot; Full Truck Load</div>
+              <div class="lp-mock-line"><span>Freight charge</span><b>&#8377; 24,000</b></div>
+              <div class="lp-mock-line"><span>Loading &amp; unloading</span><b>&#8377; 2,500</b></div>
+              <div class="lp-mock-line"><span>Detention (per day)</span><b>&#8377; 1,200</b></div>
+              <div class="lp-mock-total"><span>Total</span><b>&#8377; 27,700</b></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5b. Documentation -->
+      <div id="lp-feature-documents" class="lp-row lp-row-flip lp-reveal" appScrollReveal>
+        <div class="lp-row-text">
+          <p class="lp-kicker">Documentation</p>
+          <h3>Paperwork that writes itself</h3>
+          <p>
+            Bilty, invoice and receipt all read from the trip that produced them, so the consignor,
+            consignee and freight figures agree by construction. GST is broken out on the invoice, and
+            every document shares as a PDF without leaving the screen.
+          </p>
+          <ul class="lp-ticks">
+            <li><mat-icon aria-hidden="true">check</mat-icon> Bilty generated from trip data</li>
+            <li><mat-icon aria-hidden="true">check</mat-icon> CGST / SGST / IGST split on every invoice</li>
+            <li><mat-icon aria-hidden="true">check</mat-icon> One-tap PDF share to customers</li>
+          </ul>
+        </div>
+        <div class="lp-row-art" aria-hidden="true">
+          <div class="lp-mock">
+            <div class="lp-mock-bar"><span></span><span></span><span></span></div>
+            <div class="lp-mock-body">
+              <div class="lp-mock-head">
+                <strong>Invoice #INV-8817</strong>
+                <em class="lp-pill lp-pill-ok">Paid</em>
+              </div>
+              <div class="lp-mock-meta">Raised 12 Sep &middot; Due 27 Sep</div>
+              <div class="lp-mock-line"><span>Taxable value</span><b>&#8377; 27,700</b></div>
+              <div class="lp-mock-line"><span>CGST @ 2.5%</span><b>&#8377; 692</b></div>
+              <div class="lp-mock-line"><span>SGST @ 2.5%</span><b>&#8377; 692</b></div>
+              <div class="lp-mock-total"><span>Payable</span><b>&#8377; 29,084</b></div>
+              <div class="lp-mock-actions">
+                <span class="lp-chip"><mat-icon>picture_as_pdf</mat-icon> PDF</span>
+                <span class="lp-chip"><mat-icon>share</mat-icon> Share</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5c. Fleet & People -->
+      <div id="lp-feature-fleet" class="lp-row lp-reveal" appScrollReveal>
+        <div class="lp-row-text">
+          <p class="lp-kicker">Fleet &amp; People</p>
+          <h3>Everyone in, scoped to their job</h3>
+          <p>
+            Vehicles, drivers, staff and customers live as masters you fill once. Roles and permissions
+            then decide what each person actually reaches &mdash; an accountant opens billing, a dispatcher
+            opens trips, and neither trips over the other.
+          </p>
+          <ul class="lp-ticks">
+            <li><mat-icon aria-hidden="true">check</mat-icon> Vehicle and driver masters</li>
+            <li><mat-icon aria-hidden="true">check</mat-icon> Role-based permissions per module</li>
+            <li><mat-icon aria-hidden="true">check</mat-icon> Departments and staff hierarchy</li>
+          </ul>
+        </div>
+        <div class="lp-row-art" aria-hidden="true">
+          <div class="lp-mock">
+            <div class="lp-mock-bar"><span></span><span></span><span></span></div>
+            <div class="lp-mock-body">
+              <div class="lp-mock-head"><strong>Roles</strong><em class="lp-pill">4 active</em></div>
+              <div class="lp-role"><span><mat-icon>admin_panel_settings</mat-icon> Company Admin</span><b>Full access</b></div>
+              <div class="lp-role"><span><mat-icon>route</mat-icon> Dispatcher</span><b>Trips, Vehicles</b></div>
+              <div class="lp-role"><span><mat-icon>receipt_long</mat-icon> Accountant</span><b>Billing, Invoices</b></div>
+              <div class="lp-role"><span><mat-icon>local_shipping</mat-icon> Driver</span><b>Assigned trips</b></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5d. Live tracking -->
+      <div id="lp-feature-tracking" class="lp-row lp-row-flip lp-reveal" appScrollReveal>
+        <div class="lp-row-text">
+          <p class="lp-kicker">Live tracking</p>
+          <h3>Answer &ldquo;where is my load?&rdquo; before they ask</h3>
+          <p>
+            Trips carry their status as they move, so the office sees position and progress without
+            calling the driver. The customer gets a straight answer, and your traffic desk stops
+            working the phone.
+          </p>
+          <ul class="lp-ticks">
+            <li><mat-icon aria-hidden="true">check</mat-icon> Driver location on a live map</li>
+            <li><mat-icon aria-hidden="true">check</mat-icon> Status from assigned to delivered</li>
+            <li><mat-icon aria-hidden="true">check</mat-icon> Shareable trip progress</li>
+          </ul>
+        </div>
+        <div class="lp-row-art" aria-hidden="true">
+          <div class="lp-mock lp-mock-map">
+            <div class="lp-mock-bar"><span></span><span></span><span></span></div>
+            <div class="lp-mock-body">
+              <svg viewBox="0 0 420 200" class="lp-map">
+                <path d="M20 160 C 110 160, 130 60, 210 60 S 330 130, 400 40"
+                      fill="none" stroke="#dfe6f2" stroke-width="10" stroke-linecap="round" />
+                <path class="lp-map-done" d="M20 160 C 110 160, 130 60, 210 60 S 330 130, 400 40"
+                      fill="none" stroke="#4663ac" stroke-width="4" stroke-linecap="round" />
+                <circle cx="20" cy="160" r="6" fill="#4663ac" />
+                <circle cx="400" cy="40" r="6" fill="var(--lp-ink)" />
+                <circle class="lp-map-truck" r="7" fill="#2fbf87" stroke="#fff" stroke-width="3">
+                  <animateMotion dur="7s" repeatCount="indefinite"
+                                 path="M20 160 C 110 160, 130 60, 210 60 S 330 130, 400 40" />
+                </circle>
+              </svg>
+              <div class="lp-mock-head lp-mock-head-flat">
+                <strong>Trip #TR-1290</strong>
+                <em class="lp-pill lp-pill-live">In transit</em>
+              </div>
+              <div class="lp-mock-meta">Delhi &rarr; Jaipur &middot; 168 km covered of 281 km</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 6. INDUSTRIES ============ -->
+  <section class="lp-section lp-section-tint" aria-labelledby="lp-industries-title">
+    <div class="lp-shell">
+      <header class="lp-head">
+        <p class="lp-kicker">Who runs on Cargo Setu</p>
+        <h2 id="lp-industries-title">One workspace, every kind of movement</h2>
+      </header>
+      <div class="lp-industries">
+        <div class="lp-industry lp-reveal" appScrollReveal *ngFor="let ind of industries; let i = index"
+             [style.transition-delay.ms]="i * 60">
+          <mat-icon aria-hidden="true">{{ ind.icon }}</mat-icon>
+          <span>{{ ind.label }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 7. WHY CARGO SETU ============ -->
+  <section class="lp-section" aria-labelledby="lp-why-title">
+    <div class="lp-shell">
+      <header class="lp-head">
+        <p class="lp-kicker">Why operators switch</p>
+        <h2 id="lp-why-title">Less friction than the system you have now</h2>
+      </header>
+      <div class="lp-values">
+        <article class="lp-value lp-reveal" appScrollReveal *ngFor="let v of valueProps; let i = index"
+                 [style.transition-delay.ms]="i * 90">
+          <mat-icon aria-hidden="true">{{ v.icon }}</mat-icon>
+          <h3>{{ v.title }}</h3>
+          <p>{{ v.body }}</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 8. PRICING ============ -->
+  <section id="lp-pricing" class="lp-section lp-section-tint lp-pricing" aria-labelledby="lp-pricing-title">
+    <div class="lp-shell">
+      <header class="lp-head">
+        <p class="lp-kicker">Pricing</p>
+        <h2 id="lp-pricing-title">Pick the plan that fits the fleet</h2>
+      </header>
+    </div>
+    <app-planscreen></app-planscreen>
+  </section>
+
+  <!-- ============ 9. FAQ ============ -->
+  <section class="lp-section" aria-labelledby="lp-faq-title">
+    <div class="lp-shell lp-shell-narrow">
+      <header class="lp-head">
+        <p class="lp-kicker">Questions</p>
+        <h2 id="lp-faq-title">Before you sign up</h2>
+      </header>
+      <div class="lp-faq">
+        <div class="lp-faq-item" *ngFor="let f of faqs; let i = index" [class.is-open]="openFaq === i">
+          <h3>
+            <button type="button" class="lp-faq-q" (click)="toggleFaq(i)"
+                    [attr.aria-expanded]="openFaq === i" [attr.aria-controls]="'lp-faq-a-' + i"
+                    [id]="'lp-faq-q-' + i">
+              <span>{{ f.q }}</span>
+              <mat-icon aria-hidden="true">{{ openFaq === i ? 'remove' : 'add' }}</mat-icon>
+            </button>
+          </h3>
+          <div class="lp-faq-a" role="region" [id]="'lp-faq-a-' + i" [attr.aria-labelledby]="'lp-faq-q-' + i"
+               [hidden]="openFaq !== i">
+            <p>{{ f.a }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 10. CONTACT & OFFICE ============ -->
+  <section id="lp-contact" class="lp-section lp-section-tint" aria-labelledby="lp-contact-title">
+    <div class="lp-shell">
+      <header class="lp-head">
+        <p class="lp-kicker">Get in touch</p>
+        <h2 id="lp-contact-title">Tell us what you move</h2>
+      </header>
+      <app-contect-us></app-contect-us>
+    </div>
+  </section>
+
+  <!-- ============ 11. CLOSING CTA ============ -->
+  <section class="lp-cta" aria-labelledby="lp-cta-title">
+    <div class="lp-shell">
+      <h2 id="lp-cta-title">Put the paperwork on autopilot.</h2>
+      <p>Create your company, add a vehicle, raise your first quotation &mdash; today.</p>
+      <a routerLink="/signup" class="lp-btn lp-btn-primary">
+        Start Free Today
+        <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+      </a>
+    </div>
+  </section>
+
+</div>

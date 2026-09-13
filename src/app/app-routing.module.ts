@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './component/home/home.component';
+import { LandingComponent } from './component/landing/landing.component';
 import { LoginComponent } from './component/login/login.component';
 import { DashboardComponent } from './component/dashboard/dashboard.component';
 import { SignupComponent } from './component/signup/signup.component';
@@ -41,6 +42,7 @@ const routes: Routes = [
   { path: 'about', component: AboutComponent, pathMatch: 'full' },
   { path: 'contactus', component: ContectUsComponent, pathMatch: 'full' },
   { path: 'home', component: HomeComponent, pathMatch: 'full' },
+  { path: 'landing', component: LandingComponent, pathMatch: 'full' },
   { path: 'createrole', component: RoleComponent, pathMatch: 'full', canActivate: [AuthGuard, PermissionGuard], data: { module: 'ROLE', action: 'CREATE' } },
   { path: 'updaterole', component: UpdateroleComponent, pathMatch: 'full', canActivate: [AuthGuard, PermissionGuard], data: { module: 'ROLE', action: 'MODIFY' } },
   { path: 'roles', component: RolesDetailsComponent, pathMatch: 'full', canActivate: [AuthGuard, PermissionGuard], data: { module: 'ROLE', action: 'READ' } },
