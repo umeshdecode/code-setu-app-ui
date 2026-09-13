@@ -127,9 +127,11 @@
           <mat-form-field appearance="outline">
             <mat-label>Staff Type</mat-label>
             <mat-select formControlName="staffType">
-              <mat-option value="PERMANENT">PERMANENT</mat-option>
-              <mat-option value="CONTRACT">CONTRACT</mat-option>
+              <mat-option *ngFor="let type of staffTypeOptions" [value]="type.value">
+                {{ type.label }}
+              </mat-option>
             </mat-select>
+            <mat-error *ngIf="staffForm.get('staffType')?.hasError('required')">Staff type is required</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline">

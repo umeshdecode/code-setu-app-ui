@@ -42,6 +42,16 @@ export class StaffuserComponent implements OnInit {
 
   roles: any[] = [];
   departments: any[] = [];
+  /**
+   * The designations tblm_staff.staff_type actually holds (see the comment on
+   * Staff.java). SUPERADMIN is excluded — it is seeded once and never assignable here.
+   */
+  readonly staffTypeOptions = [
+    { value: 'COMPANY_ADMIN', label: 'Company Admin' },
+    { value: 'MANAGER', label: 'Manager' },
+    { value: 'DRIVER', label: 'Driver' },
+    { value: 'ACCOUNTANT', label: 'Accountant' }
+  ];
   mobileCountries: MobileCountry[] = MOBILE_COUNTRIES;
   constructor(
     private fb: FormBuilder,
@@ -119,7 +129,7 @@ export class StaffuserComponent implements OnInit {
       address: [''],
       pincode: [null, [Validators.pattern('^[0-9]{6}$')]],
       departmentId: [null],
-      staffType: ['STAFF', Validators.required],
+      staffType: ['', Validators.required],
       isActive: [true],
       dob: [null]
     });
@@ -169,7 +179,7 @@ export class StaffuserComponent implements OnInit {
       departmentId: ['', Validators.required],
       companyId: [null],
 
-      staffType: ['PERMANENT'],
+      staffType: ['', Validators.required],
       isActive: [true],
       salary: [null],
 
@@ -319,7 +329,6 @@ export class StaffuserComponent implements OnInit {
       this.staffForm.reset({
         mobileCode: '+91',
         country: 'India',
-        staffType: 'STAFF',
         isActive: true
       });
     }

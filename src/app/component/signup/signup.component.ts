@@ -64,7 +64,8 @@ export class SignupComponent implements OnInit, AfterViewInit {
       otherInfo: this.fb.group({
         mobileNumber: ['', [Validators.required, Validators.pattern(getMobilePattern(DEFAULT_MOBILE_CODE))]],
         mobileCode: [DEFAULT_MOBILE_CODE, Validators.required],
-        staffType: ['STAFF'],
+        // staffType is not user-editable here: the backend derives it as COMPANY_ADMIN
+        // for every self-signup, since that's the only role this flow ever creates.
         departmentId: [1],
         isActive: [true]
       }),
