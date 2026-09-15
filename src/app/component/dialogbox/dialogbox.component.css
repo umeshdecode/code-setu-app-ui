@@ -1,16 +1,22 @@
-/* Minimal rectangular dialog design with Staff Details reference */
+/* Minimal rectangular dialog design with Staff Details reference.
+   This app runs Angular Material 13's LEGACY dialog DOM (`.mat-dialog-container`),
+   not the MDC-based one — same legacy structure the snackbar styles account for. */
 
+::ng-deep .mat-dialog-container,
 ::ng-deep .mat-mdc-dialog-container {
   border-radius: 12px !important;
   overflow: visible !important;
   padding: 0 !important;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18) !important;
   max-height: none !important;
+  background: var(--app-surface) !important;
+  color: var(--app-text) !important;
 }
 
-::ng-deep .mdc-dialog__surface {
+::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
   border-radius: 12px !important;
   overflow: visible !important;
+  background: var(--app-surface) !important;
 }
 
 ::ng-deep .mat-mdc-dialog-container .mdc-dialog__content {
@@ -28,12 +34,12 @@
 .confirm-dialog h2 {
   margin: 0 0 12px;
   font-size: 20px;
-  color: #222;
+  color: var(--app-text);
 }
 
 .confirm-dialog p {
   margin: 0 0 24px;
-  color: #555;
+  color: var(--app-muted-text);
   line-height: 1.5;
 }
 
@@ -48,9 +54,9 @@
 }
 
 .btn-cancel {
-  background: #f3f4f6 !important;
-  color: #111827 !important;
-  border: none !important;
+  background: var(--app-surface-muted) !important;
+  color: var(--app-text) !important;
+  border: 1px solid var(--app-border) !important;
   padding: 0 18px !important;
   height: 42px !important;
   border-radius: 6px !important;
@@ -58,12 +64,10 @@
 }
 
 .btn-cancel:hover {
-  background: #e5e7eb !important;
+  background: var(--app-border) !important;
 }
 
-.btn-delete {
-  background: #ef4444 !important;
-  color: #ffffff !important;
+.btn-confirm {
   border: none !important;
   padding: 0 18px !important;
   height: 42px !important;
@@ -71,8 +75,22 @@
   font-weight: 600 !important;
 }
 
-.btn-delete:hover {
-  background: #dc2626 !important;
+.btn-confirm.btn-danger {
+  background: var(--app-error) !important;
+  color: #ffffff !important;
+}
+
+.btn-confirm.btn-danger:hover {
+  filter: brightness(0.9);
+}
+
+.btn-confirm.btn-primary {
+  background: var(--app-primary) !important;
+  color: var(--app-primary-contrast) !important;
+}
+
+.btn-confirm.btn-primary:hover {
+  background: var(--app-primary-hover) !important;
 }
 
 @media (max-width: 600px) {
@@ -89,4 +107,3 @@
     width: 100%;
   }
 }
-

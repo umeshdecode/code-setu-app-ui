@@ -6,6 +6,8 @@ export interface DialogBoxData {
   message?: string;
   confirmText?: string;
   cancelText?: string;
+  /** Confirm-button color. Defaults to 'danger' since most callers are delete confirmations. */
+  variant?: 'danger' | 'primary';
 }
 
 @Component({
@@ -28,6 +30,10 @@ export class DialogboxComponent {
 
   onCancel(): void {
     this.dialogRef.close(false);
+  }
+
+  get variant(): 'danger' | 'primary' {
+    return this.data.variant || 'danger';
   }
 
 }

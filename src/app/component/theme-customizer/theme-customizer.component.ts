@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { AppThemeSettings, ThemeService } from 'src/app/services/theme.service';
+import { AppThemeSettings, PALETTE_SWATCHES, ThemeService } from 'src/app/services/theme.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 @Component({
@@ -11,14 +11,8 @@ import { CommonModule } from '@angular/common';
 export class ThemeCustomizerComponent implements OnInit, OnDestroy {
   settings!: AppThemeSettings;
 
-  /** Read-only: the palette is fixed in styles.css and is not user-editable. */
-  readonly paletteSwatches = [
-    { label: 'Primary', hex: '#4663ac' },
-    { label: 'Surface tint', hex: '#e1f1fd' },
-    { label: 'Muted', hex: '#d2deeb' },
-    { label: 'Border', hex: '#c8d9ed' },
-    { label: 'Border strong', hex: '#c1d8f0' }
-  ];
+  /** The fixed "Web light blue" palette — clicking a swatch sets it as the app's accent. */
+  readonly paletteSwatches = PALETTE_SWATCHES;
 
   readonly fontOptions = [
     { label: 'Roboto', value: 'Roboto, "Helvetica Neue", sans-serif' },
@@ -44,6 +38,11 @@ export class ThemeCustomizerComponent implements OnInit, OnDestroy {
 
   updateTheme(): void {
     this.themeService.updateTheme(this.settings);
+  }
+
+  selectPrimary(hex: string): void {
+    this.settings.primaryColor = hex;
+    this.updateTheme();
   }
 
   resetTheme(): void {

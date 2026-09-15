@@ -392,7 +392,8 @@ export class AppComponent implements OnInit, OnDestroy {
         title: 'Choose a Plan',
         message: 'Pick a subscription plan to keep using all features.',
         confirmText: 'Buy a Plan',
-        cancelText: 'Maybe Later'
+        cancelText: 'Maybe Later',
+        variant: 'primary'
       }
     });
 

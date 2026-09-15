@@ -26,11 +26,16 @@
   </div>
 
   <div class="field-group">
-    <label>Palette</label>
+    <label>Accent colour</label>
     <div class="palette-strip">
-      <span class="swatch" *ngFor="let swatch of paletteSwatches"
-            [style.background]="swatch.hex"
-            [title]="swatch.label + ' · ' + swatch.hex"></span>
+      <button type="button" class="swatch" *ngFor="let swatch of paletteSwatches"
+              [class.active]="settings.primaryColor === swatch.hex"
+              [style.background]="swatch.hex"
+              [attr.aria-pressed]="settings.primaryColor === swatch.hex"
+              [title]="swatch.label + ' · ' + swatch.hex"
+              (click)="selectPrimary(swatch.hex)">
+        <mat-icon *ngIf="settings.primaryColor === swatch.hex">check</mat-icon>
+      </button>
     </div>
   </div>
 

@@ -358,7 +358,8 @@ export class SignupComponent implements OnInit, AfterViewInit {
         title: 'Create Your First Company',
         message: 'It looks like you do not have any company associated with your account. Would you like to create one now?',
         confirmText: 'Create Company',
-        cancelText: 'Skip'
+        cancelText: 'Skip',
+        variant: 'primary'
       }
     });
 

@@ -284,7 +284,8 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         title: 'Create Your First Company',
         message: 'It looks like you do not have any company associated with your account. Would you like to create one now?',
         confirmText: 'Create Company',
-        cancelText: 'Skip'
+        cancelText: 'Skip',
+        variant: 'primary'
       }
     });
 

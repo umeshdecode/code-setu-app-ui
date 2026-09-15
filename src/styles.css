@@ -11,17 +11,15 @@
    the tints form the surface ramp. Text and dark-mode shades are
    derived from it.
 
-   CSS owns the palette. ThemeService only toggles the theme class
-   and the font — it must never write colour vars onto :root, or
-   those inline styles would shadow everything below.
+   CSS owns the surface/status palette below. ThemeService toggles the theme
+   class + font, AND drives the primary and sidebar tokens directly as inline
+   styles (derived from the user's chosen accent swatch) — those five are
+   deliberately NOT declared here or in the .app-dark-theme block below: a
+   static value on body.app-dark-theme would win over an inline value set on
+   <html>, since custom-property inheritance resolves per-element, not by
+   inline-vs-stylesheet specificity. Leave them JS-only.
    ========================================================= */
 :root {
-  --app-primary: #4663ac;
-  --app-primary-hover: #3a5490;
-  --app-primary-contrast: #ffffff;
-  --app-primary-soft: #e1f1fd;
-  --app-primary-shadow: rgba(70, 99, 172, 0.28);
-
   --app-bg: #e1f1fd;
   --app-surface: #ffffff;
   --app-surface-muted: #d2deeb;
@@ -41,11 +39,8 @@
   --app-permission: #5b46ac;
   --app-permission-soft: #ebe8f7;
 
-  /* The sidebar is a large filled surface, so it gets its own token rather than
-     reusing --app-primary: in dark mode primary lightens for contrast on dark,
-     which would otherwise turn the whole sidebar into a bright blue slab. */
-  --app-sidebar-bg: #4663ac;
-  --app-sidebar-text: #ffffff;
+  /* --app-sidebar-active-* stays fixed regardless of the chosen accent — only
+     the sidebar's own fill/text (set by ThemeService) follows the swatch. */
   --app-sidebar-active-bg: #ffffff;
   --app-sidebar-active-text: #16233d;
 
@@ -68,12 +63,6 @@
    body would leave the page root showing the light background in dark mode. */
 :root.app-dark-theme,
 body.app-dark-theme {
-  --app-primary: #7d9ad8;
-  --app-primary-hover: #94aee2;
-  --app-primary-contrast: #0e1524;
-  --app-primary-soft: rgba(125, 154, 216, 0.16);
-  --app-primary-shadow: rgba(125, 154, 216, 0.35);
-
   --app-bg: #0e1524;
   --app-surface: #16203a;
   --app-surface-muted: #1e2b49;
@@ -93,10 +82,9 @@ body.app-dark-theme {
   --app-permission: #a78bfa;
   --app-permission-soft: rgba(167, 139, 250, 0.15);
 
-  /* Not --app-surface: the sidebar already sits at that value in dark mode,
-     so the active pill would be invisible against it. */
-  --app-sidebar-bg: #16203a;
-  --app-sidebar-text: #e1f1fd;
+  /* --app-sidebar-active-* stays fixed here too — not --app-surface, since the
+     sidebar's own (JS-derived) fill already sits close to that in dark mode,
+     and the active pill needs to stand out against whatever that fill is. */
   --app-sidebar-active-bg: #2b3a5e;
   --app-sidebar-active-text: #ffffff;
 }
