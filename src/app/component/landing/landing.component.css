@@ -185,65 +185,6 @@ body.app-dark-theme .lp-inline-link {
   overflow: hidden;
 }
 
-.lp-hero-art {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  color: rgba(255, 255, 255, 0.09);
-}
-
-.lp-hero-dots {
-  opacity: 0.9;
-}
-
-/* Scrim between the route art and the copy — the lines were crossing the
-   subhead and cutting its legibility. Fades out to the right so the artwork
-   still reads in the empty half. */
-.lp-hero::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    100deg,
-    rgba(11, 18, 32, 0.94) 0%,
-    rgba(11, 18, 32, 0.82) 38%,
-    rgba(11, 18, 32, 0.2) 68%,
-    rgba(11, 18, 32, 0) 100%
-  );
-  pointer-events: none;
-}
-
-/* Route lines draw themselves in, then hold. */
-.lp-route {
-  stroke-dasharray: 2200;
-  stroke-dashoffset: 2200;
-  animation: lp-draw 4.5s ease-out forwards;
-}
-
-.lp-route-b {
-  animation-delay: 0.6s;
-}
-
-@keyframes lp-draw {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-.lp-node {
-  fill: #2fbf87;
-  opacity: 0;
-  animation: lp-node-in 0.6s ease-out forwards;
-  animation-delay: 2.6s;
-}
-
-@keyframes lp-node-in {
-  to {
-    opacity: 1;
-  }
-}
-
 .lp-hero-inner {
   position: relative;
   z-index: 1;
@@ -354,11 +295,13 @@ body.app-dark-theme .lp-inline-link {
   background: var(--lp-surface);
   border: 1px solid var(--lp-border);
   border-radius: var(--lp-radius);
+  transform: perspective(900px) translateY(var(--lift, 0px))
+    rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .lp-card:hover {
-  transform: translateY(-4px);
+  --lift: -4px;
   border-color: #c8d9ed;
   box-shadow: 0 18px 40px rgba(11, 18, 32, 0.08);
 }
@@ -495,6 +438,8 @@ body.app-dark-theme .lp-inline-link {
   border-radius: 14px;
   box-shadow: 0 24px 60px rgba(11, 18, 32, 0.1);
   overflow: hidden;
+  transform: perspective(1100px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transition: transform 0.25s ease;
 }
 
 .lp-mock-bar {
@@ -946,15 +891,18 @@ body.app-dark-theme .lp-inline-link {
 
 /* ================= SCROLL REVEAL ================= */
 
+/* Uses the individual `translate` property, NOT `transform`: the pillar cards
+   are both reveal and tilt targets, and tilt owns `transform`. Two separate
+   properties compose automatically; two `transform` declarations would not. */
 .lp-reveal {
   opacity: 0;
-  transform: translateY(22px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  translate: 0 22px;
+  transition: opacity 0.7s ease, translate 0.7s ease;
 }
 
 .lp-reveal.is-visible {
   opacity: 1;
-  transform: none;
+  translate: none;
 }
 
 /* ================= RESPONSIVE ================= */
@@ -991,7 +939,9 @@ body.app-dark-theme .lp-inline-link {
 
   .lp-hero {
     min-height: auto;
-    padding: 92px 0 110px;
+    /* Extra bottom padding is the truck's lane — on a phone the copy stacks
+       and there is otherwise nowhere for it to sit but behind the CTAs. */
+    padding: 92px 0 230px;
   }
 
   .lp-hero-cta .lp-btn {
@@ -1019,6 +969,12 @@ body.app-dark-theme .lp-inline-link {
 
   .lp-trust-row {
     justify-content: flex-start;
+  }
+
+  /* Collides with the truck's lane, and a phone needs no hint that pages
+     scroll. */
+  .lp-scroll-cue {
+    display: none;
   }
 }
 
@@ -1055,5 +1011,6 @@ body.app-dark-theme .lp-inline-link {
   .lp-card:hover,
   .lp-industry:hover {
     transform: none;
+    --lift: 0px;
   }
 }

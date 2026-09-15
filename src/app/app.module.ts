@@ -30,6 +30,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { LoginComponent } from './component/login/login.component';
 import { HomeComponent } from './component/home/home.component';
 import { LandingComponent } from './component/landing/landing.component';
+import { HeroTruck3dComponent } from './component/hero-truck-3d/hero-truck-3d.component';
 import { NavBarComponent } from './component/nav-bar/nav-bar.component';
 import { DashboardComponent } from './component/dashboard/dashboard.component';
 import { SignupComponent } from './component/signup/signup.component';
@@ -166,6 +167,7 @@ import { HasPermissionDirective } from './directives/has-permission.directive';
     // Standalone components
     HomeComponent,
     LandingComponent,
+    HeroTruck3dComponent,
     DashboardComponent,
     AboutComponent,
     ContectUsComponent,

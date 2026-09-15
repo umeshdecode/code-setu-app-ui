@@ -5,6 +5,9 @@
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
+    // Required before three.js: its transitive typings (lil-gui, tween.js,
+    // fflate) are authored against newer TypeScript than the 4.7 pinned here.
+    "skipLibCheck": true,
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,

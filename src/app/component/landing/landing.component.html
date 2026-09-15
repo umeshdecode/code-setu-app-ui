@@ -2,35 +2,7 @@
 
   <!-- ============ 1. HERO ============ -->
   <section class="lp-hero" aria-labelledby="lp-hero-title">
-    <svg class="lp-hero-art" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <defs>
-        <pattern id="lpDots" width="28" height="28" patternUnits="userSpaceOnUse">
-          <circle cx="1.5" cy="1.5" r="1.5" fill="currentColor" />
-        </pattern>
-        <linearGradient id="lpRouteA" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="#4663ac" stop-opacity="0" />
-          <stop offset="45%" stop-color="#6f8fd8" stop-opacity="1" />
-          <stop offset="100%" stop-color="#2fbf87" stop-opacity="0.9" />
-        </linearGradient>
-        <linearGradient id="lpRouteB" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="#2fbf87" stop-opacity="0" />
-          <stop offset="60%" stop-color="#4663ac" stop-opacity="0.8" />
-          <stop offset="100%" stop-color="#8fa9e0" stop-opacity="0.6" />
-        </linearGradient>
-      </defs>
-
-      <rect width="1200" height="700" fill="url(#lpDots)" class="lp-hero-dots" />
-
-      <path class="lp-route lp-route-a" d="M-40 520 C 220 520, 260 300, 470 300 S 760 470, 900 380 S 1130 150, 1260 170"
-            fill="none" stroke="url(#lpRouteA)" stroke-width="2.5" stroke-linecap="round" />
-      <path class="lp-route lp-route-b" d="M-40 250 C 180 250, 300 120, 520 160 S 820 320, 1000 250 S 1180 190, 1260 220"
-            fill="none" stroke="url(#lpRouteB)" stroke-width="2" stroke-linecap="round" />
-
-      <circle class="lp-node" cx="470" cy="300" r="5" />
-      <circle class="lp-node" cx="900" cy="380" r="5" />
-      <circle class="lp-node" cx="520" cy="160" r="4" />
-      <circle class="lp-node" cx="1000" cy="250" r="4" />
-    </svg>
+    <app-hero-truck-3d></app-hero-truck-3d>
 
     <div class="lp-shell lp-hero-inner">
       <p class="lp-eyebrow">Transport &amp; Logistics Software</p>
@@ -74,7 +46,7 @@
         <h2 id="lp-pillars-title">Three jobs, one system of record</h2>
       </header>
 
-      <div class="lp-pillars">
+      <div class="lp-pillars" appTilt3d=".lp-card">
         <article class="lp-card lp-reveal" appScrollReveal *ngFor="let p of pillars; let i = index"
                  [style.transition-delay.ms]="i * 110">
           <mat-icon class="lp-card-icon" aria-hidden="true">{{ p.icon }}</mat-icon>
@@ -127,7 +99,7 @@
             <li><mat-icon aria-hidden="true">check</mat-icon> Vehicle and driver assignment in one step</li>
           </ul>
         </div>
-        <div class="lp-row-art" aria-hidden="true">
+        <div class="lp-row-art" aria-hidden="true" appTilt3d=".lp-mock">
           <div class="lp-mock">
             <div class="lp-mock-bar"><span></span><span></span><span></span></div>
             <div class="lp-mock-body">
@@ -161,7 +133,7 @@
             <li><mat-icon aria-hidden="true">check</mat-icon> One-tap PDF share to customers</li>
           </ul>
         </div>
-        <div class="lp-row-art" aria-hidden="true">
+        <div class="lp-row-art" aria-hidden="true" appTilt3d=".lp-mock">
           <div class="lp-mock">
             <div class="lp-mock-bar"><span></span><span></span><span></span></div>
             <div class="lp-mock-body">
@@ -199,7 +171,7 @@
             <li><mat-icon aria-hidden="true">check</mat-icon> Departments and staff hierarchy</li>
           </ul>
         </div>
-        <div class="lp-row-art" aria-hidden="true">
+        <div class="lp-row-art" aria-hidden="true" appTilt3d=".lp-mock">
           <div class="lp-mock">
             <div class="lp-mock-bar"><span></span><span></span><span></span></div>
             <div class="lp-mock-body">
@@ -229,7 +201,7 @@
             <li><mat-icon aria-hidden="true">check</mat-icon> Shareable trip progress</li>
           </ul>
         </div>
-        <div class="lp-row-art" aria-hidden="true">
+        <div class="lp-row-art" aria-hidden="true" appTilt3d=".lp-mock">
           <div class="lp-mock lp-mock-map">
             <div class="lp-mock-bar"><span></span><span></span><span></span></div>
             <div class="lp-mock-body">

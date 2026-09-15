@@ -6,7 +6,9 @@ import { MatButtonModule } from '@angular/material/button';
 
 import { PlanscreenComponent } from '../planscreen/planscreen.component';
 import { ContectUsComponent } from '../contect-us/contect-us.component';
+import { HeroTruck3dComponent } from '../hero-truck-3d/hero-truck-3d.component';
 import { ScrollRevealDirective } from 'src/app/directives/scroll-reveal.directive';
+import { Tilt3dDirective } from 'src/app/directives/tilt-3d.directive';
 
 interface Pillar {
   icon: string;
@@ -47,7 +49,9 @@ interface Faq {
     MatButtonModule,
     PlanscreenComponent,
     ContectUsComponent,
+    HeroTruck3dComponent,
     ScrollRevealDirective,
+    Tilt3dDirective,
   ],
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.css'],

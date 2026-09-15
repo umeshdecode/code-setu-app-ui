@@ -11,7 +11,8 @@
           "/index.html",
           "/manifest.webmanifest",
           "/*.css",
-          "/*.js"
+          "/*.js",
+          "!/three-scene.*.js"
         ]
       }
     },
@@ -30,7 +31,9 @@
   "dataGroups": [
     {
       "name": "api-freshness",
-      "urls": ["/api/**"],
+      "urls": [
+        "/api/**"
+      ],
       "cacheConfig": {
         "strategy": "freshness",
         "maxSize": 100,
