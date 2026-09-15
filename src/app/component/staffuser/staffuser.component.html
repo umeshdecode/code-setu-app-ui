@@ -60,7 +60,8 @@
 
             <mat-form-field appearance="outline" class="mobile-number-field">
               <mat-label>Mobile Number</mat-label>
-              <input matInput formControlName="mobileNumber" (input)="onMobileInput($event)" [maxLength]="mobileDigits">
+              <input matInput type="tel" inputmode="numeric" formControlName="mobileNumber"
+                     [placeholder]="mobilePlaceholder" (input)="onMobileInput($event)" [maxLength]="mobileDigits">
               <mat-error *ngIf="staffForm.get('mobileNumber')?.hasError('required')">Mobile number is required</mat-error>
               <mat-error *ngIf="staffForm.get('mobileNumber')?.hasError('pattern')">Mobile number must be {{ mobileDigits }} digits</mat-error>
             </mat-form-field>
@@ -82,7 +83,12 @@
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>City</mat-label>
-            <input matInput formControlName="city">
+            <input matInput formControlName="city" [matAutocomplete]="cityAuto" autocomplete="off">
+            <mat-autocomplete #cityAuto="matAutocomplete" (optionSelected)="selectCity($event.option.value)">
+              <mat-option *ngFor="let place of citySuggestions" [value]="place.name">
+                {{ place.name }}<span *ngIf="place.state">, {{ place.state }}</span>
+              </mat-option>
+            </mat-autocomplete>
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>State</mat-label>
@@ -121,9 +127,11 @@
           <mat-form-field appearance="outline">
             <mat-label>Staff Type</mat-label>
             <mat-select formControlName="staffType">
-              <mat-option value="PERMANENT">PERMANENT</mat-option>
-              <mat-option value="CONTRACT">CONTRACT</mat-option>
+              <mat-option *ngFor="let type of staffTypeOptions" [value]="type.value">
+                {{ type.label }}
+              </mat-option>
             </mat-select>
+            <mat-error *ngIf="staffForm.get('staffType')?.hasError('required')">Staff type is required</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline">

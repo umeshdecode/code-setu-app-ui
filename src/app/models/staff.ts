@@ -31,7 +31,7 @@ export class Staff {
   pincode!: number;
 
   departmentId!: number;
-  staffType!: 'ADMIN' | 'STAFF' | 'DRIVER';
+  staffType!: 'SUPERADMIN' | 'COMPANY_ADMIN' | 'MANAGER' | 'DRIVER' | 'ACCOUNTANT';
   isActive!: boolean;
   dob!: Date;
 }

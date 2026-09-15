@@ -73,15 +73,15 @@
           <label>Mobile Number <span class="required">*</span></label>
           <div class="mobile-input-group">
             <select class="form-input code-select" formControlName="mobileCode">
-              <option *ngFor="let c of countryCodes" [value]="c.code">{{c.code}} ({{c.name}})</option>
+              <option *ngFor="let c of countryCodes" [value]="c.code">{{ c.flag }} {{ c.code }}</option>
             </select>
             <div class="input-wrapper">
               <i class="fas fa-phone input-icon"></i>
-              <input type="tel" class="form-input" formControlName="mobileNumber" placeholder="9876543210"
-                (input)="restrictMobileNumber($event)" maxlength="10">
+              <input type="tel" class="form-input" formControlName="mobileNumber" [placeholder]="mobilePlaceholder"
+                (input)="restrictMobileNumber($event)" [maxLength]="mobileDigits" inputmode="numeric">
             </div>
           </div>
-          <small class="error-msg" *ngIf="isInvalid('otherInfo', 'mobileNumber')">10-digit mobile number
+          <small class="error-msg" *ngIf="isInvalid('otherInfo', 'mobileNumber')">{{ mobileDigits }}-digit mobile number
             required</small>
         </div>
       </div>
@@ -95,8 +95,8 @@
               autocomplete="off">
             <div class="autocomplete-results" *ngIf="citySuggestions.length > 0">
               <div class="autocomplete-item" *ngFor="let city of citySuggestions" (click)="selectCity(city)">
-                <strong>{{city.properties.name}}</strong>
-                <small>{{city.properties.state}}, {{city.properties.country}}</small>
+                <strong>{{city.name}}</strong>
+                <small>{{city.state}}, {{city.country}}</small>
               </div>
             </div>
           </div>

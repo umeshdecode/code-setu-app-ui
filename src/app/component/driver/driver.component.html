@@ -63,12 +63,16 @@
           <label>Phone Number *</label>
           <div class="mobile-split-group">
             <select class="code-select" formControlName="phoneCode">
-              <option *ngFor="let c of countryCodes" [value]="c.code">
-                {{c.cca2 ? c.cca2 + ' (' + c.code + ')' : c.code + ' (' + c.name + ')'}}
-              </option>
+              <option *ngFor="let c of countryCodes" [value]="c.code">{{ c.flag }} {{ c.code }}</option>
             </select>
-            <input formControlName="phoneNumber" placeholder="Phone Number">
+            <input formControlName="phoneNumber" type="tel" inputmode="numeric"
+              [placeholder]="phonePlaceholder" [maxLength]="phoneDigits" (input)="onPhoneInput($event)">
           </div>
+          <span class="validation-error"
+            *ngIf="driverForm.get('phoneNumber')?.invalid && driverForm.get('phoneNumber')?.touched">
+            <span *ngIf="driverForm.get('phoneNumber')?.errors?.['required']">Phone number is required</span>
+            <span *ngIf="driverForm.get('phoneNumber')?.errors?.['pattern']">Phone number must be {{ phoneDigits }} digits</span>
+          </span>
         </div>
         <div class="form-group">
           <label>Email *</label>

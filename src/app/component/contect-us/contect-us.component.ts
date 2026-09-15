@@ -7,8 +7,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
-import { HttpClient } from '@angular/common/http';
 import { InquiryService } from 'src/app/services/inquiry.service';
+import { MOBILE_COUNTRIES, MobileCountry, DEFAULT_MOBILE_CODE, getMobileDigits, getMobilePattern, sanitizeMobileNumber } from 'src/app/models/mobile-codes';
 import { ShowpopupService } from 'src/app/services/showpopup.service';
 
 @Component({
@@ -30,54 +30,53 @@ import { ShowpopupService } from 'src/app/services/showpopup.service';
 export class ContectUsComponent implements OnInit {
   contact = {
     fullName: '',
-    mobileCode: '+91',
+    mobileCode: DEFAULT_MOBILE_CODE,
     mobilenumber: '',
     email: '',
     message: ''
   };
 
-  countryCodes: any[] = [
-    { name: 'India', code: '+91', cca2: 'IN' },
-    { name: 'USA', code: '+1', cca2: 'US' },
-    { name: 'UK', code: '+44', cca2: 'GB' },
-    { name: 'UAE', code: '+971', cca2: 'AE' }
-  ];
+  countryCodes: MobileCountry[] = MOBILE_COUNTRIES;
 
   constructor(
     private inquiryService: InquiryService,
-    private showPopup: ShowpopupService,
-    private http: HttpClient
+    private showPopup: ShowpopupService
   ) { }
 
-  ngOnInit(): void {
-    this.loadCountryCodes();
+  ngOnInit(): void { }
+
+  get mobileDigits(): number {
+    return getMobileDigits(this.contact.mobileCode);
   }
 
-  loadCountryCodes(): void {
-    this.http.get<any[]>('https://restcountries.com/v3.1/all?fields=name,idd,cca2').subscribe({
-      next: (countries) => {
-        if (Array.isArray(countries)) {
-          this.countryCodes = countries
-            .map(c => {
-              const root = c.idd?.root || '';
-              const suffix = c.idd?.suffixes?.[0] || '';
-              return {
-                name: c.name?.common || '',
-                code: root + suffix,
-                cca2: c.cca2 || ''
-              };
-            })
-            .filter(c => c.name && c.code)
-            .sort((a, b) => a.name.localeCompare(b.name));
-        }
-      },
-      error: (err) => {
-        console.error("Error loading country codes:", err);
-      }
-    });
+  get mobilePlaceholder(): string {
+    return '0'.repeat(this.mobileDigits);
+  }
+
+  get isMobileValid(): boolean {
+    return getMobilePattern(this.contact.mobileCode).test(this.contact.mobilenumber || '');
+  }
+
+  /** Re-trims the typed number when the country code changes. */
+  onMobileCodeChange(): void {
+    this.contact.mobilenumber = sanitizeMobileNumber(this.contact.mobilenumber, this.contact.mobileCode);
+  }
+
+  onMobileInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digits = sanitizeMobileNumber(input.value, this.contact.mobileCode);
+    if (input.value !== digits) {
+      input.value = digits;
+    }
+    this.contact.mobilenumber = digits;
   }
 
   sendMessage(): void {
+    if (!this.isMobileValid) {
+      this.showPopup.showError(`Mobile number must be ${this.mobileDigits} digits for ${this.contact.mobileCode}`);
+      return;
+    }
+
     const payload = {
       name: this.contact.fullName,
       email: this.contact.email,
@@ -94,7 +93,7 @@ export class ContectUsComponent implements OnInit {
         // Reset the form
         this.contact = {
           fullName: '',
-          mobileCode: '+91',
+          mobileCode: DEFAULT_MOBILE_CODE,
           mobilenumber: '',
           email: '',
           message: ''

@@ -51,3 +51,11 @@
 }
 
 
+
+.validation-error {
+  color: #e53e3e;
+  font-size: 0.78rem;
+  margin-top: 4px;
+  display: block;
+  line-height: 1.3;
+}

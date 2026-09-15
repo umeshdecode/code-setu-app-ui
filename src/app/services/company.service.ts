@@ -87,6 +87,11 @@ export class CompanyService {
     return this.http.put<any>(this.BASE_URL, payload);
   }
 
+  // Record which plan the company selected (no payment processing — see PlanSelectionComponent)
+  selectPlan(companyId: number, planId: number): Observable<any> {
+    return this.http.put<any>(`${this.BASE_URL}/${companyId}/plan`, { planId });
+  }
+
   // Get By Id
   getCompanyById(id: number): Observable<any> {
     return this.http.get<any>(`${this.BASE_URL}/${id}`);

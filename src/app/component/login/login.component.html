@@ -54,16 +54,18 @@
           <div class="mobile-field-container">
             <mat-form-field appearance="outline" class="mobile-code-field">
               <mat-label>Code</mat-label>
-              <mat-select [(ngModel)]="otp.mobileCode" name="mobileCode">
+              <mat-select [(ngModel)]="otp.mobileCode" name="mobileCode" (selectionChange)="onMobileCodeChange()">
                 <mat-option *ngFor="let c of countryCodes" [value]="c.code">
-                  {{c.cca2 ? c.cca2 + ' (' + c.code + ')' : c.code + ' (' + c.name + ')'}}
+                  {{ c.flag }} {{ c.code }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="mobile-number-field">
               <mat-label>Mobile Number</mat-label>
-              <input matInput type="tel" [(ngModel)]="otp.mobile" name="mobile" required>
+              <input matInput type="tel" [(ngModel)]="otp.mobile" name="mobile" required
+                [placeholder]="mobilePlaceholder" (input)="onMobileInput($event)"
+                [maxLength]="mobileDigits" inputmode="numeric">
             </mat-form-field>
           </div>
 

@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { RoleserviceService } from 'src/app/services/role/roleservice.service';
 import { DialogboxComponent } from '../dialogbox/dialogbox.component';
+import { ShowpopupService } from 'src/app/services/showpopup.service';
 
 @Component({
   selector: 'app-permission',
@@ -29,7 +29,7 @@ export class PermissionComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private roleService: RoleserviceService,
-    private snackBar: MatSnackBar,
+    private showPopup: ShowpopupService,
     private dialog: MatDialog
   ) {}
 
@@ -120,13 +120,19 @@ export class PermissionComponent implements OnInit {
     request.subscribe({
       next: (res: any) => {
         this.isSaving = false;
-        this.showMessage(res?.responseMessege || (this.selectedId ? 'Permission updated' : 'Permission created'));
-        this.resetForm();
-        this.loadPermissions(wasEdit ? this.pageIndex : 0, this.pageSize);
+        const message = res?.responseMessege || res?.responseMessage
+          || (this.selectedId ? 'Permission updated' : 'Permission created');
+        this.showPopup.showResponsePopup(message, res?.responseCode);
+        // The backend answers HTTP 200 even on failure (e.g. a duplicate code
+        // is a 409 embedded in the body) — only reset/reload on a real success code.
+        if (res?.responseCode === 200 || res?.responseCode === 201) {
+          this.resetForm();
+          this.loadPermissions(wasEdit ? this.pageIndex : 0, this.pageSize);
+        }
       },
-      error: () => {
+      error: (err: any) => {
         this.isSaving = false;
-        this.showMessage('Permission save failed');
+        this.showPopup.showApiError(err, 'Permission save failed');
       }
     });
   }
@@ -165,14 +171,16 @@ export class PermissionComponent implements OnInit {
 
       this.roleService.deletePermission(id).subscribe({
         next: (res: any) => {
-          this.showMessage(res?.responseMessege || 'Permission deleted');
+          const message = res?.responseMessege || res?.responseMessage || 'Permission deleted';
+          this.showPopup.showResponsePopup(message, res?.responseCode);
+          if (res?.responseCode !== 200 && res?.responseCode !== 201) return;
           if (this.selectedId === id) {
             this.resetForm();
           }
           const nextPageIndex = this.permissions.length === 1 && this.pageIndex > 0 ? this.pageIndex - 1 : this.pageIndex;
           this.loadPermissions(nextPageIndex, this.pageSize);
         },
-        error: () => this.showMessage('Permission delete failed')
+        error: (err: any) => this.showPopup.showApiError(err, 'Permission delete failed')
       });
     });
   }
@@ -212,10 +220,6 @@ export class PermissionComponent implements OnInit {
       code: raw.code,
       description: raw.description
     };
-  }
-
-  private showMessage(message: string): void {
-    this.snackBar.open(String(message), 'Close', { duration: 3000 });
   }
 
   private readNumber(value: any, fallback: number): number {

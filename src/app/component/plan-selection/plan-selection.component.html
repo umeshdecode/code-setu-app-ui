@@ -1,0 +1,70 @@
+<div class="pricing-wrapper">
+  <div class="pricing-header">
+    <h1>Your Company Is Ready</h1>
+    <p>Choose a plan for your company — or skip this for now and pick one later</p>
+  </div>
+
+  <div class="container">
+    <div class="loading-state" *ngIf="isLoading">
+      <p>Loading plans...</p>
+    </div>
+
+    <div class="row" *ngIf="!isLoading">
+      <div class="col" *ngFor="let plan of plans">
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">{{ plan.name }}</span>
+            <p class="price-large">
+              {{ plan.price }}
+              <span class="price-duration">/ {{ plan.duration }}</span>
+            </p>
+            <div class="divider"></div>
+            <ul class="feature-list">
+              <li *ngFor="let feature of plan.features">
+                <i class="material-icons">check_circle</i> {{ feature }}
+              </li>
+            </ul>
+          </div>
+          <div class="card-action">
+            <button type="button" class="btn subscribe-button" (click)="openConfirmModal(plan)">
+              {{ plan.buttonText }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <p class="empty-state" *ngIf="plans.length === 0">No plans are available right now.</p>
+    </div>
+
+    <div class="skip-action">
+      <button type="button" class="skip-link" (click)="skipForNow()">Skip for now</button>
+    </div>
+  </div>
+</div>
+
+<!-- Plan confirmation modal — blurred background overlay -->
+<div class="modal" *ngIf="isConfirmModalVisible && selectedPlan" (click)="closeConfirmModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <span class="close" (click)="closeConfirmModal()">&times;</span>
+
+    <h2>
+      Confirm Plan
+      <span class="plan-badge">{{ selectedPlan.name }}</span>
+    </h2>
+
+    <div class="confirm-body">
+      <div class="detail-row">
+        <span>Plan Price</span>
+        <span class="amount">₹{{ selectedPlan.price }} / {{ selectedPlan.duration }}</span>
+      </div>
+
+      <p class="info-text">
+        This plan will be linked to your company. Payment setup can be completed later.
+      </p>
+    </div>
+
+    <button type="button" class="next-button" [disabled]="isConfirming" (click)="confirmSelection()">
+      {{ isConfirming ? 'Selecting...' : 'Confirm Selection' }}
+    </button>
+  </div>
+</div>

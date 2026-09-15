@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { LoaderComponent } from '../loader/loader.component';
 import { DriverPayload, DriverService } from 'src/app/services/driver.service';
+import { MOBILE_COUNTRIES, MobileCountry, DEFAULT_MOBILE_CODE, getMobileDigits, getMobilePattern, sanitizeMobileNumber } from 'src/app/models/mobile-codes';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { DialogboxComponent } from '../dialogbox/dialogbox.component';
 
@@ -29,22 +29,15 @@ export class DriverComponent implements OnInit {
   error = '';
   showForm = true;
 
-  countryCodes: any[] = [
-    { name: 'India', code: '+91', cca2: 'IN' },
-    { name: 'USA', code: '+1', cca2: 'US' },
-    { name: 'UK', code: '+44', cca2: 'GB' },
-    { name: 'UAE', code: '+971', cca2: 'AE' }
-  ];
+  countryCodes: MobileCountry[] = MOBILE_COUNTRIES;
 
   constructor(
     private fb: FormBuilder,
     private driverService: DriverService,
-    private dialog: MatDialog,
-    private http: HttpClient
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
-    this.loadCountryCodes();
     this.initForm();
     this.loadDrivers();
   }
@@ -71,12 +64,11 @@ export class DriverComponent implements OnInit {
 
   initForm(): void {
     const codePattern = '^\\+\\d{1,4}$';
-    const numberPattern = '^\\d{10}$';
 
     this.driverForm = this.fb.group({
       name: ['', Validators.required],
-      phoneCode: ['+91', [Validators.required, Validators.pattern(codePattern)]],
-      phoneNumber: ['', [Validators.required, Validators.pattern(numberPattern)]],
+      phoneCode: [DEFAULT_MOBILE_CODE, [Validators.required, Validators.pattern(codePattern)]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(getMobilePattern(DEFAULT_MOBILE_CODE))]],
       email: ['', [Validators.required, Validators.email]],
       licenseNumber: ['', Validators.required],
       licenseExpiryDate: ['', Validators.required],
@@ -85,6 +77,40 @@ export class DriverComponent implements OnInit {
       status: ['AVAILABLE', Validators.required],
       joiningDate: [new Date().toISOString().slice(0, 10), Validators.required]
     });
+
+    // Keep the phone-number length rule in sync with the selected country code.
+    this.driverForm.get('phoneCode')?.valueChanges.subscribe(() => {
+      this.refreshPhoneValidators();
+      const phone = this.driverForm.get('phoneNumber');
+      phone?.setValue(sanitizeMobileNumber(phone.value, this.driverForm.get('phoneCode')?.value), { emitEvent: false });
+    });
+  }
+
+  get phoneDigits(): number {
+    return getMobileDigits(this.driverForm?.get('phoneCode')?.value);
+  }
+
+  get phonePlaceholder(): string {
+    return '0'.repeat(this.phoneDigits);
+  }
+
+  private refreshPhoneValidators(): void {
+    const phone = this.driverForm?.get('phoneNumber');
+    if (!phone) return;
+    phone.setValidators([
+      Validators.required,
+      Validators.pattern(getMobilePattern(this.driverForm.get('phoneCode')?.value))
+    ]);
+    phone.updateValueAndValidity({ emitEvent: false });
+  }
+
+  onPhoneInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digits = sanitizeMobileNumber(input.value, this.driverForm?.get('phoneCode')?.value);
+    if (input.value !== digits) {
+      input.value = digits;
+      this.driverForm.get('phoneNumber')?.setValue(digits);
+    }
   }
 
   loadDrivers(): void {
@@ -195,7 +221,7 @@ export class DriverComponent implements OnInit {
 
   reset(): void {
     this.driverForm.reset({
-      phoneCode: '+91',
+      phoneCode: DEFAULT_MOBILE_CODE,
       experienceYears: 0,
       status: 'AVAILABLE',
       joiningDate: new Date().toISOString().slice(0, 10)
@@ -222,30 +248,6 @@ export class DriverComponent implements OnInit {
 
   private getApiError(error: any, fallback: string): string {
     return error?.error?.responseMessege || error?.error?.message || error?.message || fallback;
-  }
-
-  loadCountryCodes() {
-    this.http.get<any[]>('https://restcountries.com/v3.1/all?fields=name,idd,cca2').subscribe({
-      next: (countries) => {
-        if (Array.isArray(countries)) {
-          this.countryCodes = countries
-            .map(c => {
-              const root = c.idd?.root || '';
-              const suffix = c.idd?.suffixes?.[0] || '';
-              return {
-                name: c.name?.common || '',
-                code: root + suffix,
-                cca2: c.cca2 || ''
-              };
-            })
-            .filter(c => c.name && c.code)
-            .sort((a, b) => a.name.localeCompare(b.name));
-        }
-      },
-      error: (err) => {
-        console.error('Failed to load country codes', err);
-      }
-    });
   }
 
   parsePhoneNumber(fullNo: string): { code: string, number: string } {

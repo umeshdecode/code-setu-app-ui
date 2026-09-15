@@ -1,10 +1,13 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { HttpClient } from '@angular/common/http';
 import { CompanyService } from 'src/app/services/company.service';
 import { ShowpopupService } from 'src/app/services/showpopup.service';
 import { LoginService } from 'src/app/services/login.service';
+import { MOBILE_COUNTRIES, MobileCountry, DEFAULT_MOBILE_CODE, getMobileDigits, getMobilePattern, sanitizeMobileNumber } from 'src/app/models/mobile-codes';
+import { debounceTime, distinctUntilChanged, filter, switchMap } from 'rxjs/operators';
+import { PlaceLookupService, PlaceSuggestion } from 'src/app/services/place-lookup.service';
 
 @Component({
   selector: 'app-company',
@@ -19,6 +22,10 @@ export class CompanyComponent implements OnInit {
 
   companyList: any[] = [];
   assetTypes: string[] = ['LOGO', 'SEAL/Signature', 'STAMP'];
+  /** Pre-selected asset type so the field is never left empty. */
+  readonly defaultAssetType = 'LOGO';
+  /** Backend message for a pending deletion request; null hides the notice. */
+  deletionNotice: string | null = null;
   companyForm!: FormGroup;
 
   showForm = false;
@@ -28,31 +35,30 @@ export class CompanyComponent implements OnInit {
   selectedAssetFileName = '';
   addedAssets: { assetType: string; file: File; fileName: string }[] = [];
 
-  countryCodes: any[] = [
-    { name: 'India', code: '+91', cca2: 'IN' },
-    { name: 'USA', code: '+1', cca2: 'US' },
-    { name: 'UK', code: '+44', cca2: 'GB' },
-    { name: 'UAE', code: '+971', cca2: 'AE' }
-  ];
+  countryCodes: MobileCountry[] = MOBILE_COUNTRIES;
+
+  /** Phone fields that carry their own country code (`<field>Code` + `<field>Number`). */
+  readonly phoneFields = ['whatsapp', 'contactNo1', 'contactNo2'];
+  citySuggestions: PlaceSuggestion[] = [];
 
   constructor(
     private fb: FormBuilder,
     private companyService: CompanyService,
     private shoepopup: ShowpopupService,
     private dialog: MatDialog,
-    private http: HttpClient,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private placeLookup: PlaceLookupService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
-    this.loadCountryCodes();
     this.buildForm();
     this.loadCompanies();
   }
 
   buildForm() {
     const codePattern = '^\\+?\\d{1,4}$';
-    const numberPattern = '^[0-9]{7,15}$';
+    const defaultNumberPattern = getMobilePattern(DEFAULT_MOBILE_CODE);
     const panPattern = '^[a-zA-Z]{5}[0-9]{4}[a-zA-Z]{1}$';
     const gstPattern = '^[0-9]{2}[a-zA-Z]{5}[0-9]{4}[a-zA-Z]{1}[1-9a-zA-Z]{1}[zZ][0-9a-zA-Z]{1}$';
 
@@ -60,12 +66,12 @@ export class CompanyComponent implements OnInit {
       companyId: [null],
       companyName: ['', Validators.required],
       companyEmail: ['', [Validators.required, Validators.email]],
-      whatsappCode: ['+91', [Validators.pattern(codePattern)]],
-      whatsappNumber: ['', [Validators.pattern(numberPattern)]],
-      contactNo1Code: ['+91', [Validators.required, Validators.pattern(codePattern)]],
-      contactNo1Number: ['', [Validators.required, Validators.pattern(numberPattern)]],
-      contactNo2Code: ['+91', [Validators.pattern(codePattern)]],
-      contactNo2Number: ['', [Validators.pattern(numberPattern)]],
+      whatsappCode: [DEFAULT_MOBILE_CODE, [Validators.pattern(codePattern)]],
+      whatsappNumber: ['', [Validators.pattern(defaultNumberPattern)]],
+      contactNo1Code: [DEFAULT_MOBILE_CODE, [Validators.required, Validators.pattern(codePattern)]],
+      contactNo1Number: ['', [Validators.required, Validators.pattern(defaultNumberPattern)]],
+      contactNo2Code: [DEFAULT_MOBILE_CODE, [Validators.pattern(codePattern)]],
+      contactNo2Number: ['', [Validators.pattern(defaultNumberPattern)]],
       landlineNo: [''],
       tollFreeNumber: [''],
       panNumber: ['', [Validators.pattern(panPattern)]],
@@ -74,14 +80,30 @@ export class CompanyComponent implements OnInit {
       country: ['India'],
       state: [''],
       city: [''],
-      branch: [''],
-      mainBranch: [''],
       website: [''],
       isActive: [true],
-      assetType: [''],
+      assetType: [this.defaultAssetType],
       assetFile: [null]
     });
 
+    // Each country code drives the digit count of its own number field.
+    this.phoneFields.forEach(field => {
+      this.companyForm.get(`${field}Code`)?.valueChanges.subscribe(() => {
+        this.refreshPhoneValidators(field);
+        const numberControl = this.companyForm.get(`${field}Number`);
+        numberControl?.setValue(sanitizeMobileNumber(numberControl.value, this.codeOf(field)), { emitEvent: false });
+      });
+    });
+
+    // Server-driven city lookup — no hardcoded city list.
+    this.companyForm.get('city')?.valueChanges.pipe(
+      debounceTime(400),
+      distinctUntilChanged(),
+      filter(val => typeof val === 'string'),
+      switchMap(val => this.placeLookup.searchCities(val))
+    ).subscribe(suggestions => {
+      this.citySuggestions = suggestions;
+    });
     this.companyForm.get('whatsappNumber')?.valueChanges.subscribe(() => {
       if (this.sameAs1Checkbox?.nativeElement) this.sameAs1Checkbox.nativeElement.checked = false;
       if (this.sameAs2Checkbox?.nativeElement) this.sameAs2Checkbox.nativeElement.checked = false;
@@ -129,21 +151,23 @@ export class CompanyComponent implements OnInit {
   openCreateForm() {
     this.showForm = true;
     this.isEditMode = false;
+    this.clearAssetFile();
+    this.addedAssets = [];
     this.companyForm.reset();
     this.companyForm.patchValue({
       country: 'India',
-      whatsappCode: '+91',
-      contactNo1Code: '+91',
-      contactNo2Code: '+91',
-      isActive: true
+      whatsappCode: DEFAULT_MOBILE_CODE,
+      contactNo1Code: DEFAULT_MOBILE_CODE,
+      contactNo2Code: DEFAULT_MOBILE_CODE,
+      isActive: true,
+      assetType: this.nextAssetType()
     });
-    this.clearAssetFile();
-    this.addedAssets = [];
   }
 
   cancelForm() {
     this.showForm = false;
     this.companyForm.reset();
+    this.companyForm.patchValue({ assetType: this.defaultAssetType });
     this.clearAssetFile();
     this.addedAssets = [];
     if (this.sameAs1Checkbox?.nativeElement) this.sameAs1Checkbox.nativeElement.checked = false;
@@ -170,7 +194,10 @@ export class CompanyComponent implements OnInit {
 
           this.cancelForm();
         },
-        error: err => console.error(err)
+        error: err => {
+          console.error(err);
+          this.shoepopup.showApiError(err, 'Failed to update the company.');
+        }
       });
 
     } else {
@@ -185,8 +212,20 @@ export class CompanyComponent implements OnInit {
           this.refreshSessionAfterCompanyChange();
 
           this.cancelForm();
+
+          // Only send the user on to plan selection on a genuine success — this
+          // backend answers HTTP 200 even for a validation failure (e.g. a
+          // duplicate company email), with the real outcome in responseCode.
+          const isSuccess = response?.responseCode === 200 || response?.responseCode === 201;
+          const companyId = response?.data?.companyId;
+          if (isSuccess && companyId) {
+            this.router.navigate(['/select-plan'], { queryParams: { companyId } });
+          }
         },
-        error: err => console.error(err)
+        error: err => {
+          console.error(err);
+          this.shoepopup.showApiError(err, 'Failed to create the company.');
+        }
       });
 
     }
@@ -238,6 +277,11 @@ export class CompanyComponent implements OnInit {
     return company?.logoBase64 || null;
   }
 
+  /** Persistent entry point back to plan selection — reusable any time, not just right after creation. */
+  goToPlanSelection(companyId: number): void {
+    this.router.navigate(['/select-plan'], { queryParams: { companyId } });
+  }
+
   editCompany(company: any) {
     console.log("Editing company:", company);
     if (!company || !this.companyForm) {
@@ -247,6 +291,8 @@ export class CompanyComponent implements OnInit {
     try {
       this.showForm = true;
       this.isEditMode = true;
+      this.clearAssetFile();
+      this.addedAssets = [];
 
       const parsedWhatsapp = this.parsePhoneNumber(company.whatsappNumber);
       const parsedContact1 = this.parsePhoneNumber(company.contactNo1);
@@ -260,10 +306,8 @@ export class CompanyComponent implements OnInit {
         contactNo1Number: parsedContact1.number,
         contactNo2Code: parsedContact2.code,
         contactNo2Number: parsedContact2.number,
-        assetType: ''
+        assetType: this.nextAssetType()
       });
-      this.clearAssetFile();
-      this.addedAssets = [];
     } catch (e) {
       console.error("Error patching company form:", e);
     }
@@ -324,12 +368,22 @@ export class CompanyComponent implements OnInit {
     return payload;
   }
 
+  /**
+   * Default selection for the Asset Type field: the first type not already
+   * added, so the field is pre-filled without immediately clashing with an
+   * asset the user has queued. Falls back to the first configured type.
+   */
+  nextAssetType(): string {
+    const unused = this.assetTypes.find(type => !this.addedAssets.some(a => a.assetType === type));
+    return unused || this.assetTypes[0] || this.defaultAssetType;
+  }
+
   checkAndAutoAddAsset(): void {
     const type = this.companyForm.get('assetType')?.value;
     if (type && this.selectedAssetFile) {
       if (this.addedAssets.some(x => x.assetType === type)) {
         this.shoepopup.showResponsePopup(`An asset of type ${type} has already been added.`, 400);
-        this.companyForm.patchValue({ assetType: '' });
+        this.companyForm.patchValue({ assetType: this.nextAssetType() });
         this.clearAssetFile();
         return;
       }
@@ -338,7 +392,7 @@ export class CompanyComponent implements OnInit {
         file: this.selectedAssetFile,
         fileName: this.selectedAssetFileName
       });
-      this.companyForm.patchValue({ assetType: '' });
+      this.companyForm.patchValue({ assetType: this.nextAssetType() });
       this.clearAssetFile();
     }
   }
@@ -406,39 +460,74 @@ export class CompanyComponent implements OnInit {
       if (confirmed) {
         this.companyService.deleteCompany(id).subscribe({
           next: (response: any) => {
-            this.shoepopup.showResponsePopup(response.responseMessege, response.responseCode);
+            // Show whatever the backend reported, whichever spelling it used.
+            const backendMessage =
+              response?.responseMessage ||
+              response?.responseMessege ||
+              response?.message ||
+              'Your company deletion request has been submitted.';
+            this.shoepopup.showResponsePopup(backendMessage, response?.responseCode ?? 200);
+            this.deletionNotice = backendMessage;
             this.companyList = [];
             this.companyService.setCompanyStatus(false);
             this.refreshSessionAfterCompanyChange();
           },
-          error: err => console.error(err)
+          error: err => {
+            console.error(err);
+            this.shoepopup.showApiError(err, 'Failed to submit the company deletion request.');
+          }
         });
       }
     });
   }
 
-  loadCountryCodes() {
-    this.http.get<any[]>('https://restcountries.com/v3.1/all?fields=name,idd,cca2').subscribe({
-      next: (countries) => {
-        if (Array.isArray(countries)) {
-          this.countryCodes = countries
-            .map(c => {
-              const root = c.idd?.root || '';
-              const suffix = c.idd?.suffixes?.[0] || '';
-              return {
-                name: c.name?.common || '',
-                code: root + suffix,
-                cca2: c.cca2 || ''
-              };
-            })
-            .filter(c => c.name && c.code)
-            .sort((a, b) => a.name.localeCompare(b.name));
-        }
-      },
-      error: (err) => {
-        console.error('Failed to load country codes', err);
-      }
-    });
+  dismissDeletionNotice(): void {
+    this.deletionNotice = null;
+  }
+
+  /** Lets a mousedown-selected suggestion register before the list is cleared on blur. */
+  hideCitySuggestionsSoon(): void {
+    setTimeout(() => this.citySuggestions = [], 150);
+  }
+
+  selectCity(place: PlaceSuggestion): void {
+    this.companyForm.patchValue({
+      city: place.name,
+      state: place.state || this.companyForm.get('state')?.value
+    }, { emitEvent: false });
+    this.citySuggestions = [];
+  }
+
+  /** Currently selected country code for a phone field. */
+  codeOf(field: string): string {
+    return this.companyForm?.get(`${field}Code`)?.value || DEFAULT_MOBILE_CODE;
+  }
+
+  /** Allowed number of digits for a phone field, per the selected country code. */
+  digitsOf(field: string): number {
+    return getMobileDigits(this.codeOf(field));
+  }
+
+  placeholderOf(field: string): string {
+    return '0'.repeat(this.digitsOf(field));
+  }
+
+  private refreshPhoneValidators(field: string): void {
+    const numberControl = this.companyForm?.get(`${field}Number`);
+    if (!numberControl) return;
+    const validators = [Validators.pattern(getMobilePattern(this.codeOf(field)))];
+    if (field === 'contactNo1') validators.unshift(Validators.required);
+    numberControl.setValidators(validators);
+    numberControl.updateValueAndValidity({ emitEvent: false });
+  }
+
+  onPhoneInput(field: string, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digits = sanitizeMobileNumber(input.value, this.codeOf(field));
+    if (input.value !== digits) {
+      input.value = digits;
+      this.companyForm.get(`${field}Number`)?.setValue(digits);
+    }
   }
 
   parsePhoneNumber(fullNo: any): { code: string, number: string } {

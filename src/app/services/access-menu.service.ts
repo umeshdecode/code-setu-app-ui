@@ -84,6 +84,10 @@ export class AccessMenuService {
       .filter((route): route is string => !!route);
   }
 
+  isSuperAdmin(): boolean {
+    return this.getCurrentAccess().isSuperAdmin;
+  }
+
   canAccess(item: AccessMenuItem): boolean {
     const access = this.getCurrentAccess();
 

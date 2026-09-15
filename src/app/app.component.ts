@@ -1,12 +1,14 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { MatDialog } from '@angular/material/dialog';
 import { LoginService } from './services/login.service';
 import { StaffuserServiceService } from './services/staffuser-service';
 import { GenericDataDTO } from './models/generic-data-dto';
 import { AccessMenuItem, AccessMenuSection, AccessMenuService } from './services/access-menu.service';
 import { PwaUpdateService } from './services/pwa-update.service';
 import { CompanyService } from './services/company.service';
+import { DialogboxComponent } from './component/dialogbox/dialogbox.component';
 
 @Component({
   selector: 'app-root',
@@ -34,6 +36,14 @@ export class AppComponent implements OnInit, OnDestroy {
 
   userdata: any;
 
+  // "Buy a Plan" static-timer prompt — non-Super-Admin users with no plan selected yet
+  // get nudged once, a fixed delay after login, from whatever screen they're on.
+  private planTimerId: any = null;
+  private currentCompanyId: number | null = null;
+  private hasSelectedPlan = false;
+  private planDialogShown = false;
+  private readonly PLAN_PROMPT_DELAY_MS = 1 * 60 * 1000; // 10 minutes
+
   constructor(
     private router: Router,
     private loginService: LoginService,
@@ -41,6 +51,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private accessMenuService: AccessMenuService,
     private pwaUpdateService: PwaUpdateService,
     private companyService: CompanyService,
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit(): void {
@@ -60,14 +71,20 @@ export class AppComponent implements OnInit, OnDestroy {
     // Check viewport size
     this.checkViewport();
 
-    this.loginService.loggedIn$.subscribe(() => {
+    this.loginService.loggedIn$.subscribe((isLoggedIn: boolean) => {
       this.setLayout(this.router.url);
       this.redirectLoggedInHome(this.router.url);
-      this.fetchCurrentCompany();
+      if (isLoggedIn) {
+        this.fetchCurrentCompany();
+        this.armPlanPrompt();
+      } else {
+        this.disarmPlanPrompt();
+      }
     });
 
     if (this.loginService.isLoggedIn()) {
       this.fetchCurrentCompany();
+      this.armPlanPrompt();
     }
 
     // Listen to route changes
@@ -90,6 +107,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     document.removeEventListener('click', this.blockFeatureClick, true);
+    clearTimeout(this.planTimerId);
   }
 
   @HostListener('window:scroll')
@@ -335,9 +353,53 @@ export class AppComponent implements OnInit, OnDestroy {
           if (res.data.companyName) {
             this.companyName = res.data.companyName;
           }
+          this.currentCompanyId = res.data.companyId ?? null;
+          this.hasSelectedPlan = res.data.selectedPlanId != null;
         }
       },
       error: (err: any) => console.warn('Failed to fetch company details', err)
+    });
+  }
+
+  /** Starts (or restarts) the fixed-delay "Buy a Plan" nudge for the current login. */
+  private armPlanPrompt(): void {
+    clearTimeout(this.planTimerId);
+    this.planTimerId = setTimeout(() => this.maybeShowPlanPrompt(), this.PLAN_PROMPT_DELAY_MS);
+  }
+
+  /** Cancels the pending nudge and resets the shown-flag so a fresh login gets a fresh chance. */
+  private disarmPlanPrompt(): void {
+    clearTimeout(this.planTimerId);
+    this.planDialogShown = false;
+  }
+
+  private maybeShowPlanPrompt(): void {
+    if (
+      this.planDialogShown ||
+      !this.loginService.isLoggedIn() ||
+      this.accessMenuService.isSuperAdmin() ||
+      this.hasSelectedPlan ||
+      this.getPath(this.router.url) === '/select-plan'
+    ) {
+      return;
+    }
+
+    this.planDialogShown = true;
+    const dialogRef = this.dialog.open(DialogboxComponent, {
+      width: '450px',
+      disableClose: false,
+      data: {
+        title: 'Choose a Plan',
+        message: 'Pick a subscription plan to keep using all features.',
+        confirmText: 'Buy a Plan',
+        cancelText: 'Maybe Later'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.router.navigate(['/select-plan'], { queryParams: { companyId: this.currentCompanyId } });
+      }
     });
   }
 }

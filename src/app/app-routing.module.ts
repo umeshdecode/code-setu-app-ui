@@ -15,6 +15,7 @@ import { UpdateroleComponent } from './component/updaterole/updaterole.component
 import { RolesDetailsComponent } from './roles-details/roles-details.component';
 import { DepartmentComponent } from './component/component/department/department.component';
 import { PlanscreenComponent } from './component/planscreen/planscreen.component';
+import { PlanSelectionComponent } from './component/plan-selection/plan-selection.component';
 import { FeaturescreenComponent } from './component/featurescreen/featurescreen.component';
 import { StaffDetailsComponent } from './component/staff-details/staff-details.component';
 import { StaffuserComponent } from './component/staffuser/staffuser.component';
@@ -50,6 +51,9 @@ const routes: Routes = [
 
   { path: 'department', component: DepartmentComponent, pathMatch: 'full', canActivate: [AuthGuard, PermissionGuard], data: { module: 'DEPARTMENT', action: 'READ' } },
   { path: 'plan', component: PlanscreenComponent, pathMatch: 'full', canActivate: [AuthGuard, PermissionGuard], data: { module: 'PLAN', action: 'READ' } },
+  // Post-company-creation onboarding step — intentionally AuthGuard-only (no PermissionGuard),
+  // so a brand-new company admin can always reach it, unlike the PLAN:READ-gated /plan route above.
+  { path: 'select-plan', component: PlanSelectionComponent, pathMatch: 'full', canActivate: [AuthGuard] },
   { path: 'createPlan', redirectTo: 'createplan', pathMatch: 'full' },
   { path: 'createPLan', redirectTo: 'createplan', pathMatch: 'full' },
   { path: 'createplan', component: CreateplanComponent, pathMatch: 'full', canActivate: [AuthGuard, PermissionGuard], data: { module: 'PLAN', action: 'CREATE' } },

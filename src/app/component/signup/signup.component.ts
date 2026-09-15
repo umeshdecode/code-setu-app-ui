@@ -1,6 +1,5 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { debounceTime, switchMap, of, filter } from 'rxjs';
 import { StaffuserServiceService } from 'src/app/services/staffuser-service';
 import { ActivatedRoute, Route, Router } from '@angular/router';
@@ -12,6 +11,8 @@ import { CompanyService } from 'src/app/services/company.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogboxComponent } from '../dialogbox/dialogbox.component';
 import { ENV } from 'src/assets/env';
+import { PlaceLookupService } from 'src/app/services/place-lookup.service';
+import { MOBILE_COUNTRIES, MobileCountry, DEFAULT_MOBILE_CODE, getMobileDigits, getMobilePattern, sanitizeMobileNumber } from 'src/app/models/mobile-codes';
 
 declare const google: any;
 
@@ -27,12 +28,7 @@ export class SignupComponent implements OnInit, AfterViewInit {
   submitting = false;
   hidePassword = true;
   hideConfirmPassword = true;
-  countryCodes = [
-    { name: 'India', code: '+91' },
-    { name: 'USA', code: '+1' },
-    { name: 'UK', code: '+44' },
-    { name: 'UAE', code: '+971' }
-  ];
+  countryCodes: MobileCountry[] = MOBILE_COUNTRIES;
   isLoading = false; // Add this property
 
   credential = {
@@ -43,7 +39,7 @@ export class SignupComponent implements OnInit, AfterViewInit {
 
   constructor(
     private fb: FormBuilder,
-    private http: HttpClient,
+    private placeLookup: PlaceLookupService,
     private staffService: StaffuserServiceService,
     private router: Router,
     private showpopupservice: ShowpopupService,
@@ -66,9 +62,10 @@ export class SignupComponent implements OnInit, AfterViewInit {
 
       // STEP 2: Contact Info
       otherInfo: this.fb.group({
-        mobileNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
-        mobileCode: ['+91', Validators.required],
-        staffType: ['STAFF'],
+        mobileNumber: ['', [Validators.required, Validators.pattern(getMobilePattern(DEFAULT_MOBILE_CODE))]],
+        mobileCode: [DEFAULT_MOBILE_CODE, Validators.required],
+        // staffType is not user-editable here: the backend derives it as COMPANY_ADMIN
+        // for every self-signup, since that's the only role this flow ever creates.
         departmentId: [1],
         isActive: [true]
       }),
@@ -90,6 +87,13 @@ export class SignupComponent implements OnInit, AfterViewInit {
     });
 
     this.setupCitySearch();
+
+    // Changing the country code re-applies the digit rule and trims the number.
+    this.staffForm.get('otherInfo.mobileCode')?.valueChanges.subscribe(() => {
+      this.refreshMobileValidators();
+      const mobile = this.staffForm.get('otherInfo.mobileNumber');
+      mobile?.setValue(sanitizeMobileNumber(mobile.value, this.mobileCode), { emitEvent: false });
+    });
 
     const emailFromQuery = this.route.snapshot.queryParamMap.get('email');
     if (emailFromQuery) {
@@ -136,7 +140,7 @@ export class SignupComponent implements OnInit, AfterViewInit {
 
   handleGoogleCredential(response: any) {
     if (!response?.credential) {
-      alert('Google sign-in failed. Please try again.');
+      this.showpopupservice.showError('Google sign-in failed. Please try again.');
       return;
     }
     this.submitting = true;
@@ -164,7 +168,7 @@ export class SignupComponent implements OnInit, AfterViewInit {
       },
       error: (err) => {
         console.error('Google sign-up failed', err);
-        alert(err.error?.message || 'Google sign-up failed');
+        this.showpopupservice.showApiError(err, 'Google sign-up failed');
         this.submitting = false;
       },
       complete: () => {
@@ -186,8 +190,27 @@ export class SignupComponent implements OnInit, AfterViewInit {
     return !!(control && control.invalid && (control.dirty || control.touched));
   }
 
+  get mobileCode(): string {
+    return this.staffForm?.get('otherInfo.mobileCode')?.value;
+  }
+
+  get mobileDigits(): number {
+    return getMobileDigits(this.mobileCode);
+  }
+
+  get mobilePlaceholder(): string {
+    return '0'.repeat(this.mobileDigits);
+  }
+
+  private refreshMobileValidators(): void {
+    const mobile = this.staffForm?.get('otherInfo.mobileNumber');
+    if (!mobile) return;
+    mobile.setValidators([Validators.required, Validators.pattern(getMobilePattern(this.mobileCode))]);
+    mobile.updateValueAndValidity({ emitEvent: false });
+  }
+
   restrictMobileNumber(event: Event): void {
-    this.restrictDigits(event, 'otherInfo.mobileNumber', 10);
+    this.restrictDigits(event, 'otherInfo.mobileNumber', this.mobileDigits);
   }
 
   restrictPincode(event: Event): void {
@@ -207,9 +230,9 @@ export class SignupComponent implements OnInit, AfterViewInit {
     this.staffForm.get('addressInfo.city')?.valueChanges.pipe(
       debounceTime(400),
       filter(val => typeof val === 'string'),
-      switchMap(val => val?.length > 2 ? this.http.get(`https://photon.komoot.io/api/?q=${val}`) : of(null))
-    ).subscribe((data: any) => {
-      this.citySuggestions = data ? data.features : [];
+      switchMap(val => this.placeLookup.searchCities(val))
+    ).subscribe(suggestions => {
+      this.citySuggestions = suggestions;
     });
   }
 
@@ -248,11 +271,10 @@ export class SignupComponent implements OnInit, AfterViewInit {
     if (this.currentStep > 1) this.currentStep--;
   }
 
-  selectCity(city: any) {
-    const props = city.properties;
+  selectCity(place: any) {
     this.staffForm.get('addressInfo')?.patchValue({
-      city: props.name,
-      state: props.state || '',
+      city: place.name,
+      state: place.state || '',
     }, { emitEvent: false });
     this.citySuggestions = [];
   }

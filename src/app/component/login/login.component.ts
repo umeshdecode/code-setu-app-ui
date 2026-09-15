@@ -9,6 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogboxComponent } from '../dialogbox/dialogbox.component';
 import { ShowpopupService } from 'src/app/services/showpopup.service';
 import { ENV } from 'src/assets/env';
+import { MOBILE_COUNTRIES, MobileCountry, DEFAULT_MOBILE_CODE, getMobileDigits, getMobilePattern, sanitizeMobileNumber } from 'src/app/models/mobile-codes';
 
 declare const google: any;
 
@@ -39,27 +40,8 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   userExists: boolean | null = null;
   checkingEmail = false;
 
-  // Static country code list – avoids CORS-blocked restcountries.com API call
-  countryCodes: any[] = [
-    { name: 'India',         code: '+91',  cca2: 'IN' },
-    { name: 'USA',           code: '+1',   cca2: 'US' },
-    { name: 'UK',            code: '+44',  cca2: 'GB' },
-    { name: 'UAE',           code: '+971', cca2: 'AE' },
-    { name: 'Australia',     code: '+61',  cca2: 'AU' },
-    { name: 'Canada',        code: '+1',   cca2: 'CA' },
-    { name: 'Germany',       code: '+49',  cca2: 'DE' },
-    { name: 'France',        code: '+33',  cca2: 'FR' },
-    { name: 'Singapore',     code: '+65',  cca2: 'SG' },
-    { name: 'Japan',         code: '+81',  cca2: 'JP' },
-    { name: 'China',         code: '+86',  cca2: 'CN' },
-    { name: 'South Africa',  code: '+27',  cca2: 'ZA' },
-    { name: 'Brazil',        code: '+55',  cca2: 'BR' },
-    { name: 'Mexico',        code: '+52',  cca2: 'MX' },
-    { name: 'Bangladesh',    code: '+880', cca2: 'BD' },
-    { name: 'Pakistan',      code: '+92',  cca2: 'PK' },
-    { name: 'Nepal',         code: '+977', cca2: 'NP' },
-    { name: 'Sri Lanka',     code: '+94',  cca2: 'LK' },
-  ];
+  // Country/mobile-code config comes from the shared mobile-codes model
+  countryCodes: MobileCountry[] = MOBILE_COUNTRIES;
 
   // Timer handle used to debounce the email-existence check on blur
   private emailBlurTimer: any = null;
@@ -176,11 +158,33 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   otp = {
-    mobileCode: '+91',
+    mobileCode: DEFAULT_MOBILE_CODE,
     mobile: '',
     code: ''
   };
   otpSent = false;
+
+  get mobileDigits(): number {
+    return getMobileDigits(this.otp.mobileCode);
+  }
+
+  get mobilePlaceholder(): string {
+    return '0'.repeat(this.mobileDigits);
+  }
+
+  /** Re-trims the typed number when the country code changes. */
+  onMobileCodeChange(): void {
+    this.otp.mobile = sanitizeMobileNumber(this.otp.mobile, this.otp.mobileCode);
+  }
+
+  onMobileInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digits = sanitizeMobileNumber(input.value, this.otp.mobileCode);
+    if (input.value !== digits) {
+      input.value = digits;
+    }
+    this.otp.mobile = digits;
+  }
 
   checkEmailExists() {
     // Clear any previous pending check
@@ -298,6 +302,10 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   sendOtp() {
     if (!this.otp.mobile) {
       this.showPopup.showError('Enter mobile number');
+      return;
+    }
+    if (!getMobilePattern(this.otp.mobileCode).test(this.otp.mobile)) {
+      this.showPopup.showError(`Mobile number must be ${this.mobileDigits} digits for ${this.otp.mobileCode}`);
       return;
     }
     this.isLoading = true;

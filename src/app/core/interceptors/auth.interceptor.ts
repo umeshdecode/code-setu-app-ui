@@ -10,13 +10,15 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { ShowpopupService } from 'src/app/services/showpopup.service';
+import { ThemeService } from 'src/app/services/theme.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
   private isRefreshing = false;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private showPopup: ShowpopupService, private themeService: ThemeService) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = localStorage.getItem('token');
@@ -53,7 +55,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
     const refreshToken = localStorage.getItem('refreshToken');
     if (!refreshToken) {
-      this.logout();
+      this.logout('Your session has expired. Please log in again.');
       return throwError(() => new Error('No refresh token available'));
     }
 
@@ -74,23 +76,27 @@ export class AuthInterceptor implements HttpInterceptor {
           return next.handle(cloned);
         }
 
-        this.logout();
+        this.logout('Your session has expired. Please log in again.');
         return throwError(() => new Error('Invalid refresh response'));
       }),
       catchError((err) => {
         this.isRefreshing = false;
-        this.logout();
+        this.logout('Your session has expired. Please log in again.');
         return throwError(() => err);
       })
     );
   }
 
-  private logout(): void {
+  private logout(reason?: string): void {
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user_session');
     localStorage.removeItem('staffInfo');
     localStorage.removeItem('user');
+    this.themeService.clearLocalTheme();
+    if (reason) {
+      this.showPopup.showPermissionDenied(reason);
+    }
     this.router.navigateByUrl('/login');
   }
 }

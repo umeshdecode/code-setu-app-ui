@@ -509,6 +509,71 @@
   border-color: #e53e3e;
   background: #fff5f5;
 }
+/* City autocomplete dropdown (mobile-codes.ts-style server-driven suggestions) */
+.city-autocomplete-group {
+  position: relative;
+}
+
+.city-autocomplete-group .autocomplete-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  z-index: 20;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.city-autocomplete-group .autocomplete-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.city-autocomplete-group .autocomplete-item:last-child {
+  border-bottom: none;
+}
+
+.city-autocomplete-group .autocomplete-item:hover {
+  background: #f8fafc;
+}
+
+.city-autocomplete-group .autocomplete-item strong {
+  display: block;
+  font-size: 0.88rem;
+  color: #2d3748;
+}
+
+.city-autocomplete-group .autocomplete-item small {
+  color: #718096;
+  font-size: 0.78rem;
+}
+
+body.app-dark-theme .city-autocomplete-group .autocomplete-results {
+  background: #1e293b;
+  border-color: rgba(148, 163, 184, 0.28);
+}
+
+body.app-dark-theme .city-autocomplete-group .autocomplete-item {
+  border-bottom-color: rgba(148, 163, 184, 0.18);
+}
+
+body.app-dark-theme .city-autocomplete-group .autocomplete-item:hover {
+  background: rgba(148, 163, 184, 0.12);
+}
+
+body.app-dark-theme .city-autocomplete-group .autocomplete-item strong {
+  color: #e2e8f0;
+}
+
+body.app-dark-theme .city-autocomplete-group .autocomplete-item small {
+  color: #94a3b8;
+}
 
 .form-group input.ng-valid.ng-touched, .form-group select.ng-valid.ng-touched {
   border-color: #48bb78;
@@ -737,6 +802,81 @@
   color: #78350f;
   font-size: 0.92rem;
   line-height: 1.5;
+}
+
+/* Persistent notice shown after a deletion request is submitted */
+.deletion-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-left: 5px solid #f59e0b;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin: 0 0 20px;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.12);
+}
+
+.deletion-notice > .material-icons {
+  color: #d97706;
+  font-size: 26px;
+  flex-shrink: 0;
+}
+
+.deletion-notice-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.deletion-notice-text strong {
+  display: block;
+  color: #92400e;
+  font-size: 0.98rem;
+  margin-bottom: 4px;
+}
+
+.deletion-notice-text p {
+  margin: 0;
+  color: #78350f;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.deletion-notice-window {
+  margin-top: 6px !important;
+  font-weight: 600;
+}
+
+.deletion-notice-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #92400e;
+  padding: 2px;
+  line-height: 1;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.deletion-notice-close:hover {
+  background: rgba(146, 64, 14, 0.1);
+}
+
+.deletion-notice-close .material-icons {
+  font-size: 20px;
+}
+
+body.app-dark-theme .deletion-notice {
+  background: rgba(245, 158, 11, 0.13);
+  border-color: rgba(251, 191, 36, 0.45);
+}
+
+body.app-dark-theme .deletion-notice-text strong,
+body.app-dark-theme .deletion-notice-text p,
+body.app-dark-theme .deletion-notice-close {
+  color: #fde68a;
 }
 
 /* ===== RESPONSIVE ===== */

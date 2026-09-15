@@ -65,24 +65,32 @@
         <div class="form-field">
           <label>Mobile Number <span class="req">*</span></label>
           <div class="mobile-split-container">
-            <select name="upMobileCode" class="mobile-code-select" [(ngModel)]="customerToUpdate.mobileCode">
-              <option *ngFor="let c of countryCodes" [value]="c.code">
-                {{c.cca2 ? c.cca2 + ' (' + c.code + ')' : c.code + ' (' + c.name + ')'}}
-              </option>
+            <select name="upMobileCode" class="mobile-code-select" [(ngModel)]="customerToUpdate.mobileCode"
+              (ngModelChange)="onMobileCodeChange(customerToUpdate, 'mobileNumber', 'mobileCode')">
+              <option *ngFor="let c of countryCodes" [value]="c.code">{{ c.flag }} {{ c.code }}</option>
             </select>
-            <input name="upMobileNo" placeholder="Mobile Number" [(ngModel)]="customerToUpdate.mobileNumber">
+            <input name="upMobileNo" type="tel" inputmode="numeric" placeholder="Mobile Number"
+              [(ngModel)]="customerToUpdate.mobileNumber" [maxLength]="mobileDigits(customerToUpdate.mobileCode)"
+              (input)="onMobileInput(customerToUpdate, 'mobileNumber', 'mobileCode', $event)">
           </div>
+          <small class="field-error" *ngIf="isMobileInvalid(customerToUpdate, 'mobileNumber', 'mobileCode')">
+            Mobile number must be {{ mobileDigits(customerToUpdate.mobileCode) }} digits for {{ customerToUpdate.mobileCode }}
+          </small>
         </div>
         <div class="form-field">
           <label>Alternate Mobile</label>
           <div class="mobile-split-container">
-            <select name="upAlternateMobileCode" class="mobile-code-select" [(ngModel)]="customerToUpdate.alternateMobileCode">
-              <option *ngFor="let c of countryCodes" [value]="c.code">
-                {{c.cca2 ? c.cca2 + ' (' + c.code + ')' : c.code + ' (' + c.name + ')'}}
-              </option>
+            <select name="upAlternateMobileCode" class="mobile-code-select" [(ngModel)]="customerToUpdate.alternateMobileCode"
+              (ngModelChange)="onMobileCodeChange(customerToUpdate, 'alternateMobileNumber', 'alternateMobileCode')">
+              <option *ngFor="let c of countryCodes" [value]="c.code">{{ c.flag }} {{ c.code }}</option>
             </select>
-            <input name="upAlternateMobileNo" placeholder="Alternate Mobile" [(ngModel)]="customerToUpdate.alternateMobileNumber">
+            <input name="upAlternateMobileNo" type="tel" inputmode="numeric" placeholder="Alternate Mobile"
+              [(ngModel)]="customerToUpdate.alternateMobileNumber" [maxLength]="mobileDigits(customerToUpdate.alternateMobileCode)"
+              (input)="onMobileInput(customerToUpdate, 'alternateMobileNumber', 'alternateMobileCode', $event)">
           </div>
+          <small class="field-error" *ngIf="isMobileInvalid(customerToUpdate, 'alternateMobileNumber', 'alternateMobileCode')">
+            Alternate mobile must be {{ mobileDigits(customerToUpdate.alternateMobileCode) }} digits for {{ customerToUpdate.alternateMobileCode }}
+          </small>
         </div>
         <div class="form-field">
           <label>Email <span class="req">*</span></label>
@@ -112,16 +120,33 @@
         <div *ngIf="i === activeUpdateShiftIndex" class="form-grid">
           <div class="form-field">
             <label>From City <span class="req">*</span></label>
-            <input [name]="'upShiftFromCity_'+i" placeholder="From City" [(ngModel)]="s.shiftFromCity">
-          </div>
-          <div class="form-field">
-            <label>To City <span class="req">*</span></label>
-            <input [name]="'upShiftToCity_'+i" placeholder="To City" [(ngModel)]="s.shiftToCity">
+            <input [name]="'upShiftFromCity_'+i" placeholder="From City" [(ngModel)]="s.shiftFromCity" autocomplete="off"
+              (input)="onCityInput(s, 'shiftFromCity')" (blur)="hideCitySuggestionsSoon()">
+            <div class="autocomplete-results" *ngIf="isActiveCityField(s, 'shiftFromCity')">
+              <div class="autocomplete-item" *ngFor="let place of citySuggestions" (mousedown)="selectCityForShift(place)">
+                <strong>{{ place.name }}</strong>
+                <small *ngIf="place.state || place.country">{{ place.state }}{{ place.state && place.country ? ', ' : '' }}{{
+                  place.country }}</small>
+              </div>
+            </div>
           </div>
           <div class="form-field">
             <label>From Address</label>
             <input [name]="'upFromAddress_'+i" placeholder="From Address" [(ngModel)]="s.fromAddress">
-          </div>
+          </div>̥
+          <div class="form-field">
+            <label>To City <span class="req">*</span></label>
+            <input [name]="'upShiftToCity_'+i" placeholder="To City" [(ngModel)]="s.shiftToCity" autocomplete="off"
+              (input)="onCityInput(s, 'shiftToCity')" (blur)="hideCitySuggestionsSoon()">
+            <div class="autocomplete-results" *ngIf="isActiveCityField(s, 'shiftToCity')">
+              <div class="autocomplete-item" *ngFor="let place of citySuggestions" (mousedown)="selectCityForShift(place)">
+                <strong>{{ place.name }}</strong>
+                <small *ngIf="place.state || place.country">{{ place.state }}{{ place.state && place.country ? ', ' : '' }}{{
+                  place.country }}</small>
+              </div>
+            </div>
+            </div>
+
           <div class="form-field">
             <label>To Address</label>
             <input [name]="'upToAddress_'+i" placeholder="To Address" [(ngModel)]="s.toAddress">
@@ -179,31 +204,31 @@
           <p class="charges-subtitle">Base Charges</p>
           <div class="charges-grid">
             <div class="form-field"><label>Transport</label><input type="number" min="0" [name]="'upTransport_'+si"
-                [(ngModel)]="s.charges.transportCharge"></div>
+                [(ngModel)]="s.charges.transportCharge" placeholder="0"></div>
             <div class="form-field"><label>Packing</label><input type="number" min="0" [name]="'upPacking_'+si"
-                [(ngModel)]="s.charges.packingCharge"></div>
+                [(ngModel)]="s.charges.packingCharge" placeholder="0"></div>
             <div class="form-field"><label>Loading</label><input type="number" min="0" [name]="'upLoading_'+si"
-                [(ngModel)]="s.charges.loadingCharge"></div>
+                [(ngModel)]="s.charges.loadingCharge" placeholder="0"></div>
             <div class="form-field"><label>Unloading</label><input type="number" min="0" [name]="'upUnloading_'+si"
-                [(ngModel)]="s.charges.unloadingCharge"></div>
+                [(ngModel)]="s.charges.unloadingCharge" placeholder="0"></div>
             <div class="form-field"><label>Unpacking</label><input type="number" min="0" [name]="'upUnpacking_'+si"
-                [(ngModel)]="s.charges.unpackingCharge"></div>
+                [(ngModel)]="s.charges.unpackingCharge" placeholder="0"></div>
             <div class="form-field"><label>Car Transport</label><input type="number" min="0"
-                [name]="'upCarTransport_'+si" [(ngModel)]="s.charges.carTransportCharge"></div>
+                [name]="'upCarTransport_'+si" [(ngModel)]="s.charges.carTransportCharge" placeholder="0"></div>
             <div class="form-field"><label>Risk / Insurance</label><input type="number" min="0" [name]="'upRisk_'+si"
-                [(ngModel)]="s.charges.riskInsureCharge"></div>
+                [(ngModel)]="s.charges.riskInsureCharge" placeholder="0"></div>
             <div class="form-field"><label>Storage</label><input type="number" min="0" [name]="'upStorage_'+si"
-                [(ngModel)]="s.charges.storageCharge"></div>
+                [(ngModel)]="s.charges.storageCharge" placeholder="0"></div>
             <div class="form-field"><label>Statistical</label><input type="number" min="0" [name]="'upStatistical_'+si"
-                [(ngModel)]="s.charges.statisticalCharge"></div>
+                [(ngModel)]="s.charges.statisticalCharge" placeholder="0"></div>
             <div class="form-field"><label>Service</label><input type="number" min="0" [name]="'upService_'+si"
-                [(ngModel)]="s.charges.serviceCharge"></div>
+                [(ngModel)]="s.charges.serviceCharge" placeholder="0"></div>
             <div class="form-field"><label>Service Rate (%)</label><input type="number" min="0"
-                [name]="'upServiceRate_'+si" [(ngModel)]="s.charges.serviceRate"></div>
+                [name]="'upServiceRate_'+si" [(ngModel)]="s.charges.serviceRate" placeholder="0"></div>
             <div class="form-field"><label>GST Rate (%)</label><input type="number" min="0" [name]="'upGstRate_'+si"
-                [(ngModel)]="s.charges.gstRate"></div>
+                [(ngModel)]="s.charges.gstRate" placeholder="0"></div>
             <div class="form-field"><label>GST Charge</label><input type="number" min="0" [name]="'upGstCharge_'+si"
-                [(ngModel)]="s.charges.gstCharge"></div>
+                [(ngModel)]="s.charges.gstCharge" placeholder="0"></div>
           </div>
 
           <p class="charges-subtitle" style="margin-top:1.25rem;">Extra Charges</p>
@@ -245,7 +270,7 @@
         <div class="shift-review-meta">
           <span>Type: {{ s.shiftingType || '—' }}</span>
           <span>Start: {{ s.shiftingStartDate || '—' }}</span>
-          <span>Transport: ₹{{ s.charges.transportCharge }}</span>
+          <span>Transport: ₹{{ s.charges.transportCharge || 0 }}</span>
           <span>GST: {{ s.charges.gstRate }}%</span>
           <span>Status: {{ s.isShiftCompleted ? 'Completed' : 'Pending' }}</span>
         </div>
@@ -311,24 +336,32 @@
         <div class="form-field">
           <label>Mobile Number <span class="req">*</span></label>
           <div class="mobile-split-container">
-            <select name="mobileCode" class="mobile-code-select" [(ngModel)]="newCustomer.mobileCode">
-              <option *ngFor="let c of countryCodes" [value]="c.code">
-                {{c.cca2 ? c.cca2 + ' (' + c.code + ')' : c.code + ' (' + c.name + ')'}}
-              </option>
+            <select name="mobileCode" class="mobile-code-select" [(ngModel)]="newCustomer.mobileCode"
+              (ngModelChange)="onMobileCodeChange(newCustomer, 'mobileNumber', 'mobileCode')">
+              <option *ngFor="let c of countryCodes" [value]="c.code">{{ c.flag }} {{ c.code }}</option>
             </select>
-            <input name="mobileNo" placeholder="Mobile Number" [(ngModel)]="newCustomer.mobileNumber">
+            <input name="mobileNo" type="tel" inputmode="numeric" placeholder="Mobile Number"
+              [(ngModel)]="newCustomer.mobileNumber" [maxLength]="mobileDigits(newCustomer.mobileCode)"
+              (input)="onMobileInput(newCustomer, 'mobileNumber', 'mobileCode', $event)">
           </div>
+          <small class="field-error" *ngIf="isMobileInvalid(newCustomer, 'mobileNumber', 'mobileCode')">
+            Mobile number must be {{ mobileDigits(newCustomer.mobileCode) }} digits for {{ newCustomer.mobileCode }}
+          </small>
         </div>
         <div class="form-field">
           <label>Alternate Mobile</label>
           <div class="mobile-split-container">
-            <select name="alternateMobileCode" class="mobile-code-select" [(ngModel)]="newCustomer.alternateMobileCode">
-              <option *ngFor="let c of countryCodes" [value]="c.code">
-                {{c.cca2 ? c.cca2 + ' (' + c.code + ')' : c.code + ' (' + c.name + ')'}}
-              </option>
+            <select name="alternateMobileCode" class="mobile-code-select" [(ngModel)]="newCustomer.alternateMobileCode"
+              (ngModelChange)="onMobileCodeChange(newCustomer, 'alternateMobileNumber', 'alternateMobileCode')">
+              <option *ngFor="let c of countryCodes" [value]="c.code">{{ c.flag }} {{ c.code }}</option>
             </select>
-            <input name="alternateMobileNo" placeholder="Alternate Mobile" [(ngModel)]="newCustomer.alternateMobileNumber">
+            <input name="alternateMobileNo" type="tel" inputmode="numeric" placeholder="Alternate Mobile"
+              [(ngModel)]="newCustomer.alternateMobileNumber" [maxLength]="mobileDigits(newCustomer.alternateMobileCode)"
+              (input)="onMobileInput(newCustomer, 'alternateMobileNumber', 'alternateMobileCode', $event)">
           </div>
+          <small class="field-error" *ngIf="isMobileInvalid(newCustomer, 'alternateMobileNumber', 'alternateMobileCode')">
+            Alternate mobile must be {{ mobileDigits(newCustomer.alternateMobileCode) }} digits for {{ newCustomer.alternateMobileCode }}
+          </small>
         </div>
         <div class="form-field">
           <label>Email <span class="req">*</span></label>
@@ -358,11 +391,27 @@
         <div *ngIf="i === activeShiftIndex" class="form-grid">
           <div class="form-field">
             <label>From City <span class="req">*</span></label>
-            <input [name]="'shiftFromCity_'+i" placeholder="From City" [(ngModel)]="s.shiftFromCity">
+            <input [name]="'shiftFromCity_'+i" placeholder="From City" [(ngModel)]="s.shiftFromCity" autocomplete="off"
+              (input)="onCityInput(s, 'shiftFromCity')" (blur)="hideCitySuggestionsSoon()">
+            <div class="autocomplete-results" *ngIf="isActiveCityField(s, 'shiftFromCity')">
+              <div class="autocomplete-item" *ngFor="let place of citySuggestions" (mousedown)="selectCityForShift(place)">
+                <strong>{{ place.name }}</strong>
+                <small *ngIf="place.state || place.country">{{ place.state }}{{ place.state && place.country ? ', ' : '' }}{{
+                  place.country }}</small>
+              </div>
+            </div>
           </div>
           <div class="form-field">
             <label>To City <span class="req">*</span></label>
-            <input [name]="'shiftToCity_'+i" placeholder="To City" [(ngModel)]="s.shiftToCity">
+            <input [name]="'shiftToCity_'+i" placeholder="To City" [(ngModel)]="s.shiftToCity" autocomplete="off"
+              (input)="onCityInput(s, 'shiftToCity')" (blur)="hideCitySuggestionsSoon()">
+            <div class="autocomplete-results" *ngIf="isActiveCityField(s, 'shiftToCity')">
+              <div class="autocomplete-item" *ngFor="let place of citySuggestions" (mousedown)="selectCityForShift(place)">
+                <strong>{{ place.name }}</strong>
+                <small *ngIf="place.state || place.country">{{ place.state }}{{ place.state && place.country ? ', ' : '' }}{{
+                  place.country }}</small>
+              </div>
+            </div>
           </div>
           <div class="form-field">
             <label>From Address</label>
@@ -425,31 +474,31 @@
           <p class="charges-subtitle">Base Charges</p>
           <div class="charges-grid">
             <div class="form-field"><label>Transport</label><input type="number" min="0" [name]="'transport_'+si"
-                [(ngModel)]="s.charges.transportCharge"></div>
+                [(ngModel)]="s.charges.transportCharge" placeholder="0"></div>
             <div class="form-field"><label>Packing</label><input type="number" min="0" [name]="'packing_'+si"
-                [(ngModel)]="s.charges.packingCharge"></div>
+                [(ngModel)]="s.charges.packingCharge" placeholder="0"></div>
             <div class="form-field"><label>Loading</label><input type="number" min="0" [name]="'loading_'+si"
-                [(ngModel)]="s.charges.loadingCharge"></div>
+                [(ngModel)]="s.charges.loadingCharge" placeholder="0"></div>
             <div class="form-field"><label>Unloading</label><input type="number" min="0" [name]="'unloading_'+si"
-                [(ngModel)]="s.charges.unloadingCharge"></div>
+                [(ngModel)]="s.charges.unloadingCharge" placeholder="0"></div>
             <div class="form-field"><label>Unpacking</label><input type="number" min="0" [name]="'unpacking_'+si"
-                [(ngModel)]="s.charges.unpackingCharge"></div>
+                [(ngModel)]="s.charges.unpackingCharge" placeholder="0"></div>
             <div class="form-field"><label>Car Transport</label><input type="number" min="0" [name]="'carTransport_'+si"
-                [(ngModel)]="s.charges.carTransportCharge"></div>
+                [(ngModel)]="s.charges.carTransportCharge" placeholder="0"></div>
             <div class="form-field"><label>Risk / Insurance</label><input type="number" min="0" [name]="'risk_'+si"
-                [(ngModel)]="s.charges.riskInsureCharge"></div>
+                [(ngModel)]="s.charges.riskInsureCharge" placeholder="0"></div>
             <div class="form-field"><label>Storage</label><input type="number" min="0" [name]="'storage_'+si"
-                [(ngModel)]="s.charges.storageCharge"></div>
+                [(ngModel)]="s.charges.storageCharge" placeholder="0"></div>
             <div class="form-field"><label>Statistical</label><input type="number" min="0" [name]="'statistical_'+si"
-                [(ngModel)]="s.charges.statisticalCharge"></div>
+                [(ngModel)]="s.charges.statisticalCharge" placeholder="0"></div>
             <div class="form-field"><label>Service</label><input type="number" min="0" [name]="'service_'+si"
-                [(ngModel)]="s.charges.serviceCharge"></div>
+                [(ngModel)]="s.charges.serviceCharge" placeholder="0"></div>
             <div class="form-field"><label>Service Rate (%)</label><input type="number" min="0"
-                [name]="'serviceRate_'+si" [(ngModel)]="s.charges.serviceRate"></div>
+                [name]="'serviceRate_'+si" [(ngModel)]="s.charges.serviceRate" placeholder="0"></div>
             <div class="form-field"><label>GST Rate (%)</label><input type="number" min="0" [name]="'gstRate_'+si"
-                [(ngModel)]="s.charges.gstRate"></div>
+                [(ngModel)]="s.charges.gstRate" placeholder="0"></div>
             <div class="form-field"><label>GST Charge</label><input type="number" min="0" [name]="'gstCharge_'+si"
-                [(ngModel)]="s.charges.gstCharge"></div>
+                [(ngModel)]="s.charges.gstCharge" placeholder="0"></div>
           </div>
 
           <p class="charges-subtitle" style="margin-top:1.25rem;">Extra Charges</p>
@@ -491,7 +540,7 @@
         <div class="shift-review-meta">
           <span>Type: {{ s.shiftingType || '—' }}</span>
           <span>Start: {{ s.shiftingStartDate || '—' }}</span>
-          <span>Transport: ₹{{ s.charges.transportCharge }}</span>
+          <span>Transport: ₹{{ s.charges.transportCharge || 0 }}</span>
           <span>GST: {{ s.charges.gstRate }}%</span>
           <span>Status: {{ s.isShiftCompleted ? 'Completed' : 'Pending' }}</span>
         </div>

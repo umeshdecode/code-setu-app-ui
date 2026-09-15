@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { CustomerModels } from 'src/app/models/customer-models';
+import { MOBILE_COUNTRIES, MobileCountry, DEFAULT_MOBILE_CODE, getMobileDigits, getMobilePattern, sanitizeMobileNumber } from 'src/app/models/mobile-codes';
 import { CompanyService } from 'src/app/services/company.service';
 import { CustomersService } from 'src/app/services/customers.service';
 import { StaffuserServiceService } from 'src/app/services/staffuser-service';
@@ -9,6 +9,7 @@ import { TemplateService } from 'src/app/services/template.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogboxComponent } from '../dialogbox/dialogbox.component';
 import { QuotationDialogComponent } from '../quotation-dialog/quotation-dialog.component';
+import { PlaceLookupService, PlaceSuggestion } from 'src/app/services/place-lookup.service';
 
 type ConnectionStatus = 'Online' | 'Offline';
 type CustomerRow = CustomerModels & {
@@ -73,12 +74,11 @@ export class CustomerComponent implements OnInit {
   currentPageNumber = 0;
   totalPages = 0;
 
-  countryCodes: any[] = [
-    { name: 'India', code: '+91', cca2: 'IN' },
-    { name: 'USA', code: '+1', cca2: 'US' },
-    { name: 'UK', code: '+44', cca2: 'GB' },
-    { name: 'UAE', code: '+971', cca2: 'AE' }
-  ];
+  countryCodes: MobileCountry[] = MOBILE_COUNTRIES;
+  // Server-driven city lookup for shifting From/To City (no hardcoded city list).
+  citySuggestions: PlaceSuggestion[] = [];
+  private activeCityTarget: { model: any; field: 'shiftFromCity' | 'shiftToCity' } | null = null;
+  private citySearchTimer: any = null;
 
   constructor(
     private companyService: CompanyService,
@@ -86,12 +86,11 @@ export class CustomerComponent implements OnInit {
     private staffService: StaffuserServiceService,
     private templateService: TemplateService,
     private dialog: MatDialog,
-    private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private placeLookup: PlaceLookupService
   ) { }
 
   ngOnInit(): void {
-    this.loadCountryCodes();
     this.loadCustomers();
     this.loadStaffList();
     this.loadCompanyList();
@@ -275,6 +274,8 @@ export class CustomerComponent implements OnInit {
       if (!this.newCustomer.firstName?.trim()) { this.showCreateSnackbar('First name is required', true); return false; }
       if (!this.newCustomer.lastName?.trim())  { this.showCreateSnackbar('Last name is required', true); return false; }
       if (!this.newCustomer.mobileNumber?.trim())  { this.showCreateSnackbar('Mobile number is required', true); return false; }
+      if (this.isMobileInvalid(this.newCustomer, 'mobileNumber', 'mobileCode')) { this.showCreateSnackbar(`Mobile number must be ${this.mobileDigits(this.newCustomer.mobileCode)} digits for ${this.newCustomer.mobileCode}`, true); return false; }
+      if (this.isMobileInvalid(this.newCustomer, 'alternateMobileNumber', 'alternateMobileCode')) { this.showCreateSnackbar(`Alternate mobile must be ${this.mobileDigits(this.newCustomer.alternateMobileCode)} digits for ${this.newCustomer.alternateMobileCode}`, true); return false; }
       if (!this.newCustomer.email?.trim())     { this.showCreateSnackbar('Email is required', true); return false; }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.newCustomer.email)) { this.showCreateSnackbar('Enter a valid email address', true); return false; }
     }
@@ -318,7 +319,7 @@ export class CustomerComponent implements OnInit {
   }
 
   addExtraCharge(shiftIndex: number): void {
-    this.newCustomer.shiftings[shiftIndex].charges.extracharges.push({ chargeName: '', chargeValue: 0, chargeRate: 0 });
+    this.newCustomer.shiftings[shiftIndex].charges.extracharges.push({ chargeName: '', chargeValue: null, chargeRate: null });
   }
 
   removeExtraCharge(shiftIndex: number, chargeIndex: number): void {
@@ -334,17 +335,26 @@ export class CustomerComponent implements OnInit {
     this.newCustomer.mobileNo = (this.newCustomer.mobileCode || '') + (this.newCustomer.mobileNumber || '');
     this.newCustomer.alternateMobileNo = (this.newCustomer.alternateMobileCode || '') + (this.newCustomer.alternateMobileNumber || '');
     this.customersService.createCustomer(this.newCustomer).subscribe({
-      next: () => {
+      next: (res: any) => {
         this.isCreating = false;
-        this.createMessage = 'Customer created successfully.';
-        this.resetCreateForm();
-        this.showCreateForm = false;
-        this.loadCustomers();
+        // The backend always answers HTTP 200 and embeds the real outcome in
+        // responseCode — a 422 (e.g. a negative charge) lands here too, not in `error`.
+        const code = res?.responseCode;
+        if (code === 200 || code === 201) {
+          this.createMessage = res?.responseMessege || res?.responseMessage || 'Customer created successfully.';
+          this.resetCreateForm();
+          this.showCreateForm = false;
+          this.loadCustomers();
+        } else {
+          this.createError = res?.responseMessege || res?.responseMessage || 'Unable to create customer.';
+          this.showCreateSnackbar(this.createError, true);
+        }
       },
       error: error => {
         console.error('Create customer failed:', error);
         this.isCreating = false;
-        this.createError = error.error?.responseMessege || error.error?.message || 'Unable to create customer.';
+        this.createError = error.error?.responseMessege || error.error?.responseMessage || error.error?.message || 'Unable to create customer.';
+        this.showCreateSnackbar(this.createError, true);
       }
     });
   }
@@ -394,24 +404,24 @@ export class CustomerComponent implements OnInit {
               return {
                 ...s,
                 charges: {
-                  transportCharge:    src.transportCharge    ?? 0,
-                  packingCharge:      src.packingCharge      ?? 0,
-                  loadingCharge:      src.loadingCharge      ?? 0,
-                  unloadingCharge:    src.unloadingCharge    ?? 0,
-                  unpackingCharge:    src.unpackingCharge    ?? 0,
-                  carTransportCharge: src.carTransportCharge ?? 0,
-                  riskInsureCharge:   src.riskInsureCharge   ?? 0,
-                  storageCharge:      src.storageCharge      ?? 0,
-                  statisticalCharge:  src.statisticalCharge  ?? 0,
-                  serviceCharge:      src.serviceCharge      ?? 0,
-                  serviceRate:        src.serviceRate        ?? 0,
+                  transportCharge:    src.transportCharge    ?? null,
+                  packingCharge:      src.packingCharge      ?? null,
+                  loadingCharge:      src.loadingCharge      ?? null,
+                  unloadingCharge:    src.unloadingCharge    ?? null,
+                  unpackingCharge:    src.unpackingCharge    ?? null,
+                  carTransportCharge: src.carTransportCharge ?? null,
+                  riskInsureCharge:   src.riskInsureCharge   ?? null,
+                  storageCharge:      src.storageCharge      ?? null,
+                  statisticalCharge:  src.statisticalCharge  ?? null,
+                  serviceCharge:      src.serviceCharge      ?? null,
+                  serviceRate:        src.serviceRate        ?? null,
                   gstRate:            src.gstRate            ?? 18,
-                  gstCharge:          src.gstCharge          ?? 0,
+                  gstCharge:          src.gstCharge          ?? null,
                   // API may use extraChargesList (capital L) — normalise to extracharges
                   extracharges: (src.extraChargesList || src.extracharges || []).map((e: any) => ({
                     chargeName:  e.chargeName  || '',
-                    chargeValue: e.chargeValue ?? 0,
-                    chargeRate:  e.chargeRate  ?? 0
+                    chargeValue: e.chargeValue ?? null,
+                    chargeRate:  e.chargeRate  ?? null
                   }))
                 }
               };
@@ -460,6 +470,8 @@ export class CustomerComponent implements OnInit {
       if (!this.customerToUpdate.firstName?.trim()) { this.showUpdateSnackbar('First name is required', true); return false; }
       if (!this.customerToUpdate.lastName?.trim())  { this.showUpdateSnackbar('Last name is required', true); return false; }
       if (!this.customerToUpdate.mobileNumber?.trim())  { this.showUpdateSnackbar('Mobile number is required', true); return false; }
+      if (this.isMobileInvalid(this.customerToUpdate, 'mobileNumber', 'mobileCode')) { this.showUpdateSnackbar(`Mobile number must be ${this.mobileDigits(this.customerToUpdate.mobileCode)} digits for ${this.customerToUpdate.mobileCode}`, true); return false; }
+      if (this.isMobileInvalid(this.customerToUpdate, 'alternateMobileNumber', 'alternateMobileCode')) { this.showUpdateSnackbar(`Alternate mobile must be ${this.mobileDigits(this.customerToUpdate.alternateMobileCode)} digits for ${this.customerToUpdate.alternateMobileCode}`, true); return false; }
       if (!this.customerToUpdate.email?.trim())     { this.showUpdateSnackbar('Email is required', true); return false; }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.customerToUpdate.email)) { this.showUpdateSnackbar('Enter a valid email address', true); return false; }
     }
@@ -499,7 +511,7 @@ export class CustomerComponent implements OnInit {
   }
 
   addUpdateExtraCharge(shiftIndex: number): void {
-    this.customerToUpdate.shiftings[shiftIndex].charges.extracharges.push({ chargeName: '', chargeValue: 0, chargeRate: 0 });
+    this.customerToUpdate.shiftings[shiftIndex].charges.extracharges.push({ chargeName: '', chargeValue: null, chargeRate: null });
   }
 
   removeUpdateExtraCharge(shiftIndex: number, chargeIndex: number): void {
@@ -527,16 +539,25 @@ export class CustomerComponent implements OnInit {
     };
 
     this.customersService.updateCustomer(payload).subscribe({
-      next: () => {
+      next: (res: any) => {
         this.isUpdating = false;
-        this.updateMessage = 'Customer updated successfully.';
-        this.showUpdateForm = false;
-        this.loadCustomers();
+        // The backend always answers HTTP 200 and embeds the real outcome in
+        // responseCode — a 422 (e.g. a negative charge) lands here too, not in `error`.
+        const code = res?.responseCode;
+        if (code === 200 || code === 201) {
+          this.updateMessage = res?.responseMessege || res?.responseMessage || 'Customer updated successfully.';
+          this.showUpdateForm = false;
+          this.loadCustomers();
+        } else {
+          this.updateError = res?.responseMessege || res?.responseMessage || 'Unable to update customer.';
+          this.showUpdateSnackbar(this.updateError, true);
+        }
       },
       error: error => {
         console.error('Update customer failed:', error);
         this.isUpdating = false;
-        this.updateError = error.error?.responseMessege || error.error?.message || 'Unable to update customer.';
+        this.updateError = error.error?.responseMessege || error.error?.responseMessage || error.error?.message || 'Unable to update customer.';
+        this.showUpdateSnackbar(this.updateError, true);
       }
     });
   }
@@ -853,22 +874,22 @@ export class CustomerComponent implements OnInit {
       tokenMoney: 0,
       customerId: null,
       charges: {
-        transportCharge: 0,
-        packingCharge: 0,
-        loadingCharge: 0,
-        unloadingCharge: 0,
-        unpackingCharge: 0,
-        carTransportCharge: 0,
-        riskInsureCharge: 0,
-        storageCharge: 0,
-        statisticalCharge: 0,
-        serviceCharge: 0,
-        serviceRate: 0,
+        transportCharge: null,
+        packingCharge: null,
+        loadingCharge: null,
+        unloadingCharge: null,
+        unpackingCharge: null,
+        carTransportCharge: null,
+        riskInsureCharge: null,
+        storageCharge: null,
+        statisticalCharge: null,
+        serviceCharge: null,
+        serviceRate: null,
         gstRate: 18,
-        gstCharge: 0,
+        gstCharge: null,
         extracharges: [
-          { chargeName: 'Toll Charge', chargeValue: 0, chargeRate: 0 },
-          { chargeName: 'Lift Handling Charge', chargeValue: 0, chargeRate: 0 }
+          { chargeName: 'Toll Charge', chargeValue: null, chargeRate: null },
+          { chargeName: 'Lift Handling Charge', chargeValue: null, chargeRate: null }
         ]
       }
     };
@@ -879,9 +900,9 @@ export class CustomerComponent implements OnInit {
       customerId: null,
       firstName: '',
       lastName: '',
-      mobileCode: '+91',
+      mobileCode: DEFAULT_MOBILE_CODE,
       mobileNumber: '',
-      alternateMobileCode: '+91',
+      alternateMobileCode: DEFAULT_MOBILE_CODE,
       alternateMobileNumber: '',
       mobileNo: '',
       alternateMobileNo: '',
@@ -892,28 +913,67 @@ export class CustomerComponent implements OnInit {
     };
   }
 
-  loadCountryCodes() {
-    this.http.get<any[]>('https://restcountries.com/v3.1/all?fields=name,idd,cca2').subscribe({
-      next: (countries) => {
-        if (Array.isArray(countries)) {
-          this.countryCodes = countries
-            .map(c => {
-              const root = c.idd?.root || '';
-              const suffix = c.idd?.suffixes?.[0] || '';
-              return {
-                name: c.name?.common || '',
-                code: root + suffix,
-                cca2: c.cca2 || ''
-              };
-            })
-            .filter(c => c.name && c.code)
-            .sort((a, b) => a.name.localeCompare(b.name));
+  /** Allowed digits for a mobile code, from the shared mobile-codes config. */
+  mobileDigits(code: string): number {
+    return getMobileDigits(code);
+  }
+
+  mobilePlaceholder(code: string): string {
+    return '0'.repeat(getMobileDigits(code));
+  }
+
+  /** True when the number is present but does not match the code's digit count. */
+  isMobileInvalid(model: any, numberField: string, codeField: string): boolean {
+    const value = model?.[numberField];
+    if (!value) return false;
+    return !getMobilePattern(model?.[codeField]).test(value);
+  }
+
+  /** Keeps typing digit-only and capped at the selected country's length. */
+  onMobileInput(model: any, numberField: string, codeField: string, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digits = sanitizeMobileNumber(input.value, model?.[codeField]);
+    if (input.value !== digits) {
+      input.value = digits;
+    }
+    if (model) model[numberField] = digits;
+  }
+
+  /** Re-trims an already typed number when the country code changes. */
+  onMobileCodeChange(model: any, numberField: string, codeField: string): void {
+    if (!model) return;
+    model[numberField] = sanitizeMobileNumber(model[numberField], model[codeField]);
+  }
+
+  /** Debounced server-driven lookup for a shifting's From/To City field. */
+  onCityInput(model: any, field: 'shiftFromCity' | 'shiftToCity'): void {
+    this.activeCityTarget = { model, field };
+    clearTimeout(this.citySearchTimer);
+    const term = model?.[field];
+    this.citySearchTimer = setTimeout(() => {
+      this.placeLookup.searchCities(term).subscribe(suggestions => {
+        if (this.activeCityTarget?.model === model && this.activeCityTarget?.field === field) {
+          this.citySuggestions = suggestions;
         }
-      },
-      error: (err) => {
-        console.error('Failed to load country codes', err);
-      }
-    });
+      });
+    }, 400);
+  }
+
+  selectCityForShift(place: PlaceSuggestion): void {
+    if (!this.activeCityTarget) return;
+    const { model, field } = this.activeCityTarget;
+    model[field] = place.name;
+    this.citySuggestions = [];
+    this.activeCityTarget = null;
+  }
+
+  isActiveCityField(model: any, field: 'shiftFromCity' | 'shiftToCity'): boolean {
+    return this.activeCityTarget?.model === model && this.activeCityTarget?.field === field && this.citySuggestions.length > 0;
+  }
+
+  /** Lets a mousedown-selected suggestion register before the list is cleared on blur. */
+  hideCitySuggestionsSoon(): void {
+    setTimeout(() => { this.citySuggestions = []; this.activeCityTarget = null; }, 150);
   }
 
   parsePhoneNumber(fullNo: string): { code: string, number: string } {

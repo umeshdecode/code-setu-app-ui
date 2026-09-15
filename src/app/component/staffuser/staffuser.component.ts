@@ -7,12 +7,13 @@ import { StaffuserServiceService } from 'src/app/services/staffuser-service';
 import { GenericDataDTO } from 'src/app/models/generic-data-dto';
 import { ShowpopupService } from 'src/app/services/showpopup.service';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { RoleserviceService } from 'src/app/services/role/roleservice.service';
 import { DepartmentService } from 'src/app/services/department.service';
 import { CompanyService } from 'src/app/services/company.service';
 import { forkJoin } from 'rxjs';
-import { MOBILE_COUNTRIES, MobileCountry, getMobileDigits } from 'src/app/models/mobile-codes';
+import { debounceTime, distinctUntilChanged, filter, switchMap } from 'rxjs/operators';
+import { PlaceLookupService, PlaceSuggestion } from 'src/app/services/place-lookup.service';
+import { MOBILE_COUNTRIES, MobileCountry, getCountryFlag as countryFlag, getMobileDigits, getMobilePattern, sanitizeMobileNumber } from 'src/app/models/mobile-codes';
 
 
 @Component({
@@ -41,18 +42,28 @@ export class StaffuserComponent implements OnInit {
 
   roles: any[] = [];
   departments: any[] = [];
+  /**
+   * The designations tblm_staff.staff_type actually holds (see the comment on
+   * Staff.java). SUPERADMIN is excluded — it is seeded once and never assignable here.
+   */
+  readonly staffTypeOptions = [
+    { value: 'COMPANY_ADMIN', label: 'Company Admin' },
+    { value: 'MANAGER', label: 'Manager' },
+    { value: 'DRIVER', label: 'Driver' },
+    { value: 'ACCOUNTANT', label: 'Accountant' }
+  ];
   mobileCountries: MobileCountry[] = MOBILE_COUNTRIES;
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private staffservice: StaffuserServiceService,
     private cd: ChangeDetectorRef,
-    private snackBar: MatSnackBar,
     private route: ActivatedRoute,
     private roleservice: RoleserviceService,
     private departmentservice: DepartmentService,
     private companyService: CompanyService,
-    private shoepopup: ShowpopupService
+    private shoepopup: ShowpopupService,
+    private placeLookup: PlaceLookupService
   ) {
     // this.initializeForm();
 
@@ -118,7 +129,7 @@ export class StaffuserComponent implements OnInit {
       address: [''],
       pincode: [null, [Validators.pattern('^[0-9]{6}$')]],
       departmentId: [null],
-      staffType: ['STAFF', Validators.required],
+      staffType: ['', Validators.required],
       isActive: [true],
       dob: [null]
     });
@@ -139,27 +150,11 @@ export class StaffuserComponent implements OnInit {
 
 
   getCountryFlag(code: string): string {
-    const flags: { [key: string]: string } = {
-      '+91': '🇮🇳',
-      '+1': '🇺🇸',
-      '+44': '🇬🇧',
-      '+971': '🇦🇪',
-      '+61': '🇦🇺',
-      '+65': '🇸🇬',
-      '+60': '🇲🇾',
-      '+82': '🇰🇷',
-      '+81': '🇯🇵',
-      '+49': '🇩🇪',
-      '+33': '🇫🇷',
-      '+39': '🇮🇹',
-      '+34': '🇪🇸',
-      '+55': '🇧🇷',
-      '+7': '🇷🇺',
-      '+86': '🇨🇳'
-    };
-    return flags[code] || '🌐';
+    return countryFlag(code);
   }
 
+
+  citySuggestions: PlaceSuggestion[] = [];
 
   buildForm() {
     this.staffForm = this.fb.group({
@@ -184,7 +179,7 @@ export class StaffuserComponent implements OnInit {
       departmentId: ['', Validators.required],
       companyId: [null],
 
-      staffType: ['PERMANENT'],
+      staffType: ['', Validators.required],
       isActive: [true],
       salary: [null],
 
@@ -193,9 +188,26 @@ export class StaffuserComponent implements OnInit {
       profileImageUrl: ['']
     });
 
+    // Server-driven city lookup — no hardcoded city list.
+    this.staffForm.get('city')?.valueChanges.pipe(
+      debounceTime(400),
+      distinctUntilChanged(),
+      filter(val => typeof val === 'string'),
+      switchMap(val => this.placeLookup.searchCities(val))
+    ).subscribe(suggestions => {
+      this.citySuggestions = suggestions;
+    });
+
     // Keep mobile validation in sync with the selected country code.
     this.staffForm.get('mobileCode')?.valueChanges.subscribe(() => {
       this.refreshMobileValidators();
+      const code = this.staffForm.get('mobileCode')?.value;
+      ['mobileNumber', 'alternateMobile'].forEach(field => {
+        const control = this.staffForm.get(field);
+        if (control?.value) {
+          control.setValue(sanitizeMobileNumber(control.value, code), { emitEvent: false });
+        }
+      });
     });
   }
 
@@ -203,8 +215,12 @@ export class StaffuserComponent implements OnInit {
     return getMobileDigits(this.staffForm?.get('mobileCode')?.value);
   }
 
+  get mobilePlaceholder(): string {
+    return '0'.repeat(this.mobileDigits);
+  }
+
   getMobileInputPattern(): RegExp {
-    return new RegExp(`^[0-9]{${this.mobileDigits}}$`);
+    return getMobilePattern(this.staffForm?.get('mobileCode')?.value);
   }
 
   private refreshMobileValidators(): void {
@@ -222,11 +238,22 @@ export class StaffuserComponent implements OnInit {
     }
   }
 
+  selectCity(cityName: string): void {
+    // The control already holds cityName via its own value accessor; only
+    // the state needs to be looked up and patched in alongside it.
+    const place = this.citySuggestions.find(p => p.name === cityName);
+    if (place?.state) {
+      this.staffForm.get('state')?.setValue(place.state, { emitEvent: false });
+    }
+    this.citySuggestions = [];
+  }
+
   onMobileInput(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const digits = input.value.replace(/[^0-9]/g, '').slice(0, this.mobileDigits);
+    const digits = sanitizeMobileNumber(input.value, this.staffForm?.get('mobileCode')?.value);
     if (input.value !== digits) {
       input.value = digits;
+      this.staffForm?.get('mobileNumber')?.setValue(digits);
     }
   }
   loadStaffById() {
@@ -302,7 +329,6 @@ export class StaffuserComponent implements OnInit {
       this.staffForm.reset({
         mobileCode: '+91',
         country: 'India',
-        staffType: 'STAFF',
         isActive: true
       });
     }
@@ -557,7 +583,7 @@ export class StaffuserComponent implements OnInit {
           } else if (res && res.responseMessage) {
             this.shoepopup.showResponsePopup(res.responseMessage, res.responseCode);
           } else {
-            this.snackBar.open('Staff Updated Successfully', 'Close', { duration: 3000 });
+            this.shoepopup.showSuccess('Staff Updated Successfully');
           }
           this.router.navigate(['/staffdetails']);
         },
@@ -580,7 +606,7 @@ export class StaffuserComponent implements OnInit {
           } else if (res && res.responseMessage) {
             this.shoepopup.showResponsePopup(res.responseMessage, res.responseCode);
           } else {
-            this.snackBar.open('Staff Created Successfully', 'Close', { duration: 3000 });
+            this.shoepopup.showSuccess('Staff Created Successfully');
           }
           this.router.navigate(['/staffdetails']);
         },

@@ -33,17 +33,21 @@
                     <div class="mobile-field-container">
                         <mat-form-field appearance="outline" class="mobile-code-field">
                             <mat-label>Code</mat-label>
-                            <mat-select [(ngModel)]="contact.mobileCode" name="mobileCode" required>
+                            <mat-select [(ngModel)]="contact.mobileCode" name="mobileCode" required
+                                (selectionChange)="onMobileCodeChange()">
                                 <mat-option *ngFor="let c of countryCodes" [value]="c.code">
-                                    {{c.cca2 ? c.cca2 + ' (' + c.code + ')' : c.code + ' (' + c.name + ')'}}
+                                    {{ c.flag }} {{ c.code }}
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
 
                         <mat-form-field appearance="outline" class="mobile-number-field">
                             <mat-label>Mobile Number</mat-label>
-                            <input matInput type="tel" name="mobilenumber" placeholder="1234567890" [(ngModel)]="contact.mobilenumber" required>
+                            <input matInput type="tel" name="mobilenumber" [placeholder]="mobilePlaceholder"
+                                [(ngModel)]="contact.mobilenumber" (input)="onMobileInput($event)"
+                                [maxLength]="mobileDigits" inputmode="numeric" required>
                             <mat-icon matSuffix>phone</mat-icon>
+                            <mat-hint *ngIf="contact.mobilenumber && !isMobileValid">Mobile number must be {{ mobileDigits }} digits</mat-hint>
                         </mat-form-field>
                     </div>
 

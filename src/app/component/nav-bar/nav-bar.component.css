@@ -1,7 +1,7 @@
 /* Sticky Navbar */
 .mat-toolbar {
-    background: var(--app-header-gradient) !important;
-    color: #ffffff !important;
+    background: var(--app-primary) !important;
+    color: var(--app-primary-contrast) !important;
     box-shadow: 0 4px 20px var(--app-primary-shadow);
     transition: all 0.3s ease;
     position: sticky;
@@ -99,7 +99,7 @@
 
 /* Scrolled navbar effect */
 .mat-toolbar.scrolled {
-    background: var(--app-header-gradient) !important;
+    background: var(--app-primary) !important;
     box-shadow: 0 6px 25px var(--app-primary-shadow);
 }
 
@@ -118,7 +118,7 @@
     top: 64px;
     left: 0;
     right: 0;
-    background: var(--app-sidebar-gradient);
+    background: var(--app-sidebar-bg);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     padding: 20px 0;
     max-height: calc(100vh - 64px);
@@ -292,14 +292,14 @@
   display: flex;
   align-items: center;
   padding: 16px !important;
-  background: var(--app-action-gradient);
-  color: white;
+  background: var(--app-primary);
+  color: var(--app-primary-contrast);
   cursor: default !important;
   gap: 12px;
 }
 
 .profile-header:hover {
-  background: var(--app-action-gradient) !important;
+  background: var(--app-primary) !important;
 }
 
 .avatar-circle {
