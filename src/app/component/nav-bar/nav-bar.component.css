@@ -162,6 +162,14 @@
     margin-right: 12px;
 }
 
+.mobile-services-submenu {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.mobile-services-submenu a {
+    padding-left: 60px !important;
+}
+
 /* Tablet and Small Desktop (1024px and below) */
 @media (max-width: 1024px) {
     .mat-toolbar a[mat-button],
@@ -243,6 +251,12 @@
 .mat-menu-item:hover {
     background-color: var(--app-primary-soft) !important;
     color: var(--app-primary) !important;
+}
+
+.services-menu-panel .mat-menu-item mat-icon {
+    margin-right: 12px;
+    color: var(--app-primary);
+    vertical-align: middle;
 }
 
 /* Profile Button */

@@ -9,22 +9,17 @@
     <!-- Desktop Navigation Links -->
     <div class="nav-links">
         <a mat-button routerLink="/">Home</a>
-        <a mat-button routerLink="/dashboard">Dashboard</a>
 
         <a mat-button routerLink="/services" #servicesTrigger="matMenuTrigger" [matMenuTriggerFor]="servicesMenu"
             (mouseenter)="servicesTrigger.openMenu()">
             Services
         </a>
-        <mat-menu #servicesMenu="matMenu" [overlapTrigger]="false">
+        <mat-menu #servicesMenu="matMenu" [overlapTrigger]="false" class="services-menu-panel">
             <div (mouseleave)="servicesTrigger.closeMenu()">
-                <button mat-menu-item routerLink="#">Generate Bilty</button>
-                <button mat-menu-item routerLink="/quotations">Create Quotation</button>
-                <button mat-menu-item routerLink="#">Invoicing</button>
-                <button mat-menu-item routerLink="#">Manage Staff</button>
-                <button mat-menu-item routerLink="#">Manage Vehicles</button>
-                <button mat-menu-item routerLink="#">Ops Documents</button>
-                <button mat-menu-item routerLink="#">Create Customer</button>
-                <button mat-menu-item routerLink="#">Pending Approvals</button>
+                <button mat-menu-item *ngFor="let service of services" [routerLink]="service.route">
+                    <mat-icon>{{ service.icon }}</mat-icon>
+                    {{ service.label }}
+                </button>
             </div>
         </mat-menu>
 
@@ -120,23 +115,15 @@
     <a mat-button routerLink="/" (click)="closeMobileMenu()">
         <mat-icon>home</mat-icon> Home
     </a>
-    <a mat-button routerLink="/dashboard" (click)="closeMobileMenu()">
-        <mat-icon>dashboard</mat-icon> Dashboard
-    </a>
 
     <!-- Services in mobile menu -->
     <a mat-button (click)="toggleServicesSubmenu()">
         <mat-icon>{{ servicesSubmenuOpen ? 'expand_less' : 'expand_more' }}</mat-icon> Services
     </a>
-    <div *ngIf="servicesSubmenuOpen" style="background: rgba(0,0,0,0.1);">
-        <a mat-button routerLink="#" (click)="closeMobileMenu()" style="padding-left: 60px !important;">Generate Bilty</a>
-        <a mat-button routerLink="/quotations" (click)="closeMobileMenu()" style="padding-left: 60px !important;">Create Quotation</a>
-        <a mat-button routerLink="#" (click)="closeMobileMenu()" style="padding-left: 60px !important;">Invoicing</a>
-        <a mat-button routerLink="#" (click)="closeMobileMenu()" style="padding-left: 60px !important;">Manage Staff</a>
-        <a mat-button routerLink="#" (click)="closeMobileMenu()" style="padding-left: 60px !important;">Manage Vehicles</a>
-        <a mat-button routerLink="#" (click)="closeMobileMenu()" style="padding-left: 60px !important;">Ops Documents</a>
-        <a mat-button routerLink="#" (click)="closeMobileMenu()" style="padding-left: 60px !important;">Create Customer</a>
-        <a mat-button routerLink="#" (click)="closeMobileMenu()" style="padding-left: 60px !important;">Pending Approvals</a>
+    <div *ngIf="servicesSubmenuOpen" class="mobile-services-submenu">
+        <a mat-button *ngFor="let service of services" [routerLink]="service.route" (click)="closeMobileMenu()">
+            <mat-icon>{{ service.icon }}</mat-icon> {{ service.label }}
+        </a>
     </div>
 
     <a mat-button routerLink="/" fragment="app-featurescreen" (click)="closeMobileMenu()">

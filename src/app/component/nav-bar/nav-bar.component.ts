@@ -38,6 +38,23 @@ export class NavBarComponent implements OnInit {
   public mobileMenuOpen = false;
   public servicesSubmenuOpen = false;
 
+  /**
+   * The product's actual service pillars — each maps to a real, working route
+   * (per app-routing.module.ts). Internal admin/config screens (Roles,
+   * Permissions, Department, System Config) are deliberately excluded: they
+   * are not customer-facing services. Every route here is AuthGuard-protected,
+   * so an unauthenticated visitor is bounced to /login rather than a dead end.
+   */
+  readonly services: ReadonlyArray<{ icon: string; label: string; route: string }> = [
+    { icon: 'groups', label: 'Customer Management', route: '/customers' },
+    { icon: 'request_quote', label: 'Quotation & Billing', route: '/quotations' },
+    { icon: 'route', label: 'Trip & Shifting Management', route: '/trips' },
+    { icon: 'local_shipping', label: 'Fleet & Driver Management', route: '/vehicle-management' },
+    { icon: 'badge', label: 'Staff Management', route: '/staffdetails' },
+    { icon: 'corporate_fare', label: 'Multi-Branch Management', route: '/company-list' },
+    { icon: 'category', label: 'Subscription Plans', route: '/plan' }
+  ];
+
 
 ngOnInit(): void {
   this.loginservice.loggedIn$.subscribe(status => {
