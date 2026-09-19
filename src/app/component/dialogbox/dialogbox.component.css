@@ -63,7 +63,7 @@
 
 .btn-delete {
   background: var(--app-error) !important;
-  color: #ffffff !important;
+  color: var(--app-primary-contrast) !important;
   border: none !important;
   padding: 0 18px !important;
   height: 42px !important;
@@ -72,7 +72,8 @@
 }
 
 .btn-delete:hover {
-  background: #dc2626 !important;
+  background: var(--app-error) !important;
+  filter: brightness(0.9);
 }
 
 @media (max-width: 600px) {

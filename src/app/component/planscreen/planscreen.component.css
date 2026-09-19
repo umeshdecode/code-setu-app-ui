@@ -34,7 +34,7 @@
 
 /* Pricing Page Wrapper */
 .pricing-wrapper {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--app-header-gradient);
   min-height: 100vh;
   padding: 80px 0;
   position: relative;
@@ -127,7 +127,7 @@
 .card {
   border-radius: 24px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--app-surface);
   backdrop-filter: blur(10px);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -143,8 +143,8 @@
 .col:nth-child(2) .card {
   animation-delay: 0.2s;
   transform: scale(1.05);
-  border: 2px solid #667eea;
-  box-shadow: 0 25px 70px rgba(102, 126, 234, 0.3);
+  border: 2px solid var(--app-primary);
+  box-shadow: 0 25px 70px var(--app-primary-soft);
 }
 
 .col:nth-child(3) .card {
@@ -169,7 +169,7 @@
   left: 0;
   right: 0;
   height: 6px;
-  background: linear-gradient(90deg, #667eea, #764ba2);
+  background: var(--app-header-gradient);
 }
 
 .card:hover {
@@ -179,7 +179,7 @@
 
 .col:nth-child(2) .card:hover {
   transform: translateY(-12px) scale(1.07);
-  box-shadow: 0 35px 90px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 35px 90px var(--app-primary-soft);
 }
 
 /* Popular Badge for Middle Plan */
@@ -188,14 +188,14 @@
   position: absolute;
   top: 20px;
   right: -35px;
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: var(--app-action-gradient);
   color: white;
   padding: 8px 40px;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 1px;
   transform: rotate(45deg);
-  box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
 /* Card Content */
@@ -207,7 +207,7 @@
 .card-title {
   font-size: 1.8rem !important;
   font-weight: 700 !important;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--app-header-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -219,7 +219,7 @@
 .price-large {
   font-size: 3.5rem;
   font-weight: 800;
-  color: #2d3748;
+  color: var(--app-text);
   margin: 20px 0;
   line-height: 1;
   display: flex;
@@ -231,7 +231,7 @@
 .price-duration {
   font-size: 1.1rem;
   font-weight: 400;
-  color: #718096;
+  color: var(--app-muted-text);
   align-self: flex-end;
   margin-bottom: 8px;
 }
@@ -239,7 +239,7 @@
 /* Divider */
 .divider {
   height: 2px;
-  background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+  background: linear-gradient(90deg, transparent, var(--app-border), transparent);
   margin: 30px 0;
   border: none;
 }
@@ -257,20 +257,20 @@
   display: flex;
   align-items: center;
   font-size: 1rem;
-  color: #4a5568;
+  color: var(--app-muted-text);
   font-weight: 500;
   transition: all 0.3s ease;
 }
 
 .feature-list li:hover {
-  color: #667eea;
+  color: var(--app-primary);
   transform: translateX(5px);
 }
 
 .feature-list i {
   margin-right: 12px;
   font-size: 1.4rem;
-  color: #48bb78 !important;
+  color: var(--app-success) !important;
   flex-shrink: 0;
 }
 
@@ -288,11 +288,11 @@
   font-size: 1.1rem !important;
   font-weight: 600 !important;
   border-radius: 12px !important;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  background: var(--app-action-gradient) !important;
   color: white !important;
   text-transform: uppercase;
   letter-spacing: 1px;
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4) !important;
+  box-shadow: 0 8px 20px var(--app-primary-soft) !important;
   transition: all 0.3s ease !important;
   border: none;
   position: relative;
@@ -315,7 +315,7 @@
 
 .btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 30px rgba(102, 126, 234, 0.5) !important;
+  box-shadow: 0 12px 30px var(--app-primary-soft) !important;
 }
 
 .btn:hover::before {
@@ -328,12 +328,12 @@
 
 /* Special styling for middle card button */
 .col:nth-child(2) .btn {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
-  box-shadow: 0 8px 20px rgba(245, 87, 108, 0.4) !important;
+  background: var(--app-action-gradient) !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
 }
 
 .col:nth-child(2) .btn:hover {
-  box-shadow: 0 12px 30px rgba(245, 87, 108, 0.5) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5) !important;
 }
 
 /* Responsive Design */
@@ -341,11 +341,11 @@
   .pricing-header h1 {
     font-size: 3rem;
   }
-  
+
   .col:nth-child(2) .card {
     transform: scale(1);
   }
-  
+
   .col:nth-child(2) .card:hover {
     transform: translateY(-12px) scale(1.02);
   }
@@ -355,36 +355,36 @@
   .pricing-wrapper {
     padding: 60px 0;
   }
-  
+
   .pricing-header {
     margin-bottom: 40px;
   }
-  
+
   .pricing-header h1 {
     font-size: 2.5rem;
   }
-  
+
   .pricing-header p {
     font-size: 1.1rem;
   }
-  
+
   .row {
     gap: 25px;
   }
-  
+
   .col {
     min-width: 100%;
     max-width: 100%;
   }
-  
+
   .card-content {
     padding: 35px 25px;
   }
-  
+
   .price-large {
     font-size: 3rem;
   }
-  
+
   .col:nth-child(2) .card::after {
     top: 15px;
     right: -40px;
@@ -397,23 +397,23 @@
   .pricing-header h1 {
     font-size: 2rem;
   }
-  
+
   .pricing-header p {
     font-size: 1rem;
   }
-  
+
   .card-title {
     font-size: 1.5rem !important;
   }
-  
+
   .price-large {
     font-size: 2.5rem;
   }
-  
+
   .feature-list li {
     font-size: 0.95rem;
   }
-  
+
   .btn {
     padding: 14px 25px !important;
     font-size: 1rem !important;
@@ -448,7 +448,7 @@
 
 /* Modal Content Container */
 .modal-content {
-  background: white;
+  background: var(--app-surface);
   border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   max-width: 500px;
@@ -477,7 +477,7 @@
   left: 0;
   right: 0;
   height: 5px;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #E94E77 100%);
+  background: var(--app-header-gradient);
 }
 
 /* Close Button */
@@ -487,7 +487,7 @@
   right: 20px;
   font-size: 28px;
   font-weight: 300;
-  color: #718096;
+  color: var(--app-muted-text);
   cursor: pointer;
   width: 32px;
   height: 32px;
@@ -500,8 +500,8 @@
 }
 
 .close:hover {
-  background-color: #f7fafc;
-  color: #2d3748;
+  background-color: var(--app-surface-muted);
+  color: var(--app-text);
   transform: rotate(90deg);
 }
 
@@ -511,14 +511,14 @@
   margin: 0;
   font-size: 1.75rem;
   font-weight: 700;
-  color: #2d3748;
-  border-bottom: 1px solid #e2e8f0;
+  color: var(--app-text);
+  border-bottom: 1px solid var(--app-border);
 }
 
 /* Payment Breakdown Section */
 .payment-breakdown {
   padding: 30px;
-  background: #f8f9fa;
+  background: var(--app-surface-muted);
 }
 
 /* Detail Rows */
@@ -528,7 +528,7 @@
   align-items: center;
   padding: 14px 0;
   font-size: 1rem;
-  color: #4a5568;
+  color: var(--app-muted-text);
 }
 
 .detail-row span:first-child {
@@ -537,21 +537,21 @@
 
 .detail-row .amount {
   font-weight: 600;
-  color: #2d3748;
+  color: var(--app-text);
   font-size: 1.05rem;
 }
 
 /* Divider */
 .divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, #cbd5e0, transparent);
+  background: linear-gradient(90deg, transparent, var(--app-border), transparent);
   margin: 20px 0;
 }
 
 /* Total Row */
 .total-row {
   padding: 18px 20px;
-  background: white;
+  background: var(--app-surface);
   border-radius: 10px;
   margin-top: 15px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -559,12 +559,12 @@
 
 .total-row strong {
   font-size: 1.1rem;
-  color: #2d3748;
+  color: var(--app-text);
 }
 
 .total-row .amount {
   font-size: 1.5rem;
-  color: #667eea;
+  color: var(--app-primary);
   font-weight: 700;
 }
 
@@ -578,15 +578,15 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   border-radius: 10px !important;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  background: var(--app-action-gradient) !important;
   color: white !important;
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3) !important;
+  box-shadow: 0 8px 20px var(--app-primary-soft) !important;
   transition: all 0.3s ease !important;
 }
 
 .next-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4) !important;
+  box-shadow: 0 12px 30px var(--app-primary-soft) !important;
 }
 
 .next-button:active {
@@ -597,7 +597,7 @@
 .plan-badge {
   display: inline-block;
   padding: 6px 14px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--app-action-gradient);
   color: white;
   border-radius: 20px;
   font-size: 0.9rem;
@@ -609,19 +609,19 @@
 /* Tax Breakdown Styling */
 .tax-row {
   font-size: 0.95rem;
-  color: #718096;
+  color: var(--app-muted-text);
   padding: 10px 0;
 }
 
 .tax-row .amount {
   font-size: 1rem;
-  color: #4a5568;
+  color: var(--app-muted-text);
 }
 
 /* Info Text */
 .info-text {
   font-size: 0.85rem;
-  color: #718096;
+  color: var(--app-muted-text);
   text-align: center;
   padding: 0 30px 20px;
   line-height: 1.5;
@@ -633,13 +633,13 @@
     padding: 10px;
     align-items: flex-end;
   }
-  
+
   .modal-content {
     border-radius: 16px 16px 0 0;
     max-width: 100%;
     animation: slideUpMobile 0.3s ease-out;
   }
-  
+
   @keyframes slideUpMobile {
     from {
       transform: translateY(100%);
@@ -648,40 +648,40 @@
       transform: translateY(0);
     }
   }
-  
+
   .modal-content h2 {
     padding: 30px 20px 20px 20px;
     font-size: 1.5rem;
   }
-  
+
   .payment-breakdown {
     padding: 20px;
   }
-  
+
   .detail-row {
     padding: 12px 0;
     font-size: 0.95rem;
   }
-  
+
   .total-row {
     padding: 15px;
   }
-  
+
   .total-row strong {
     font-size: 1rem;
   }
-  
+
   .total-row .amount {
     font-size: 1.3rem;
   }
-  
+
   .next-button {
     width: calc(100% - 40px);
     margin: 0 20px 20px 20px;
     padding: 14px !important;
     font-size: 1rem !important;
   }
-  
+
   .close {
     top: 15px;
     right: 15px;
