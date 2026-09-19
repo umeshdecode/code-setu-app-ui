@@ -9,7 +9,6 @@
     <!-- Desktop Navigation Links -->
     <div class="nav-links">
         <a mat-button routerLink="/">Home</a>
-        <a mat-button routerLink="/dashboard">Dashboard</a>
 
         <a mat-button routerLink="/services" #servicesTrigger="matMenuTrigger" [matMenuTriggerFor]="servicesMenu"
             (mouseenter)="servicesTrigger.openMenu()">
@@ -119,9 +118,6 @@
 <div class="mobile-menu" [class.active]="mobileMenuOpen">
     <a mat-button routerLink="/" (click)="closeMobileMenu()">
         <mat-icon>home</mat-icon> Home
-    </a>
-    <a mat-button routerLink="/dashboard" (click)="closeMobileMenu()">
-        <mat-icon>dashboard</mat-icon> Dashboard
     </a>
 
     <!-- Services in mobile menu -->
