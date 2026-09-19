@@ -19,14 +19,14 @@
 
 .vehicle-map-header p {
   margin: 4px 0 0;
-  color: #64748b;
+  color: var(--app-muted-text);
 }
 
 google-map {
   display: block;
   min-height: 420px;
   overflow: hidden;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--app-border);
   border-radius: 8px;
 }
 
@@ -37,15 +37,15 @@ google-map {
   min-height: 420px;
   padding: 32px;
   text-align: center;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--app-border);
   border-radius: 8px;
-  background: #f8fafc;
+  background: var(--app-surface-muted);
 }
 
 .map-unavailable mat-icon {
   width: 40px;
   height: 40px;
-  color: #f97316;
+  color: var(--app-primary);
   font-size: 40px;
 }
 
@@ -56,5 +56,5 @@ google-map {
 
 .map-unavailable p {
   margin: 0;
-  color: #64748b;
+  color: var(--app-muted-text);
 }

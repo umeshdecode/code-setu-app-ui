@@ -15,8 +15,8 @@ export class ThemeCustomizerComponent implements OnInit, OnDestroy {
   readonly paletteSwatches = [
     { label: 'Primary', hex: '#4663ac' },
     { label: 'Surface tint', hex: '#e1f1fd' },
-    { label: 'Muted', hex: '#d2deeb' },
-    { label: 'Border', hex: '#c8d9ed' },
+    { label: 'Muted', hex: '#c8d9ed' },
+    { label: 'Border', hex: '#d2deeb' },
     { label: 'Border strong', hex: '#c1d8f0' }
   ];
 

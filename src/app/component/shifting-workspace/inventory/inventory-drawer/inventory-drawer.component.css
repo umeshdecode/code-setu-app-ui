@@ -11,7 +11,7 @@
   right: 0;
   width: 360px;
   height: 100vh;
-  background: #fff;
+  background: var(--app-surface);
   z-index: 1001;
   display: flex;
   flex-direction: column;
@@ -29,20 +29,20 @@
   justify-content: space-between;
   align-items: center;
   padding: 18px 20px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--app-border);
 }
 
 .drawer-title {
   font-size: 15px;
   font-weight: 700;
-  color: #2d3748;
+  color: var(--app-text);
 }
 
 .drawer-close {
   background: none;
   border: none;
   cursor: pointer;
-  color: #94a3b8;
+  color: var(--app-muted-text);
   display: flex;
   align-items: center;
 }
@@ -63,7 +63,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #667eea;
+  color: var(--app-primary);
   margin-bottom: 4px;
 }
 
@@ -76,25 +76,25 @@
 .drawer-field label {
   font-size: 11px;
   font-weight: 600;
-  color: #94a3b8;
+  color: var(--app-muted-text);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .drawer-field input, .drawer-field select, .drawer-field textarea {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--app-border);
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 13px;
-  color: #2d3748;
-  background: #f8fafc;
+  color: var(--app-text);
+  background: var(--app-surface-muted);
   outline: none;
   resize: vertical;
 }
 
 .drawer-field input:focus, .drawer-field select:focus, .drawer-field textarea:focus {
-  border-color: #667eea;
-  background: #fff;
+  border-color: var(--app-primary);
+  background: var(--app-surface);
 }
 
 .status-badge {
@@ -106,14 +106,14 @@
   text-transform: uppercase;
 }
 
-.status-packed { background: #e0f2fe; color: #0369a1; }
-.status-loaded { background: #dcfce7; color: #15803d; }
-.status-delivered { background: #f0fdf4; color: #16a34a; }
-.status-pending { background: #f1f5f9; color: #64748b; }
+.status-packed { background: var(--app-info-soft); color: var(--app-info); }
+.status-loaded { background: var(--app-success-soft); color: var(--app-success); }
+.status-delivered { background: var(--app-success-soft); color: var(--app-success); }
+.status-pending { background: var(--app-neutral-soft); color: var(--app-neutral); }
 
 .drawer-footer {
   padding: 16px 20px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--app-border);
   display: flex;
   justify-content: flex-end;
   gap: 10px;
@@ -121,10 +121,10 @@
 
 .cancel-btn {
   padding: 8px 18px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--app-border);
   border-radius: 8px;
-  background: #fff;
-  color: #718096;
+  background: var(--app-surface);
+  color: var(--app-muted-text);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -134,8 +134,8 @@
   padding: 8px 20px;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
+  background: var(--app-action-gradient);
+  color: var(--app-primary-contrast);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;

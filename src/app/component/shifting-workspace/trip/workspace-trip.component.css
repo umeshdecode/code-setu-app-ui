@@ -4,10 +4,10 @@
   align-items: center;
   padding: 60px 0;
   gap: 12px;
-  color: #94a3b8;
+  color: var(--app-muted-text);
 }
 
-.no-trip-icon { font-size: 52px; color: #e2e8f0; }
+.no-trip-icon { font-size: 52px; color: var(--app-border); }
 .no-trip-panel p { font-size: 14px; }
 
 .create-trip-btn {
@@ -17,16 +17,16 @@
   padding: 10px 22px;
   border: none;
   border-radius: 10px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
+  background: var(--app-header-gradient);
+  color: var(--app-primary-contrast);
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
 }
 
 .create-form-panel {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--app-surface-muted);
+  border: 1px solid var(--app-border);
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 20px;
@@ -35,7 +35,7 @@
 .form-title {
   font-size: 14px;
   font-weight: 700;
-  color: #2d3748;
+  color: var(--app-text);
   margin-bottom: 14px;
 }
 
@@ -46,26 +46,26 @@
 }
 
 .field-group { display: flex; flex-direction: column; gap: 4px; }
-.field-group label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; }
+.field-group label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--app-muted-text); }
 .field-group input {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--app-border);
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 13px;
-  color: #2d3748;
-  background: #fff;
+  color: var(--app-text);
+  background: var(--app-surface);
   outline: none;
 }
-.field-group input:focus { border-color: #667eea; }
+.field-group input:focus { border-color: var(--app-primary); }
 
 .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px; }
 
 .cancel-btn {
   padding: 8px 18px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--app-border);
   border-radius: 8px;
-  background: #fff;
-  color: #718096;
+  background: var(--app-surface);
+  color: var(--app-muted-text);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -75,8 +75,8 @@
   padding: 8px 20px;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
+  background: var(--app-header-gradient);
+  color: var(--app-primary-contrast);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
@@ -102,8 +102,8 @@
 }
 
 .meta-item { display: flex; flex-direction: column; gap: 2px; }
-.meta-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; }
-.meta-val { font-size: 13px; font-weight: 700; color: #2d3748; }
+.meta-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--app-muted-text); }
+.meta-val { font-size: 13px; font-weight: 700; color: var(--app-text); }
 
 .status-pill {
   display: inline-flex;
@@ -111,8 +111,8 @@
   padding: 3px 12px;
   font-size: 11px;
   font-weight: 700;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
+  background: var(--app-header-gradient);
+  color: var(--app-primary-contrast);
 }
 
 .open-trip-btn {
@@ -120,10 +120,10 @@
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--app-border);
   border-radius: 8px;
-  background: #fff;
-  color: #667eea;
+  background: var(--app-surface);
+  color: var(--app-primary);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
@@ -136,7 +136,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #94a3b8;
+  color: var(--app-muted-text);
   margin-bottom: 10px;
 }
 
@@ -151,28 +151,28 @@
   flex: 1;
   min-width: 200px;
   height: 36px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--app-border);
   border-radius: 8px;
   padding: 0 12px;
   font-size: 13px;
-  color: #2d3748;
-  background: #fff;
+  color: var(--app-text);
+  background: var(--app-surface);
   outline: none;
 }
 
 .transition-btn {
   padding: 7px 16px;
-  border: 1px solid #667eea;
+  border: 1px solid var(--app-primary);
   border-radius: 8px;
-  background: #fff;
-  color: #667eea;
+  background: var(--app-surface);
+  color: var(--app-primary);
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   transition: background 0.15s;
 }
 
-.transition-btn:hover { background: #667eea; color: #fff; }
+.transition-btn:hover { background: var(--app-primary); color: var(--app-primary-contrast); }
 
-.tab-error { color: #dc2626; font-size: 13px; margin-bottom: 10px; }
-.tab-success { color: #16a34a; font-size: 13px; margin-bottom: 10px; }
+.tab-error { color: var(--app-error); font-size: 13px; margin-bottom: 10px; }
+.tab-success { color: var(--app-success); font-size: 13px; margin-bottom: 10px; }

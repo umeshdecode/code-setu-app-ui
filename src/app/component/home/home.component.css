@@ -8,7 +8,7 @@ section {
 
 /* Plan Price Section */
 .plan-price-wrapper {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--app-header-gradient);
   min-height: 100vh;
   padding: 80px 0;
   position: relative;
@@ -34,14 +34,14 @@ section {
   left: 0;
   right: 0;
   height: 100px;
-  background: linear-gradient(to bottom, transparent, #f8f9fa);
+  background: linear-gradient(to bottom, transparent, var(--app-surface-muted));
   pointer-events: none;
   z-index: 1;
 }
 
 /* Download Section */
 .app-downloadscreen-wrapper {
-  background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 50%, #f8f9fa 100%);
+  background: var(--app-surface-muted);
   min-height: 100vh;
   padding: 100px 0;
   position: relative;
@@ -54,9 +54,9 @@ section {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
-    radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.05) 0%, transparent 50%);
+  background-image:
+    radial-gradient(circle at 20% 50%, var(--app-primary-soft) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, var(--app-primary-soft) 0%, transparent 50%);
   pointer-events: none;
 }
 
@@ -67,13 +67,13 @@ section {
   left: 0;
   right: 0;
   height: 150px;
-  background: linear-gradient(to bottom, transparent, rgba(102, 126, 234, 0.1));
+  background: linear-gradient(to bottom, transparent, var(--app-primary-soft));
   pointer-events: none;
 }
 
 /* Contact Section */
 .home-contact-wrapper {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--app-header-gradient);
   min-height: 100vh;
   padding: 0;
   position: relative;
@@ -86,7 +86,7 @@ section {
   left: 0;
   right: 0;
   height: 150px;
-  background: linear-gradient(to top, rgba(102, 126, 234, 1), transparent);
+  background: linear-gradient(to top, var(--app-primary), transparent);
   pointer-events: none;
   z-index: 1;
 }
@@ -176,7 +176,7 @@ section {
 }
 /* About Section */
 .app-about {
-  background: linear-gradient(180deg, #e8eaf6 0%, #f5f7fa 50%, #ffffff 100%);
+  background: var(--app-surface);
   min-height: 100vh;
   padding: 100px 0;
   position: relative;
@@ -190,7 +190,7 @@ section {
   left: 0;
   right: 0;
   height: 150px;
-  background: linear-gradient(to bottom, rgba(232, 234, 246, 1), transparent);
+  background: linear-gradient(to bottom, var(--app-primary-soft), transparent);
   pointer-events: none;
   z-index: 1;
 }
@@ -202,9 +202,9 @@ section {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
-    radial-gradient(circle at 30% 40%, rgba(102, 126, 234, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 70% 60%, rgba(118, 75, 162, 0.03) 0%, transparent 50%);
+  background-image:
+    radial-gradient(circle at 30% 40%, var(--app-primary-soft) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, var(--app-primary-soft) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
 }
@@ -235,7 +235,7 @@ section {
 
 
 .app-featurescreen {
-  background: linear-gradient(180deg, #e8eaf6 0%, #f5f7fa 50%, #ffffff 100%);
+  background: var(--app-surface);
   min-height: 100vh;
   padding: 100px 0;
   position: relative;
@@ -249,7 +249,7 @@ section {
   left: 0;
   right: 0;
   height: 150px;
-  background: linear-gradient(to bottom, rgba(232, 234, 246, 1), transparent);
+  background: linear-gradient(to bottom, var(--app-primary-soft), transparent);
   pointer-events: none;
   z-index: 1;
 }
@@ -261,9 +261,9 @@ section {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
-    radial-gradient(circle at 30% 40%, rgba(102, 126, 234, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 70% 60%, rgba(118, 75, 162, 0.03) 0%, transparent 50%);
+  background-image:
+    radial-gradient(circle at 30% 40%, var(--app-primary-soft) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, var(--app-primary-soft) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
 }

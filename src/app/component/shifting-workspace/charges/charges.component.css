@@ -8,7 +8,7 @@
 .charges-title {
   font-size: 15px;
   font-weight: 700;
-  color: #2d3748;
+  color: var(--app-text);
 }
 
 .edit-btn {
@@ -16,10 +16,10 @@
   align-items: center;
   gap: 4px;
   padding: 7px 16px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--app-border);
   border-radius: 8px;
-  background: #fff;
-  color: #667eea;
+  background: var(--app-surface);
+  color: var(--app-primary);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -31,10 +31,10 @@
 
 .cancel-btn {
   padding: 7px 16px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--app-border);
   border-radius: 8px;
-  background: #fff;
-  color: #718096;
+  background: var(--app-surface);
+  color: var(--app-muted-text);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -44,8 +44,8 @@
   padding: 7px 18px;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
+  background: var(--app-action-gradient);
+  color: var(--app-primary-contrast);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
@@ -65,39 +65,39 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 0;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--app-surface-muted);
 }
 
 .charge-row:last-child { border-bottom: none; }
 
 .charge-label {
   font-size: 13px;
-  color: #4a5568;
+  color: var(--app-muted-text);
   font-weight: 600;
 }
 
 .charge-val {
   font-size: 14px;
   font-weight: 700;
-  color: #2d3748;
+  color: var(--app-text);
 }
 
 .charge-input {
   width: 120px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--app-border);
   border-radius: 8px;
   padding: 6px 10px;
   font-size: 13px;
   font-weight: 700;
-  color: #2d3748;
+  color: var(--app-text);
   text-align: right;
   outline: none;
 }
 
-.charge-input:focus { border-color: #667eea; }
+.charge-input:focus { border-color: var(--app-primary); }
 
-.total-row { margin-top: 6px; border-top: 2px solid #e2e8f0; border-bottom: none; padding-top: 12px; }
-.total { color: #667eea; font-size: 17px; font-weight: 800; }
+.total-row { margin-top: 6px; border-top: 2px solid var(--app-border); border-bottom: none; padding-top: 12px; }
+.total { color: var(--app-primary); font-size: 17px; font-weight: 800; }
 
-.tab-error { color: #dc2626; font-size: 13px; margin-bottom: 10px; }
-.tab-success { color: #16a34a; font-size: 13px; margin-bottom: 10px; }
+.tab-error { color: var(--app-error); font-size: 13px; margin-bottom: 10px; }
+.tab-success { color: var(--app-success); font-size: 13px; margin-bottom: 10px; }

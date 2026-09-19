@@ -6,7 +6,7 @@
     justify-content: center;
     height: 100vh; /* Lock to viewport height */
     width: 100vw;
-    background: #f8fafc;
+    background: var(--app-bg);
     overflow: hidden; /* Prevent body scroll */
 }
 .signup-container {
@@ -15,7 +15,7 @@
     width: 95%;
     max-width: 1100px;
     height: 90vh; /* Form takes 90% of screen height */
-    background: #ffffff;
+    background: var(--app-surface);
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
     border-radius: 16px;
     overflow: hidden;
@@ -24,7 +24,7 @@
 /* --- Left Side (Form) --- */
 .signup-left {
     padding: 50px 80px;
-    background: #ffffff;
+    background: var(--app-surface);
     display: flex;
     flex-direction: column;
 }
@@ -43,13 +43,13 @@
     content: "";
     flex: 1;
     height: 1px;
-    background-color: #dcdcdc;
+    background-color: var(--app-border);
 }
 
 .divider span {
     font-size: 12px;
     font-weight: 500;
-    color: #888;
+    color: var(--app-muted-text);
     padding: 0 6px;
 }
 
@@ -69,7 +69,7 @@
 .logo-text {
     font-size: 24px;
     font-weight: 700;
-    color: #1e293b;
+    color: var(--app-text);
 }
 
 .header-section {
@@ -79,11 +79,11 @@
 .header-section h1 {
     font-size: 28px;
     margin-bottom: 8px;
-    color: #0f172a;
+    color: var(--app-text);
 }
 
 .header-section p {
-    color: #64748b;
+    color: var(--app-muted-text);
 }
 
 /* --- Progress Stepper --- */
@@ -103,7 +103,7 @@
     left: 0;
     right: 0;
     height: 2px;
-    background: #e2e8f0;
+    background: var(--app-border);
     z-index: 0;
 }
 
@@ -112,7 +112,7 @@
     top: 16px;
     left: 0;
     height: 2px;
-    background: #2563eb;
+    background: var(--app-primary);
     z-index: 1;
     transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -130,37 +130,37 @@
     width: 34px;
     height: 34px;
     border-radius: 50%;
-    background: #fff;
-    border: 2px solid #e2e8f0;
+    background: var(--app-surface);
+    border: 2px solid var(--app-border);
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 600;
-    color: #94a3b8;
+    color: var(--app-muted-text);
     transition: 0.3s;
 }
 
 .step.active .step-circle {
-    background: #2563eb;
-    border-color: #2563eb;
-    color: #fff;
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    background: var(--app-primary);
+    border-color: var(--app-primary);
+    color: var(--app-primary-contrast);
+    box-shadow: 0 0 0 4px var(--app-primary-shadow);
 }
 
 .step.completed .step-circle {
-    background: #10b981;
-    border-color: #10b981;
-    color: #fff;
+    background: var(--app-success);
+    border-color: var(--app-success);
+    color: var(--app-primary-contrast);
 }
 
 .step-label {
     font-size: 12px;
-    color: #94a3b8;
+    color: var(--app-muted-text);
     font-weight: 500;
 }
 
 .step.active .step-label {
-    color: #2563eb;
+    color: var(--app-primary);
     font-weight: 600;
 }
 
@@ -195,11 +195,11 @@ label {
     font-size: 13px;
     font-weight: 600;
     margin-bottom: 8px;
-    color: #475569;
+    color: var(--app-muted-text);
 }
 
 .required {
-    color: #ef4444;
+    color: var(--app-error);
 }
 
 .input-wrapper {
@@ -211,23 +211,23 @@ label {
     left: 14px;
     top: 50%;
     transform: translateY(-50%);
-    color: #94a3b8;
+    color: var(--app-muted-text);
 }
 
 .form-input {
     width: 100%;
     padding: 12px 14px 12px 42px;
-    border: 2px solid #e2e8f0;
+    border: 2px solid var(--app-border);
     border-radius: 10px;
     font-size: 14px;
     transition: 0.3s;
-    color: #1e293b;
+    color: var(--app-text);
 }
 
 .form-input:focus {
     outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    border-color: var(--app-primary);
+    box-shadow: 0 0 0 3px var(--app-primary-shadow);
 }
 
 /* --- Autocomplete Dropdown --- */
@@ -236,8 +236,8 @@ label {
     top: calc(100% + 5px);
     left: 0;
     right: 0;
-    background: white;
-    border: 1px solid #e2e8f0;
+    background: var(--app-surface);
+    border: 1px solid var(--app-border);
     border-radius: 10px;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     z-index: 1000;
@@ -248,7 +248,7 @@ label {
 .autocomplete-item {
     padding: 12px 16px;
     cursor: pointer;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--app-border);
     transition: background 0.2s;
 }
 
@@ -257,17 +257,17 @@ label {
 }
 
 .autocomplete-item:hover {
-    background: #f8fafc;
+    background: var(--app-surface-muted);
 }
 
 .autocomplete-item strong {
     display: block;
     font-size: 14px;
-    color: #1e293b;
+    color: var(--app-text);
 }
 
 .autocomplete-item small {
-    color: #64748b;
+    color: var(--app-muted-text);
     font-size: 12px;
 }
 
@@ -293,27 +293,27 @@ label {
 }
 
 .btn-secondary {
-    background: #f1f5f9;
-    color: #475569;
+    background: var(--app-surface-muted);
+    color: var(--app-muted-text);
 }
 
 .btn-secondary:hover {
-    background: #e2e8f0;
+    background: var(--app-border);
 }
 
 .btn-primary {
-    background: #2563eb;
-    color: #fff;
+    background: var(--app-primary);
+    color: var(--app-primary-contrast);
 }
 
 .btn-primary:hover {
-    background: #1d4ed8;
-    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+    background: var(--app-primary-hover);
+    box-shadow: 0 4px 6px -1px var(--app-primary-shadow);
 }
 
 /* --- Right Side (Features) --- */
 .signup-right {
-    background: #f1f5f9;
+    background: var(--app-surface-muted);
     padding: 50px;
     display: flex;
     flex-direction: column;
@@ -323,7 +323,7 @@ label {
 .signup-right h2 {
     font-size: 24px;
     margin-bottom: 30px;
-    color: #0f172a;
+    color: var(--app-text);
 }
 
 .feature-item {
@@ -335,12 +335,12 @@ label {
 .feature-icon {
     width: 44px;
     height: 44px;
-    background: #fff;
+    background: var(--app-surface);
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #2563eb;
+    color: var(--app-primary);
     box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
     flex-shrink: 0;
 }
@@ -348,12 +348,12 @@ label {
 .feature-content h3 {
     font-size: 16px;
     margin-bottom: 4px;
-    color: #1e293b;
+    color: var(--app-text);
 }
 
 .feature-content p {
     font-size: 14px;
-    color: #64748b;
+    color: var(--app-muted-text);
     line-height: 1.5;
 }
 
@@ -376,7 +376,7 @@ label {
 
 .signup-left {
     padding: 30px 60px; /* Reduced padding to save space */
-    background: #ffffff;
+    background: var(--app-surface);
     display: flex;
     flex-direction: column;
     overflow-y: auto; /* Allow scrolling inside the form ONLY if needed */
@@ -409,7 +409,7 @@ label {
 }
 
 .signup-right {
-    background: #f1f5f9;
+    background: var(--app-surface-muted);
     padding: 40px;
     display: flex;
     flex-direction: column;

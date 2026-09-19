@@ -4,7 +4,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #f4f6fb;
+  background: var(--app-bg);
   padding: 16px;
 }
 
@@ -26,7 +26,7 @@
 
 .login-header p {
   font-size: 13px;
-  color: #666;
+  color: var(--app-muted-text);
 }
 
 .full {
@@ -49,7 +49,7 @@
   margin-top: 10px;
   font-size: 12px;
   text-align: center;
-  color: #2563eb;
+  color: var(--app-primary);
   cursor: pointer;
 }
 
@@ -98,7 +98,7 @@
   content: "";
   flex: 1;
   height: 1px;
-  background-color: #dcdcdc;
+  background-color: var(--app-border);
 }
 
 .divider span {
@@ -108,7 +108,7 @@
 
   font-size: 12px;
   font-weight: 500;
-  color: #888;
+  color: var(--app-muted-text);
 
   line-height: 1;
   padding: 0 6px;

@@ -4,7 +4,7 @@
   gap: 24px;
   align-items: start;
   padding: 28px;
-  background: #f8fafc;
+  background: var(--app-bg);
   min-height: 100vh;
 }
 
@@ -22,7 +22,7 @@ mat-card {
 mat-card-title {
   display: block;
   margin-bottom: 18px;
-  color: #2d3748;
+  color: var(--app-text);
   font-size: 24px;
   font-weight: 700;
 }
@@ -53,13 +53,13 @@ td.mat-cell {
 }
 
 .status-badge.active {
-  background: #2e7d32;
-  color: #fff;
+  background: var(--app-success);
+  color: var(--app-primary-contrast);
 }
 
 .status-badge.inactive {
-  background: #c62828;
-  color: #fff;
+  background: var(--app-error);
+  color: var(--app-primary-contrast);
 }
 
 @media (max-width: 900px) {

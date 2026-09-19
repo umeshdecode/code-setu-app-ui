@@ -18,17 +18,29 @@
 :root {
   --app-primary: #4663ac;
   --app-primary-hover: #3a5490;
+  --app-primary-active: #2f4370;
   --app-primary-contrast: #ffffff;
   --app-primary-soft: #e1f1fd;
   --app-primary-shadow: rgba(70, 99, 172, 0.28);
+  --app-focus: var(--app-primary);
 
+  /* Role mapping corrected to match the published "Web light blue" spec:
+     #c8d9ed is the soft/secondary surface tint, #d2deeb is the border tint.
+     (Previously swapped — fixing the values here re-colors every existing
+     var(--app-border)/var(--app-surface-muted) consumer with no other edits.) */
   --app-bg: #e1f1fd;
   --app-surface: #ffffff;
-  --app-surface-muted: #d2deeb;
-  --app-border: #c8d9ed;
+  --app-surface-muted: #c8d9ed;
+  --app-border: #d2deeb;
   --app-border-strong: #c1d8f0;
   --app-text: #16233d;
   --app-muted-text: #5a6a86;
+  --app-text-disabled: #9fb0c9;
+
+  /* Muted gray-blue for non-semantic "default/closed" style statuses that
+     aren't success/warning/error/info but still need a distinct chip color. */
+  --app-neutral: #5b6b85;
+  --app-neutral-soft: #e7ecf2;
 
   --app-success: #1b7f4b;
   --app-success-soft: #e6f4ec;
@@ -49,6 +61,17 @@
   --app-sidebar-active-bg: #ffffff;
   --app-sidebar-active-text: #16233d;
 
+  /* The sidebar surface is filled and dark in both light and dark app themes,
+     so these white-based overlays are correct in either mode and are not
+     redefined under .app-dark-theme. */
+  --app-sidebar-text-soft: rgba(255, 255, 255, 0.9);
+  --app-sidebar-hover-bg: rgba(255, 255, 255, 0.1);
+  --app-sidebar-hover-bg-strong: rgba(255, 255, 255, 0.18);
+  --app-sidebar-submenu-bg: rgba(255, 255, 255, 0.08);
+  --app-sidebar-divider: rgba(255, 255, 255, 0.2);
+  --app-sidebar-shadow: rgba(45, 55, 72, 0.18);
+  --app-overlay-scrim: rgba(0, 0, 0, 0.5);
+
   --app-font-family: Roboto, "Helvetica Neue", sans-serif;
 
   /* Kept under their original names so the ~21 existing consumers across
@@ -62,6 +85,14 @@
      (e.g. syetemconfiguration) resolving rather than falling back to unset. */
   --app-secondary: var(--app-primary);
   --app-accent: var(--app-primary);
+
+  /* Best-effort shared scale — reuse where convenient, not a mandatory retrofit. */
+  --app-radius-sm: 6px;
+  --app-radius-md: 8px;
+  --app-radius-lg: 12px;
+  --app-shadow-sm: 0 1px 2px rgba(45, 55, 72, 0.06);
+  --app-shadow-md: 0 4px 6px -1px rgba(45, 55, 72, 0.08), 0 10px 28px -4px rgba(45, 55, 72, 0.14);
+  --app-shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -4px rgba(15, 23, 42, 0.1);
 }
 
 /* Also matched on :root — html itself paints --app-bg, so tokens defined only on
@@ -70,9 +101,11 @@
 body.app-dark-theme {
   --app-primary: #7d9ad8;
   --app-primary-hover: #94aee2;
+  --app-primary-active: #a8c0ea;
   --app-primary-contrast: #0e1524;
   --app-primary-soft: rgba(125, 154, 216, 0.16);
   --app-primary-shadow: rgba(125, 154, 216, 0.35);
+  --app-focus: var(--app-primary);
 
   --app-bg: #0e1524;
   --app-surface: #16203a;
@@ -81,6 +114,14 @@ body.app-dark-theme {
   --app-border-strong: #3a4c78;
   --app-text: #e1f1fd;
   --app-muted-text: #a8bcd8;
+  --app-text-disabled: #5f7194;
+
+  --app-neutral: #94a3b8;
+  --app-neutral-soft: rgba(148, 163, 184, 0.15);
+
+  --app-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --app-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.35), 0 10px 28px -4px rgba(0, 0, 0, 0.4);
+  --app-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.45), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
 
   --app-success: #4ade80;
   --app-success-soft: rgba(74, 222, 128, 0.15);
@@ -292,6 +333,64 @@ html {
 .mat-mini-fab.mat-primary {
   background: var(--app-primary) !important;
   color: var(--app-primary-contrast) !important;
+}
+
+/* =========================================================
+   MATERIAL NATIVE CONTROLS — checkbox / radio / slide-toggle /
+   tabs / tooltip / paginator. These render Material's stock
+   indigo/pink (from the prebuilt indigo-pink.css theme in
+   angular.json) unless overridden here, so every consumer of
+   these controls app-wide picks up the brand blue in one place.
+   ========================================================= */
+
+.mat-checkbox-checked.mat-primary .mat-checkbox-background,
+.mat-checkbox-indeterminate.mat-primary .mat-checkbox-background,
+.mat-mdc-checkbox .mdc-checkbox__native-control:checked ~ .mdc-checkbox__background,
+.mat-mdc-checkbox .mdc-checkbox__native-control:indeterminate ~ .mdc-checkbox__background {
+  background-color: var(--app-primary) !important;
+  border-color: var(--app-primary) !important;
+}
+
+.mat-radio-button.mat-primary.mat-radio-checked .mat-radio-outer-circle,
+.mat-mdc-radio-button.mat-primary .mdc-radio__native-control:checked ~ .mdc-radio__background .mdc-radio__outer-circle {
+  border-color: var(--app-primary) !important;
+}
+
+.mat-radio-button.mat-primary .mat-radio-inner-circle,
+.mat-mdc-radio-button.mat-primary .mdc-radio__native-control:checked ~ .mdc-radio__background .mdc-radio__inner-circle {
+  background-color: var(--app-primary) !important;
+}
+
+.mat-slide-toggle.mat-checked.mat-primary .mat-slide-toggle-thumb,
+.mat-mdc-slide-toggle.mat-primary.mat-mdc-slide-toggle-checked .mdc-switch__handle-track .mdc-switch__handle::after {
+  background-color: var(--app-primary) !important;
+}
+
+.mat-slide-toggle.mat-checked.mat-primary .mat-slide-toggle-bar,
+.mat-mdc-slide-toggle.mat-primary.mat-mdc-slide-toggle-checked .mdc-switch__track::after {
+  background-color: var(--app-primary-soft) !important;
+}
+
+.mat-tab-label.mat-tab-label-active,
+.mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+  color: var(--app-primary) !important;
+}
+
+.mat-ink-bar,
+.mat-mdc-tab .mdc-tab-indicator__content--underline {
+  background-color: var(--app-primary) !important;
+  border-color: var(--app-primary) !important;
+}
+
+.mat-tooltip,
+.mat-mdc-tooltip .mdc-tooltip__surface {
+  background-color: var(--app-text) !important;
+  color: var(--app-surface) !important;
+}
+
+.mat-paginator-container button.mat-mdc-icon-button:not(:disabled) .mat-mdc-paginator-icon,
+.mat-mdc-paginator-icon {
+  fill: var(--app-primary) !important;
 }
 
 input,

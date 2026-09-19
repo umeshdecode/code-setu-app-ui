@@ -10,7 +10,7 @@
 
 .pagination-summary {
   font-size: 13.5px;
-  color: #718096;
+  color: var(--app-muted-text);
   font-weight: 600;
 }
 
@@ -24,10 +24,10 @@
   min-width: 36px;
   height: 36px;
   padding: 0 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--app-border);
   border-radius: 10px;
-  color: #2d3748;
-  background: #fff;
+  color: var(--app-text);
+  background: var(--app-surface);
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
@@ -38,22 +38,22 @@
 }
 
 .pagination-controls button:hover:not(:disabled) {
-  border-color: #667eea;
-  background: #f8fafc;
+  border-color: var(--app-primary);
+  background: var(--app-surface-muted);
 }
 
 .pagination-controls button:disabled {
-  color: #cbd5e0;
+  color: var(--app-text-disabled);
   cursor: not-allowed;
-  background: #f1f5f9;
+  background: var(--app-surface-muted);
 }
 
 /* Matching the "Action-Button" gradient from your CSS */
 .pagination-controls button.active {
-  color: #fff;
+  color: var(--app-primary-contrast);
   border-color: transparent;
-  background: linear-gradient(135deg, #667eea, #ec4b80);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.25);
+  background: var(--app-action-gradient);
+  box-shadow: 0 8px 20px var(--app-primary-shadow);
 }
 
 .page-size {
@@ -61,10 +61,10 @@
   height: 36px;
   margin-left: 10px;
   padding: 0 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--app-border);
   border-radius: 10px;
-  background-color: #fff;
-  color: #2d3748;
+  background-color: var(--app-surface);
+  color: var(--app-text);
   font-size: 14px;
   font-weight: 600;
   outline: none;
@@ -72,6 +72,6 @@
 }
 
 .page-size:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: var(--app-primary);
+  box-shadow: 0 0 0 3px var(--app-primary-soft);
 }

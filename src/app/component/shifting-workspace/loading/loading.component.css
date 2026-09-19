@@ -13,32 +13,32 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #94a3b8;
+  color: var(--app-muted-text);
 }
 
 .stat-val {
   font-size: 14px;
   font-weight: 800;
-  color: #667eea;
+  color: var(--app-primary);
 }
 
 .progress-track {
   height: 8px;
-  background: #e2e8f0;
+  background: var(--app-border);
   border-radius: 999px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #667eea, #764ba2);
+  background: var(--app-action-gradient);
   border-radius: 999px;
   transition: width 0.4s ease;
 }
 
 .remaining-label {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--app-muted-text);
   margin-top: 4px;
   display: block;
 }
@@ -53,12 +53,12 @@
 
 .select-all-btn, .clear-sel-btn {
   padding: 6px 14px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--app-border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--app-surface);
   font-size: 12px;
   font-weight: 600;
-  color: #718096;
+  color: var(--app-muted-text);
   cursor: pointer;
 }
 
@@ -67,7 +67,7 @@
 .sel-count {
   font-size: 13px;
   font-weight: 700;
-  color: #667eea;
+  color: var(--app-primary);
 }
 
 .bulk-actions { display: flex; gap: 8px; }
@@ -81,8 +81,8 @@
   cursor: pointer;
 }
 
-.loaded-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; }
-.unloaded-btn { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+.loaded-btn { background: var(--app-action-gradient); color: var(--app-primary-contrast); }
+.unloaded-btn { background: var(--app-warning-soft); color: var(--app-warning); border: 1px solid var(--app-warning-soft); }
 
 .loading-table {
   width: 100%;
@@ -91,26 +91,26 @@
 }
 
 .loading-table th {
-  background: #f8fafc;
+  background: var(--app-surface-muted);
   padding: 10px 14px;
   text-align: left;
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #718096;
-  border-bottom: 1px solid #e2e8f0;
+  color: var(--app-muted-text);
+  border-bottom: 1px solid var(--app-border);
 }
 
 .loading-table td {
   padding: 11px 14px;
-  border-bottom: 1px solid #f1f5f9;
-  color: #2d3748;
+  border-bottom: 1px solid var(--app-surface-muted);
+  color: var(--app-text);
   cursor: pointer;
 }
 
-.loading-table tbody tr:hover { background: #f8fafc; }
-.selected-row { background: rgba(102, 126, 234, 0.07) !important; }
+.loading-table tbody tr:hover { background: var(--app-surface-muted); }
+.selected-row { background: var(--app-primary-soft) !important; }
 
 .check-col { width: 40px; text-align: center; }
 
@@ -125,17 +125,17 @@
   text-transform: uppercase;
 }
 
-.status-packed { background: #e0f2fe; color: #0369a1; }
-.status-loaded { background: #dcfce7; color: #15803d; }
-.status-unloaded { background: #fff7ed; color: #c2410c; }
-.status-delivered { background: #f0fdf4; color: #16a34a; }
-.status-pending { background: #f1f5f9; color: #64748b; }
+.status-packed { background: var(--app-info-soft); color: var(--app-info); }
+.status-loaded { background: var(--app-success-soft); color: var(--app-success); }
+.status-unloaded { background: var(--app-warning-soft); color: var(--app-warning); }
+.status-delivered { background: var(--app-success-soft); color: var(--app-success); }
+.status-pending { background: var(--app-neutral-soft); color: var(--app-neutral); }
 
 .empty-state {
   text-align: center;
-  color: #94a3b8;
+  color: var(--app-muted-text);
   padding: 40px 0;
 }
 
-.tab-error { color: #dc2626; font-size: 13px; margin-bottom: 10px; }
-.tab-success { color: #16a34a; font-size: 13px; margin-bottom: 10px; }
+.tab-error { color: var(--app-error); font-size: 13px; margin-bottom: 10px; }
+.tab-success { color: var(--app-success); font-size: 13px; margin-bottom: 10px; }

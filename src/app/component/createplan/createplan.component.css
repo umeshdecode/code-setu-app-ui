@@ -98,12 +98,12 @@
 }
 
 .refresh-btn {
-  background: rgba(72, 187, 120, 0.08) !important;
-  color: #38a169 !important;
+  background: var(--app-success-soft) !important;
+  color: var(--app-success) !important;
 }
 
 .refresh-btn:hover {
-  background: rgba(72, 187, 120, 0.18) !important;
+  background: var(--app-success-soft) !important;
 }
 
 /* Spinning animation for refresh */
@@ -161,7 +161,7 @@
 .plan-list-panel {
   background: var(--app-surface);
   border-radius: 14px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--app-shadow-sm);
   overflow: hidden;
   animation: fadeUp 0.35s ease-out;
 }
@@ -208,7 +208,7 @@
   font-size: 70px;
   width: 70px;
   height: 70px;
-  color: #cbd5e0;
+  color: var(--app-border);
   margin-bottom: 14px;
 }
 
@@ -252,7 +252,7 @@
 }
 
 .plan-table tbody tr {
-  border-bottom: 1px solid #f0f2f5;
+  border-bottom: 1px solid var(--app-border);
   transition: background 0.2s ease;
   cursor: pointer;
 }
@@ -278,7 +278,7 @@
 
 /* Index Cell */
 .index-cell {
-  color: #a0aec0;
+  color: var(--app-muted-text);
   font-weight: 600;
   font-size: 0.9rem;
   width: 40px;
@@ -317,8 +317,8 @@
 /* Category Badge */
 .category-badge {
   display: inline-block;
-  background: #edf2ff;
-  color: #5a67d8;
+  background: var(--app-primary-soft);
+  color: var(--app-primary);
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 0.83rem;
@@ -358,13 +358,13 @@
 }
 
 .active-status {
-  background: #c6f6d5;
-  color: #276749;
+  background: var(--app-success-soft);
+  color: var(--app-success);
 }
 
 .expired-status {
-  background: #fed7d7;
-  color: #822727;
+  background: var(--app-error-soft);
+  color: var(--app-error);
 }
 
 /* Action Buttons */
@@ -398,12 +398,12 @@
 }
 
 .delete-icon {
-  background: rgba(229, 62, 62, 0.1) !important;
-  color: #e53e3e !important;
+  background: var(--app-error-soft) !important;
+  color: var(--app-error) !important;
 }
 
 .delete-icon:hover {
-  background: rgba(229, 62, 62, 0.2) !important;
+  background: var(--app-error-soft) !important;
   transform: scale(1.1);
 }
 
@@ -417,7 +417,7 @@
 .form-card {
   background: var(--app-surface);
   border-radius: 14px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--app-shadow-sm);
   overflow: hidden;
 }
 
@@ -427,8 +427,8 @@
   align-items: center;
   gap: 16px;
   padding: 20px 28px;
-  background: #fff5f5;
-  border-left: 5px solid #e53e3e;
+  background: var(--app-error-soft);
+  border-left: 5px solid var(--app-error);
   animation: fadeUp 0.3s ease-out;
 }
 
@@ -436,7 +436,7 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: #fed7d7;
+  background: var(--app-error-soft);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -444,7 +444,7 @@
 }
 
 .delete-icon-wrap mat-icon {
-  color: #e53e3e;
+  color: var(--app-error);
   font-size: 24px;
   width: 24px;
   height: 24px;
@@ -456,14 +456,14 @@
 
 .delete-confirmation-content h3 {
   margin: 0 0 4px 0;
-  color: #742a2a;
+  color: var(--app-error);
   font-size: 1rem;
   font-weight: 700;
 }
 
 .delete-confirmation-content p {
   margin: 0;
-  color: #9b2c2c;
+  color: var(--app-error);
   font-size: 0.88rem;
 }
 
@@ -474,14 +474,14 @@
 }
 
 .cancel-delete-btn {
-  border-color: #fc8181 !important;
-  color: #742a2a !important;
+  border-color: var(--app-error) !important;
+  color: var(--app-error) !important;
   font-weight: 600 !important;
   border-radius: 8px !important;
 }
 
 .confirm-delete-btn {
-  background: #e53e3e !important;
+  background: var(--app-error) !important;
   color: white !important;
   font-weight: 600 !important;
   border-radius: 8px !important;
@@ -562,7 +562,7 @@
 
 .cancel-button:hover {
   background: var(--app-surface-muted) !important;
-  border-color: #cbd5e0 !important;
+  border-color: var(--app-border) !important;
   color: var(--app-text) !important;
 }
 

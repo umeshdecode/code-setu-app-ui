@@ -104,23 +104,23 @@
 }
 
 .identity-avatar.driver-avatar {
-  background-color: #d1fae5;
-  color: #065f46;
+  background-color: var(--app-success-soft);
+  color: var(--app-success);
 }
 
 body.app-dark-theme .identity-avatar.driver-avatar {
-  background-color: rgba(16, 185, 129, 0.18);
-  color: #34d399;
+  background-color: var(--app-success-soft);
+  color: var(--app-success);
 }
 
 .identity-avatar.vehicle-avatar {
-  background-color: #dbeafe;
-  color: #1e40af;
+  background-color: var(--app-info-soft);
+  color: var(--app-info);
 }
 
 body.app-dark-theme .identity-avatar.vehicle-avatar {
-  background-color: rgba(59, 130, 246, 0.18);
-  color: #60a5fa;
+  background-color: var(--app-info-soft);
+  color: var(--app-info);
 }
 
 .identity-avatar.empty {
@@ -178,15 +178,15 @@ body.app-dark-theme .identity-avatar.vehicle-avatar {
 }
 
 .selected-arrow.active {
-  background-color: #ecfdf5;
-  color: #10b981;
-  border-color: #a7f3d0;
+  background-color: var(--app-success-soft);
+  color: var(--app-success);
+  border-color: var(--app-success-soft);
   box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.08);
 }
 
 body.app-dark-theme .selected-arrow.active {
-  background-color: rgba(16, 185, 129, 0.18);
-  color: #34d399;
+  background-color: var(--app-success-soft);
+  color: var(--app-success);
   border-color: rgba(16, 185, 129, 0.3);
 }
 
@@ -200,8 +200,8 @@ body.app-dark-theme .selected-arrow.active {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: var(--app-action-gradient, #5d59eb);
-  color: #ffffff !important;
+  background: var(--app-action-gradient, var(--app-primary));
+  color: var(--app-primary-contrast) !important;
   border: none;
   border-radius: 8px;
   padding: 12px 24px;
@@ -209,14 +209,14 @@ body.app-dark-theme .selected-arrow.active {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 6px -1px rgba(93, 89, 235, 0.2);
+  box-shadow: 0 4px 6px -1px var(--app-primary-shadow);
   min-height: 48px;
   outline: none;
 }
 
 .assign-btn:hover:not(:disabled) {
   opacity: 0.9;
-  box-shadow: 0 4px 12px -1px rgba(93, 89, 235, 0.3);
+  box-shadow: 0 4px 12px -1px var(--app-primary-shadow);
 }
 
 .assign-btn:disabled {
@@ -362,12 +362,12 @@ body.app-dark-theme .selected-arrow.active {
 
 .assignment-row.selected {
   border-color: var(--app-primary);
-  background-color: rgba(102, 126, 234, 0.04);
+  background-color: var(--app-primary-soft);
   box-shadow: 0 0 0 1px var(--app-primary);
 }
 
 body.app-dark-theme .assignment-row.selected {
-  background-color: rgba(102, 126, 234, 0.08);
+  background-color: var(--app-primary-soft);
 }
 
 /* Radio Button Styling */
@@ -446,13 +446,13 @@ body.app-dark-theme .assignment-row.selected {
 }
 
 .status-pill.available {
-  background-color: #ecfdf5;
-  color: #10b981;
+  background-color: var(--app-success-soft);
+  color: var(--app-success);
 }
 
 body.app-dark-theme .status-pill.available {
-  background-color: rgba(16, 185, 129, 0.15);
-  color: #34d399;
+  background-color: var(--app-success-soft);
+  color: var(--app-success);
 }
 
 /* Empty State */
@@ -558,40 +558,40 @@ body.app-dark-theme .status-pill.available {
 }
 
 .info-strip {
-  background-color: #eff6ff;
-  border: 1px solid #bfdbfe;
-  color: #1e40af;
+  background-color: var(--app-info-soft);
+  border: 1px solid var(--app-info-soft);
+  color: var(--app-info);
   margin-top: 24px;
 }
 
 body.app-dark-theme .info-strip {
-  background-color: rgba(59, 130, 246, 0.12);
+  background-color: var(--app-info-soft);
   border-color: rgba(59, 130, 246, 0.3);
-  color: #60a5fa;
+  color: var(--app-info);
 }
 
 .api-message.success {
-  background-color: #ecfdf5;
-  border: 1px solid #a7f3d0;
-  color: #065f46;
+  background-color: var(--app-success-soft);
+  border: 1px solid var(--app-success-soft);
+  color: var(--app-success);
 }
 
 body.app-dark-theme .api-message.success {
-  background-color: rgba(16, 185, 129, 0.12);
+  background-color: var(--app-success-soft);
   border-color: rgba(16, 185, 129, 0.3);
-  color: #34d399;
+  color: var(--app-success);
 }
 
 .api-message.error {
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #991b1b;
+  background-color: var(--app-error-soft);
+  border: 1px solid var(--app-error-soft);
+  color: var(--app-error);
 }
 
 body.app-dark-theme .api-message.error {
-  background-color: rgba(239, 68, 68, 0.12);
+  background-color: var(--app-error-soft);
   border-color: rgba(239, 68, 68, 0.3);
-  color: #f87171;
+  color: var(--app-error);
 }
 
 .api-message .material-icons,

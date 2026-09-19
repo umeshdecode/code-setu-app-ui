@@ -1,14 +1,14 @@
 .page-wrapper{
 padding:24px;
-background:#f5f7fb;
+background:var(--app-bg);
 min-height:100vh;
 }
 
 .header-card{
 margin-bottom:20px;
 padding:20px;
-color:#fff;
-background:linear-gradient(90deg,#4f6df5,#7a42c8,#ec4b7a);
+color:var(--app-primary-contrast);
+background:var(--app-header-gradient);
 border-radius:16px;
 }
 
@@ -38,7 +38,7 @@ width:100%;
 .review-box{
 padding:25px;
 text-align:center;
-background:#f8fafc;
+background:var(--app-surface-muted);
 border-radius:12px;
 margin-bottom:20px;
 }
@@ -61,9 +61,9 @@ margin-bottom:25px;
 .preview-grid p{
   margin:0;
   padding:12px;
-  background:#ffffff;
+  background:var(--app-surface);
   border-radius:10px;
-  border:1px solid #e5e7eb;
+  border:1px solid var(--app-border);
 }
 
 .status-badge {
@@ -104,9 +104,9 @@ margin-bottom:25px;
 .form-section h3 {
   font-size: 1.15rem;
   font-weight: 600;
-  color: #2d3748;
+  color: var(--app-text);
   margin: 0 0 15px 0;
   padding-left: 10px;
-  border-left: 4px solid #4f6df5;
+  border-left: 4px solid var(--app-primary);
   border-radius: 2px;
 }

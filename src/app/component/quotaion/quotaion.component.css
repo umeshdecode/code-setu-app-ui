@@ -1,6 +1,6 @@
 .page-wrapper {
   padding: 30px;
-  background: #f4f6f9;
+  background: var(--app-bg);
   min-height: 100vh;
   max-width: 1400px;
   margin: 0 auto;
@@ -8,7 +8,7 @@
 
 .top-card,
 .list-card {
-  background: white;
+  background: var(--app-surface);
   border-radius: 14px;
   padding: 26px;
   margin-bottom: 24px;
@@ -23,7 +23,7 @@
   left: 0;
   width: 100%;
   height: 4px;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #E94E77 100%);
+  background: var(--app-header-gradient);
 }
 
 .card-header {
@@ -36,7 +36,7 @@
 .card-header h1,
 .card-header h2 {
   margin: 0;
-  color: #2d3748;
+  color: var(--app-text);
   font-weight: 700;
 }
 
@@ -50,7 +50,7 @@
 
 .sub-title {
   margin: 4px 0 0;
-  color: #718096;
+  color: var(--app-muted-text);
   font-size: 0.9rem;
 }
 
@@ -84,31 +84,31 @@
 .form-group label {
   font-size: 0.88rem;
   font-weight: 600;
-  color: #2d3748;
+  color: var(--app-text);
   margin-bottom: 8px;
 }
 
 .form-group input {
   height: 44px;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--app-border);
   border-radius: 8px;
   padding: 0 14px;
   font-size: 0.95rem;
-  color: #2d3748;
+  color: var(--app-text);
   outline: none;
   transition: all 0.3s ease;
-  background: #f8f9fa;
+  background: var(--app-surface-muted);
 }
 
 .form-group input:focus {
-  border-color: #667eea;
-  background: white;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: var(--app-primary);
+  background: var(--app-surface);
+  box-shadow: 0 0 0 3px var(--app-primary-shadow);
 }
 
 .form-group input.ng-invalid.ng-touched {
-  border-color: #e53e3e;
-  background: #fff5f5;
+  border-color: var(--app-error);
+  background: var(--app-error-soft);
 }
 
 .template-select {
@@ -124,7 +124,7 @@
 ::ng-deep .template-select .mat-form-field-flex {
   height: 44px;
   align-items: center;
-  background: #f8f9fa;
+  background: var(--app-surface-muted);
   border-radius: 8px;
   padding: 0 14px;
 }
@@ -143,23 +143,23 @@
 
 ::ng-deep .template-select .mat-select-value,
 ::ng-deep .template-select .mat-select-placeholder {
-  color: #2d3748;
+  color: var(--app-text);
   font-size: 0.95rem;
   max-width: none;
   width: 100%;
 }
 
 ::ng-deep .template-select .mat-select-placeholder {
-  color: #a0aec0;
+  color: var(--app-muted-text);
 }
 
 ::ng-deep .template-select .mat-select-arrow,
 ::ng-deep .template-select .mat-form-field-outline-thick {
-  color: #667eea;
+  color: var(--app-primary);
 }
 
 ::ng-deep .template-select .mat-form-field-outline {
-  color: #e2e8f0;
+  color: var(--app-border);
 }
 
 .checkbox-field {
@@ -168,38 +168,38 @@
   align-items: center;
   gap: 10px;
   margin-top: 27px;
-  color: #2d3748;
+  color: var(--app-text);
   font-weight: 600;
 }
 
 .checkbox-field input {
   width: 18px;
   height: 18px;
-  accent-color: #667eea;
+  accent-color: var(--app-primary);
 }
 
 .file-upload-box {
   height: 44px;
-  border: 2px dashed #cbd5e0;
+  border: 2px dashed var(--app-border);
   border-radius: 8px;
   padding: 0 14px;
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #f8f9fa;
-  color: #4a5568;
+  background: var(--app-surface-muted);
+  color: var(--app-muted-text);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .file-upload-box:hover {
-  border-color: #667eea;
-  background: white;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: var(--app-primary);
+  background: var(--app-surface);
+  box-shadow: 0 0 0 3px var(--app-primary-shadow);
 }
 
 .file-upload-box .material-icons {
-  color: #667eea;
+  color: var(--app-primary);
   font-size: 20px;
 }
 
@@ -225,9 +225,9 @@
 
 .save-btn {
   border: none;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  background: var(--app-action-gradient);
+  color: var(--app-primary-contrast);
+  box-shadow: 0 4px 12px var(--app-primary-shadow);
 }
 
 .save-btn:disabled {
@@ -236,20 +236,20 @@
 }
 
 .cancel-btn {
-  background: white;
-  color: #718096;
-  border: 2px solid #e2e8f0;
+  background: var(--app-surface);
+  color: var(--app-muted-text);
+  border: 2px solid var(--app-border);
 }
 
 :host-context(body.app-dark-theme) .page-wrapper {
   background: var(--app-bg) !important;
-  color: #ffffff !important;
+  color: var(--app-text) !important;
 }
 
 :host-context(body.app-dark-theme) .top-card,
 :host-context(body.app-dark-theme) .list-card {
   background: var(--app-surface) !important;
-  color: #ffffff !important;
+  color: var(--app-text) !important;
 }
 
 :host-context(body.app-dark-theme) .card-header h1,
@@ -257,18 +257,18 @@
 :host-context(body.app-dark-theme) .form-group label,
 :host-context(body.app-dark-theme) .checkbox-field,
 :host-context(body.app-dark-theme) .checkbox-field span {
-  color: #ffffff !important;
+  color: var(--app-text) !important;
 }
 
 :host-context(body.app-dark-theme) .sub-title {
-  color: #cbd5e1 !important;
+  color: var(--app-muted-text) !important;
 }
 
 :host-context(body.app-dark-theme) .form-group input,
 :host-context(body.app-dark-theme) .file-upload-box,
 :host-context(body.app-dark-theme) .cancel-btn {
   background: var(--app-surface-muted) !important;
-  color: #ffffff !important;
+  color: var(--app-text) !important;
   border-color: var(--app-border) !important;
 }
 
@@ -280,14 +280,14 @@
 }
 
 :host-context(body.app-dark-theme) .file-upload-box span:not(.material-icons) {
-  color: #ffffff !important;
+  color: var(--app-text) !important;
 }
 
 :host-context(body.app-dark-theme) ::ng-deep .template-select .mat-form-field-flex,
 :host-context(body.app-dark-theme) ::ng-deep .template-select .mat-mdc-text-field-wrapper,
 :host-context(body.app-dark-theme) ::ng-deep .template-select .mdc-text-field {
   background: var(--app-surface-muted) !important;
-  color: #ffffff !important;
+  color: var(--app-text) !important;
 }
 
 :host-context(body.app-dark-theme) ::ng-deep .template-select .mat-select-value,
@@ -297,7 +297,7 @@
 :host-context(body.app-dark-theme) ::ng-deep .template-select .mat-mdc-select-value,
 :host-context(body.app-dark-theme) ::ng-deep .template-select .mat-mdc-select-min-line,
 :host-context(body.app-dark-theme) ::ng-deep .template-select .mat-mdc-select-placeholder {
-  color: #ffffff !important;
+  color: var(--app-text) !important;
 }
 
 :host-context(body.app-dark-theme) ::ng-deep .template-select .mat-form-field-outline,

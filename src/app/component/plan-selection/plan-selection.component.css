@@ -1,6 +1,6 @@
 /* Pricing Page Wrapper */
 .pricing-wrapper {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--app-header-gradient);
   min-height: 100vh;
   padding: 80px 0;
   position: relative;
@@ -18,7 +18,7 @@
 .pricing-header h1 {
   font-size: 3rem;
   font-weight: 800;
-  color: white;
+  color: var(--app-primary-contrast);
   margin: 0 0 15px 0;
   text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   letter-spacing: -1px;
@@ -55,7 +55,7 @@
 
 .loading-state,
 .empty-state {
-  color: white;
+  color: var(--app-primary-contrast);
   text-align: center;
   font-size: 1.1rem;
   width: 100%;
@@ -80,7 +80,7 @@
   left: 0;
   right: 0;
   height: 6px;
-  background: linear-gradient(90deg, #667eea, #764ba2);
+  background: var(--app-header-gradient);
 }
 
 .card:hover {
@@ -96,7 +96,7 @@
 .card-title {
   font-size: 1.8rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--app-header-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -107,7 +107,7 @@
 .price-large {
   font-size: 3rem;
   font-weight: 800;
-  color: #2d3748;
+  color: var(--app-text);
   margin: 20px 0;
   line-height: 1;
   display: flex;
@@ -119,14 +119,14 @@
 .price-duration {
   font-size: 1rem;
   font-weight: 400;
-  color: #718096;
+  color: var(--app-muted-text);
   align-self: flex-end;
   margin-bottom: 8px;
 }
 
 .divider {
   height: 2px;
-  background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+  background: linear-gradient(90deg, transparent, var(--app-border), transparent);
   margin: 30px 0;
   border: none;
 }
@@ -143,14 +143,14 @@
   display: flex;
   align-items: center;
   font-size: 1rem;
-  color: #4a5568;
+  color: var(--app-muted-text);
   font-weight: 500;
 }
 
 .feature-list i {
   margin-right: 12px;
   font-size: 1.4rem;
-  color: #48bb78;
+  color: var(--app-success);
   flex-shrink: 0;
 }
 
@@ -164,11 +164,11 @@
   font-size: 1.05rem;
   font-weight: 600;
   border-radius: 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--app-action-gradient);
+  color: var(--app-primary-contrast);
   text-transform: uppercase;
   letter-spacing: 1px;
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 20px var(--app-primary-shadow);
   transition: all 0.3s ease;
   border: none;
   cursor: pointer;
@@ -176,7 +176,7 @@
 
 .btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 30px rgba(102, 126, 234, 0.5);
+  box-shadow: 0 12px 30px var(--app-primary-shadow);
 }
 
 .skip-action {
@@ -195,7 +195,7 @@
 }
 
 .skip-link:hover {
-  color: white;
+  color: var(--app-primary-contrast);
 }
 
 /* Confirm Modal — blurred background overlay */
@@ -221,7 +221,7 @@
 }
 
 .modal-content {
-  background: white;
+  background: var(--app-surface);
   border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   max-width: 460px;
@@ -237,7 +237,7 @@
   left: 0;
   right: 0;
   height: 5px;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #E94E77 100%);
+  background: var(--app-header-gradient);
 }
 
 .close {
@@ -246,7 +246,7 @@
   right: 20px;
   font-size: 28px;
   font-weight: 300;
-  color: #718096;
+  color: var(--app-muted-text);
   cursor: pointer;
   width: 32px;
   height: 32px;
@@ -257,8 +257,8 @@
 }
 
 .close:hover {
-  background-color: #f7fafc;
-  color: #2d3748;
+  background-color: var(--app-surface-muted);
+  color: var(--app-text);
 }
 
 .modal-content h2 {
@@ -266,15 +266,15 @@
   margin: 0;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #2d3748;
-  border-bottom: 1px solid #e2e8f0;
+  color: var(--app-text);
+  border-bottom: 1px solid var(--app-border);
 }
 
 .plan-badge {
   display: inline-block;
   padding: 6px 14px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--app-action-gradient);
+  color: var(--app-primary-contrast);
   border-radius: 20px;
   font-size: 0.9rem;
   font-weight: 600;
@@ -284,7 +284,7 @@
 
 .confirm-body {
   padding: 30px;
-  background: #f8f9fa;
+  background: var(--app-surface-muted);
 }
 
 .detail-row {
@@ -293,18 +293,18 @@
   align-items: center;
   padding: 14px 0;
   font-size: 1rem;
-  color: #4a5568;
+  color: var(--app-muted-text);
 }
 
 .detail-row .amount {
   font-weight: 600;
-  color: #2d3748;
+  color: var(--app-text);
   font-size: 1.05rem;
 }
 
 .info-text {
   font-size: 0.88rem;
-  color: #718096;
+  color: var(--app-muted-text);
   text-align: center;
   padding-top: 10px;
   line-height: 1.5;
@@ -319,16 +319,16 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--app-action-gradient);
+  color: var(--app-primary-contrast);
   border: none;
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 8px 20px var(--app-primary-shadow);
   cursor: pointer;
 }
 
 .next-button:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 12px 30px var(--app-primary-shadow);
 }
 
 .next-button:disabled {

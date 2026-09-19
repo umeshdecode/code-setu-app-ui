@@ -12,7 +12,7 @@
 .panel-title {
   font-size: 16px;
   font-weight: 700;
-  color: #2d3748;
+  color: var(--app-text);
 }
 
 .btn-edit {
@@ -22,8 +22,8 @@
   padding: 7px 18px;
   border-radius: 8px;
   border: none;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
+  background: var(--app-header-gradient);
+  color: var(--app-primary-contrast);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -49,13 +49,13 @@
   gap: 4px;
   padding: 12px 14px;
   border-radius: 10px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--app-surface-muted);
+  border: 1px solid var(--app-border);
 }
 
 .detail-item.readonly {
-  background: #f1f5f9;
-  border-color: #e2e8f0;
+  background: var(--app-surface-muted);
+  border-color: var(--app-border);
 }
 
 .detail-label {
@@ -63,13 +63,13 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #94a3b8;
+  color: var(--app-muted-text);
 }
 
 .detail-value {
   font-size: 14px;
   font-weight: 600;
-  color: #2d3748;
+  color: var(--app-text);
 }
 
 .detail-value.mono { font-family: monospace; }
@@ -83,8 +83,8 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
+  background: var(--app-header-gradient);
+  color: var(--app-primary-contrast);
 }
 
 /* Edit mode fields */
@@ -99,16 +99,16 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #94a3b8;
+  color: var(--app-muted-text);
 }
 
 .field-input {
   padding: 9px 12px;
   border-radius: 8px;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid var(--app-border);
   font-size: 14px;
-  color: #2d3748;
-  background: #fff;
+  color: var(--app-text);
+  background: var(--app-surface);
   outline: none;
   font-family: Arial, Helvetica, sans-serif;
   transition: border-color 0.15s;
@@ -116,7 +116,7 @@
   box-sizing: border-box;
 }
 
-.field-input:focus { border-color: #667eea; }
+.field-input:focus { border-color: var(--app-primary); }
 
 textarea.field-input { resize: vertical; }
 
@@ -133,16 +133,16 @@ select.field-input { cursor: pointer; }
 .btn-cancel {
   padding: 9px 22px;
   border-radius: 8px;
-  border: 1.5px solid #e2e8f0;
-  background: #fff;
-  color: #4a5568;
+  border: 1.5px solid var(--app-border);
+  background: var(--app-surface);
+  color: var(--app-muted-text);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: border-color 0.15s;
 }
 
-.btn-cancel:hover:not(:disabled) { border-color: #667eea; color: #667eea; }
+.btn-cancel:hover:not(:disabled) { border-color: var(--app-primary); color: var(--app-primary); }
 .btn-cancel:disabled { opacity: 0.55; cursor: not-allowed; }
 
 .btn-save {
@@ -152,8 +152,8 @@ select.field-input { cursor: pointer; }
   padding: 9px 24px;
   border-radius: 8px;
   border: none;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
+  background: var(--app-header-gradient);
+  color: var(--app-primary-contrast);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -175,8 +175,8 @@ select.field-input { cursor: pointer; }
   gap: 8px;
   padding: 10px 16px;
   border-radius: 8px;
-  background: #dcfce7;
-  color: #15803d;
+  background: var(--app-success-soft);
+  color: var(--app-success);
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 16px;
@@ -190,8 +190,8 @@ select.field-input { cursor: pointer; }
   gap: 8px;
   padding: 10px 16px;
   border-radius: 8px;
-  background: #fee2e2;
-  color: #dc2626;
+  background: var(--app-error-soft);
+  color: var(--app-error);
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 16px;
@@ -205,11 +205,11 @@ select.field-input { cursor: pointer; }
   flex-direction: column;
   align-items: center;
   padding: 60px 0;
-  color: #94a3b8;
+  color: var(--app-muted-text);
   gap: 10px;
 }
 
-.empty-state .material-icons { font-size: 48px; color: #e2e8f0; }
+.empty-state .material-icons { font-size: 48px; color: var(--app-border); }
 .empty-state p { font-size: 14px; }
 
 @media (max-width: 700px) {

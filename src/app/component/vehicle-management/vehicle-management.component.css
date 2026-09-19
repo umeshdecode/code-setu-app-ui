@@ -1,8 +1,5 @@
 :host {
   display: block;
-  --cargo-blue: #2563eb;
-  --cargo-orange: #f97316;
-  --cargo-green: #059669;
 }
 
 .vehicle-management-page {
@@ -20,7 +17,7 @@
 
 .eyebrow {
   margin: 0 0 4px;
-  color: #64748b;
+  color: var(--app-muted-text);
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -29,7 +26,7 @@
 
 .vehicle-management-header h1 {
   margin: 0;
-  color: #0f172a;
+  color: var(--app-text);
   font-size: 28px;
   font-weight: 800;
 }
@@ -43,7 +40,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #334155;
+  color: var(--app-text);
 }
 
 .section-title h2 {
@@ -66,9 +63,9 @@
   align-items: flex-start;
   gap: 8px;
   padding: 18px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--app-border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--app-surface);
   text-align: left;
   text-decoration: none;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
@@ -77,7 +74,7 @@
 
 .module-card:hover {
   transform: translateY(-3px);
-  border-color: #cbd5e1;
+  border-color: var(--app-border-strong);
   box-shadow: 0 14px 28px rgba(15, 23, 42, 0.1);
 }
 
@@ -92,29 +89,29 @@
 }
 
 .accent-blue .icon-wrapper {
-  background: #eff6ff;
-  color: var(--cargo-blue);
+  background: var(--app-primary-soft);
+  color: var(--app-primary);
 }
 
 .accent-orange .icon-wrapper {
-  background: #fff7ed;
-  color: var(--cargo-orange);
+  background: var(--app-warning-soft);
+  color: var(--app-warning);
 }
 
 .accent-green .icon-wrapper {
-  background: #ecfdf5;
-  color: var(--cargo-green);
+  background: var(--app-success-soft);
+  color: var(--app-success);
 }
 
 .card-title {
-  color: #0f172a;
+  color: var(--app-text);
   font-size: 16px;
   font-weight: 800;
 }
 
 .card-subtitle {
   max-width: 190px;
-  color: #64748b;
+  color: var(--app-muted-text);
   font-size: 13px;
   line-height: 1.4;
 }
@@ -123,7 +120,7 @@
   position: absolute;
   right: 16px;
   bottom: 16px;
-  color: #db2777;
+  color: var(--app-primary);
   font-size: 13px;
   font-weight: 800;
 }

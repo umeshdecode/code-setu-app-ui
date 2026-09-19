@@ -3,11 +3,11 @@
   flex-direction: column;
   align-items: center;
   padding: 60px 0;
-  color: #94a3b8;
+  color: var(--app-muted-text);
   gap: 10px;
 }
 
-.timeline-empty .material-icons { font-size: 52px; color: #e2e8f0; }
+.timeline-empty .material-icons { font-size: 52px; color: var(--app-border); }
 .timeline-empty p { font-size: 14px; text-align: center; }
 
 .timeline-list {
@@ -24,7 +24,7 @@
   top: 0;
   bottom: 0;
   width: 2px;
-  background: #e2e8f0;
+  background: var(--app-border);
 }
 
 .timeline-item {
@@ -47,10 +47,10 @@
   position: relative;
 }
 
-.icon-trip { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; }
-.icon-inventory { background: #dcfce7; color: #15803d; }
+.icon-trip { background: var(--app-action-gradient); color: var(--app-primary-contrast); }
+.icon-inventory { background: var(--app-success-soft); color: var(--app-success); }
 .icon-document { background: #ede9fe; color: #6d28d9; }
-.icon-shift { background: #e0f2fe; color: #0369a1; }
+.icon-shift { background: var(--app-info-soft); color: var(--app-info); }
 
 .timeline-icon .material-icons { font-size: 18px; }
 
@@ -64,12 +64,12 @@
 .timeline-label {
   font-size: 13px;
   font-weight: 600;
-  color: #2d3748;
+  color: var(--app-text);
 }
 
 .timeline-time {
   font-size: 11px;
-  color: #94a3b8;
+  color: var(--app-muted-text);
 }
 
-.tab-error { color: #dc2626; font-size: 13px; margin-bottom: 10px; }
+.tab-error { color: var(--app-error); font-size: 13px; margin-bottom: 10px; }

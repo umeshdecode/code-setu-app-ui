@@ -1,19 +1,18 @@
 .workspace-page {
   padding: 24px 32px 40px;
   min-height: 100vh;
-  background: #f8fafc;
+  background: var(--app-bg);
   font-family: Arial, Helvetica, sans-serif;
 }
 
 /* ── Header ─────────────────────────────────────────────── */
 .workspace-header {
-  background: #fff;
+  background: var(--app-surface);
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(45, 55, 72, 0.1);
   padding: 20px 28px;
   margin-bottom: 24px;
-  border-top: 4px solid transparent;
-  border-image: linear-gradient(90deg, #667eea, #764ba2) 1;
+  border-top: 4px solid var(--app-header-gradient);
 }
 
 .header-main {
@@ -32,13 +31,13 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #94a3b8;
+  color: var(--app-muted-text);
 }
 
 .header-value {
   font-size: 18px;
   font-weight: 700;
-  color: #2d3748;
+  color: var(--app-text);
 }
 
 .header-value.mono {
@@ -60,12 +59,12 @@
   gap: 6px;
   font-size: 15px;
   font-weight: 600;
-  color: #4a5568;
+  color: var(--app-muted-text);
 }
 
 .header-route .material-icons {
   font-size: 18px;
-  color: #667eea;
+  color: var(--app-primary);
 }
 
 .header-right {
@@ -83,8 +82,8 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
+  background: var(--app-header-gradient);
+  color: var(--app-primary-contrast);
 }
 
 .move-date {
@@ -92,7 +91,7 @@
   align-items: center;
   gap: 5px;
   font-size: 13px;
-  color: #718096;
+  color: var(--app-muted-text);
 }
 
 .move-date .material-icons {
@@ -100,7 +99,7 @@
 }
 
 .load-error {
-  color: #dc2626;
+  color: var(--app-error);
   font-size: 13px;
   margin: 8px 0 0;
 }
@@ -127,19 +126,19 @@
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  background: #fff;
+  border: 1px solid var(--app-border);
+  background: var(--app-surface);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #4a5568;
+  color: var(--app-muted-text);
   transition: all 0.15s;
 }
 
 .qa-btn:hover {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
+  background: var(--app-action-gradient);
+  color: var(--app-primary-contrast);
   border-color: transparent;
 }
 
@@ -165,47 +164,47 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 2px solid #cbd5e0;
+  border: 2px solid var(--app-border);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 11px;
   font-weight: 700;
-  color: #94a3b8;
-  background: #fff;
+  color: var(--app-muted-text);
+  background: var(--app-surface);
   transition: all 0.2s;
 }
 
 .ws-step.done .ws-step-circle {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-color: #667eea;
-  color: #fff;
+  background: var(--app-action-gradient);
+  border-color: var(--app-primary);
+  color: var(--app-primary-contrast);
 }
 
 .ws-step-label {
   font-size: 10px;
-  color: #94a3b8;
+  color: var(--app-muted-text);
   font-weight: 600;
   white-space: nowrap;
 }
 
-.ws-step.done .ws-step-label { color: #667eea; }
+.ws-step.done .ws-step-label { color: var(--app-primary); }
 
 .ws-step-connector {
   flex: 1;
   height: 2px;
-  background: #e2e8f0;
+  background: var(--app-border);
   margin-bottom: 14px;
   min-width: 20px;
 }
 
 .ws-step-connector.done {
-  background: linear-gradient(90deg, #667eea, #764ba2);
+  background: var(--app-action-gradient);
 }
 
 /* ── Tabs ────────────────────────────────────────────────── */
 .workspace-tabs {
-  background: #fff;
+  background: var(--app-surface);
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(45, 55, 72, 0.08);
   overflow: hidden;
@@ -215,17 +214,11 @@
   font-weight: 600;
   font-size: 13px;
   letter-spacing: 0.03em;
-  color: #718096;
   min-width: 100px;
   opacity: 1;
 }
 
-::ng-deep .workspace-tabs .mat-tab-label-active {
-  color: #667eea;
-}
-
 ::ng-deep .workspace-tabs .mat-ink-bar {
-  background: linear-gradient(90deg, #667eea, #764ba2);
   height: 3px;
 }
 
