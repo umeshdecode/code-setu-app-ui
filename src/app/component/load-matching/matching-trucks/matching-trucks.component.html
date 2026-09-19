@@ -1,0 +1,86 @@
+<div class="matching-page">
+  <div class="page-header">
+    <h1>Matching Trucks</h1>
+    <p class="page-subtitle">Trips with enough remaining weight/volume capacity for this shipment, ranked by match score.</p>
+  </div>
+
+  <div class="api-message error" *ngIf="loadError">{{ loadError }}</div>
+
+  <div class="loading-state" *ngIf="isLoading">
+    <span class="material-icons spin">autorenew</span> Finding matching trucks...
+  </div>
+
+  <div class="empty-state" *ngIf="!isLoading && matches.length === 0 && !loadError">
+    No matching trucks found for this shipment right now.
+  </div>
+
+  <div class="match-list" *ngIf="!isLoading && matches.length > 0">
+    <div class="match-card" *ngFor="let match of matches">
+      <div class="match-card-main" (click)="toggleDetails(match.loadMatchId)">
+        <div class="match-route">
+          <span class="material-icons">local_shipping</span>
+          <div>
+            <strong>{{ match.tripVehicleRegistrationNumber || 'Vehicle' }}</strong>
+            <span class="match-sub">
+              {{ match.tripSourceCity || '?' }} <span class="material-icons inline-arrow">arrow_forward</span> {{ match.tripDestinationCity || '?' }}
+            </span>
+          </div>
+        </div>
+
+        <span class="match-status-chip" [ngClass]="statusClass(match.status)">{{ match.status }}</span>
+
+        <div class="match-score">
+          <div class="score-bar-track">
+            <div class="score-bar-fill" [style.width.%]="scorePct(match.overallScore)"></div>
+          </div>
+          <span class="score-value">{{ scorePct(match.overallScore) }}%</span>
+        </div>
+
+        <span class="material-icons expand-icon">{{ expandedId === match.loadMatchId ? 'expand_less' : 'expand_more' }}</span>
+      </div>
+
+      <div class="match-actions" *ngIf="canRequest(match) || canAccept(match) || canReject(match)">
+        <button type="button" class="match-btn match-btn-primary" *ngIf="canRequest(match)"
+                [disabled]="actionBusy[match.loadMatchId!]"
+                (click)="$event.stopPropagation(); requestMatch(match)">
+          Request
+        </button>
+        <button type="button" class="match-btn match-btn-success" *ngIf="canAccept(match)"
+                [disabled]="actionBusy[match.loadMatchId!]"
+                (click)="$event.stopPropagation(); acceptMatch(match)">
+          Accept
+        </button>
+        <button type="button" class="match-btn match-btn-danger" *ngIf="canReject(match)"
+                [disabled]="actionBusy[match.loadMatchId!]"
+                (click)="$event.stopPropagation(); startReject(match.loadMatchId)">
+          Reject
+        </button>
+
+        <div class="reject-inline" *ngIf="rejectingId === match.loadMatchId" (click)="$event.stopPropagation()">
+          <input type="text" class="reject-input" placeholder="Reason (optional)" [(ngModel)]="rejectReason" name="rejectReason" />
+          <button type="button" class="match-btn match-btn-danger" (click)="confirmReject(match)">Confirm</button>
+          <button type="button" class="match-btn match-btn-secondary" (click)="cancelReject()">Cancel</button>
+        </div>
+      </div>
+
+      <div class="api-message error match-action-message" *ngIf="match.loadMatchId != null && actionErrors[match.loadMatchId]">
+        {{ actionErrors[match.loadMatchId] }}
+        <button type="button" class="match-btn match-btn-secondary refresh-btn" (click)="loadMatches()">Refresh matches</button>
+      </div>
+
+      <div class="api-message success match-action-message" *ngIf="match.loadMatchId != null && actionSuccess[match.loadMatchId]">
+        {{ actionSuccess[match.loadMatchId] }}
+        <a class="match-btn match-btn-primary" [routerLink]="['/trips', match.tripId, 'manifest']">View Manifest</a>
+      </div>
+
+      <div class="match-breakdown" *ngIf="expandedId === match.loadMatchId">
+        <div class="breakdown-row"><span>Route</span><span>{{ scorePct(match.routeScore ? match.routeScore * 100 : 0) }}%</span></div>
+        <div class="breakdown-row"><span>Capacity (volume)</span><span>{{ scorePct(match.capacityScore ? match.capacityScore * 100 : 0) }}%</span></div>
+        <div class="breakdown-row"><span>Weight</span><span>{{ scorePct(match.weightScore ? match.weightScore * 100 : 0) }}%</span></div>
+        <div class="breakdown-row"><span>Timing</span><span>{{ scorePct(match.timingScore ? match.timingScore * 100 : 0) }}%</span></div>
+        <div class="breakdown-row"><span>Vehicle/Equipment</span><span>{{ scorePct(match.vehicleScore ? match.vehicleScore * 100 : 0) }}%</span></div>
+        <div class="breakdown-row"><span>Special Handling</span><span>{{ scorePct(match.handlingScore ? match.handlingScore * 100 : 0) }}%</span></div>
+      </div>
+    </div>
+  </div>
+</div>

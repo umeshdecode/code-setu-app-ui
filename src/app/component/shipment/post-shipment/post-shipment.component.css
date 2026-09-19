@@ -1,0 +1,354 @@
+.shipment-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--app-text);
+}
+
+.sub-title {
+  margin: 0.25rem 0 0;
+  color: var(--app-muted-text);
+  font-size: 0.9rem;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  text-decoration: none;
+  color: var(--app-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.form-card {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-lg);
+  box-shadow: var(--app-shadow-sm);
+  padding: 1.5rem;
+}
+
+/* ─── Progress steps ──────────────────────────────────────────────────── */
+.progress-container {
+  margin-bottom: 1.5rem;
+}
+
+.progress-steps {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+}
+
+.progress-line {
+  position: absolute;
+  top: 15px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--app-border);
+  z-index: 0;
+}
+
+.progress-line-active {
+  position: absolute;
+  top: 15px;
+  left: 0;
+  height: 2px;
+  background: var(--app-primary);
+  z-index: 1;
+  transition: width 0.3s ease;
+}
+
+.step {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--app-surface);
+  border: 2px solid var(--app-border);
+  color: var(--app-muted-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.step-label {
+  font-size: 0.72rem;
+  color: var(--app-muted-text);
+  text-align: center;
+}
+
+.step.active .step-circle {
+  border-color: var(--app-primary);
+  color: var(--app-primary);
+  background: var(--app-primary-soft);
+}
+
+.step.active .step-label {
+  color: var(--app-primary);
+  font-weight: 600;
+}
+
+.step.completed .step-circle {
+  border-color: var(--app-primary);
+  background: var(--app-primary);
+  color: var(--app-primary-contrast);
+}
+
+.step.completed .step-label {
+  color: var(--app-primary);
+}
+
+/* ─── Messages ────────────────────────────────────────────────────────── */
+.api-message {
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--app-radius-sm);
+  background: var(--app-info-soft);
+  color: var(--app-info);
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+.api-message.error {
+  background: var(--app-error-soft);
+  color: var(--app-error);
+}
+
+/* ─── Form layout ─────────────────────────────────────────────────────── */
+.form-step {
+  display: none;
+}
+
+.form-step.active {
+  display: block;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-row.three-col {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.form-row.checkbox-row {
+  grid-template-columns: repeat(2, auto);
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.9rem;
+}
+
+.form-group label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--app-text);
+}
+
+.required {
+  color: var(--app-error);
+}
+
+.form-input {
+  padding: 0.55rem 0.7rem;
+  border: 1.5px solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  font-size: 0.9rem;
+  background: var(--app-surface);
+  color: var(--app-text);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--app-primary);
+}
+
+.error-msg {
+  color: var(--app-error);
+  font-size: 0.75rem;
+}
+
+.checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--app-text);
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+}
+
+/* ─── Items ───────────────────────────────────────────────────────────── */
+.items-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--app-border);
+}
+
+.items-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.items-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--app-text);
+}
+
+.empty-hint {
+  color: var(--app-muted-text);
+  font-size: 0.85rem;
+}
+
+.item-row {
+  background: var(--app-bg);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-md);
+  padding: 1rem;
+  margin-bottom: 0.9rem;
+}
+
+.item-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+  font-weight: 600;
+  color: var(--app-text);
+}
+
+.icon-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--app-muted-text);
+  display: inline-flex;
+  align-items: center;
+}
+
+.icon-btn.danger {
+  color: var(--app-error);
+}
+
+/* ─── Review ──────────────────────────────────────────────────────────── */
+.review-section {
+  margin-bottom: 1.25rem;
+}
+
+.review-section h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  color: var(--app-text);
+  border-bottom: 1px solid var(--app-border);
+  padding-bottom: 0.35rem;
+}
+
+.review-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem 1.5rem;
+}
+
+.review-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: 0.9rem;
+  color: var(--app-text);
+}
+
+.review-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--app-muted-text);
+}
+
+/* ─── Actions ─────────────────────────────────────────────────────────── */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--app-border);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--app-radius-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+}
+
+.btn-primary {
+  background: var(--app-primary);
+  color: var(--app-primary-contrast);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: var(--app-surface);
+  color: var(--app-text);
+  border-color: var(--app-border);
+}
+
+.btn-small {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 640px) {
+  .form-row,
+  .form-row.three-col,
+  .review-grid,
+  .checkbox-grid {
+    grid-template-columns: 1fr;
+  }
+}

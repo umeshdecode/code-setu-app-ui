@@ -1,0 +1,54 @@
+<div class="active-trips-page">
+  <div class="page-header">
+    <div>
+      <h1>My Active Trips</h1>
+      <p class="page-subtitle">Trips currently in progress, with remaining weight/volume capacity for load matching.</p>
+    </div>
+  </div>
+
+  <div class="api-message error" *ngIf="loadError">{{ loadError }}</div>
+
+  <div class="loading-state" *ngIf="isLoading">
+    <span class="material-icons spin">autorenew</span> Loading trips...
+  </div>
+
+  <div class="empty-state" *ngIf="!isLoading && trips.length === 0 && !loadError">
+    No active trips found on this page.
+  </div>
+
+  <div class="trip-grid" *ngIf="!isLoading && trips.length > 0">
+    <div class="trip-grid-item" *ngFor="let trip of trips">
+      <div class="trip-grid-item-header">
+        <span class="trip-number">{{ trip.tripNumber || ('Trip #' + trip.tripId) }}</span>
+        <span class="trip-route" *ngIf="trip.sourceCity || trip.destinationCity">
+          {{ trip.sourceCity }} <span class="material-icons">arrow_forward</span> {{ trip.destinationCity }}
+        </span>
+      </div>
+
+      <app-trip-capacity-card [trip]="trip" (capacityInitialized)="onCapacityInitialized($event)"></app-trip-capacity-card>
+
+      <div class="trip-links-row">
+        <a class="view-matches-link" [routerLink]="['/trips', trip.tripId, 'matching-loads']">
+          <span class="material-icons">search</span> View Matching Loads
+        </a>
+        <a class="view-matches-link" [routerLink]="['/trips', trip.tripId, 'manifest']">
+          <span class="material-icons">list_alt</span> View Manifest
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="pagination-row" *ngIf="!isLoading && trips.length > 0">
+    <span class="pagination-summary">Page {{ getDisplayCurrentPage() }} of {{ getDisplayTotalPages() }} ({{ getDisplayTotalRecords() }} total)</span>
+    <div class="pagination-buttons">
+      <button type="button" (click)="goToPage(currentPageNumber - 1)" [disabled]="currentPageNumber <= 0">
+        <span class="material-icons">chevron_left</span>
+      </button>
+      <button type="button" *ngFor="let p of visiblePageNumbers" [class.active]="p - 1 === currentPageNumber"
+              (click)="goToPage(p - 1)">{{ p }}</button>
+      <button type="button" (click)="goToPage(currentPageNumber + 1)" [disabled]="currentPageNumber + 1 >= getDisplayTotalPages()">
+        <span class="material-icons">chevron_right</span>
+      </button>
+    </div>
+  </div>
+</div>

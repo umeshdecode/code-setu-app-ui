@@ -1,0 +1,47 @@
+<div class="capacity-card">
+  <div class="capacity-header">
+    <div class="vehicle-info">
+      <span class="material-icons">local_shipping</span>
+      <div>
+        <strong>{{ trip?.vehicleRegistrationNumber || (trip?.vehicleId ? 'Vehicle #' + trip?.vehicleId : 'Vehicle not assigned') }}</strong>
+        <span class="vehicle-sub" *ngIf="trip?.vehicleTypeCategory">{{ trip?.vehicleTypeCategory }}</span>
+      </div>
+    </div>
+  </div>
+
+  <ng-container *ngIf="capacityKnown; else notInitialized">
+    <div class="capacity-bar-row">
+      <div class="capacity-bar-label">
+        <span>Weight</span>
+        <span>{{ weightUsedKg }} / {{ trip?.totalWeightKg }} kg ({{ weightUsedPct }}%)</span>
+      </div>
+      <div class="capacity-bar-track">
+        <div class="capacity-bar-fill" [style.width.%]="weightUsedPct"></div>
+      </div>
+    </div>
+
+    <div class="capacity-bar-row">
+      <div class="capacity-bar-label">
+        <span>Volume</span>
+        <span>{{ volumeUsedCbm }} / {{ trip?.totalVolumeCbm }} cbm ({{ volumeUsedPct }}%)</span>
+      </div>
+      <div class="capacity-bar-track">
+        <div class="capacity-bar-fill" [style.width.%]="volumeUsedPct"></div>
+      </div>
+    </div>
+
+    <div class="capacity-meta" *ngIf="trip?.equipmentTags">
+      <span class="material-icons">build</span>
+      {{ trip?.equipmentTags }}
+    </div>
+  </ng-container>
+
+  <ng-template #notInitialized>
+    <p class="no-capacity-msg">Capacity has not been initialized for this trip yet.</p>
+    <p class="api-message error" *ngIf="initError">{{ initError }}</p>
+    <button type="button" class="init-btn" [disabled]="isInitializing" (click)="initializeCapacity()">
+      <span class="material-icons">tune</span>
+      {{ isInitializing ? 'Initializing...' : 'Initialize Capacity' }}
+    </button>
+  </ng-template>
+</div>

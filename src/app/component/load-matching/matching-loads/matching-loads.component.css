@@ -1,0 +1,251 @@
+.matching-page {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: var(--app-text);
+}
+
+.page-subtitle {
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+  color: var(--app-muted-text);
+}
+
+.api-message.error {
+  color: var(--app-error);
+  background: var(--app-error-soft);
+  border-radius: var(--app-radius-sm);
+  padding: 0.6rem 0.9rem;
+  font-size: 0.85rem;
+}
+
+.api-message.success {
+  color: var(--app-success);
+  background: var(--app-success-soft);
+  border-radius: var(--app-radius-sm);
+  padding: 0.6rem 0.9rem;
+  font-size: 0.85rem;
+}
+
+.match-action-message {
+  margin: 0 1.1rem 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.loading-state,
+.empty-state {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--app-muted-text);
+  padding: 1.5rem;
+  justify-content: center;
+}
+
+.loading-state .spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.match-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.match-card {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-md);
+  overflow: hidden;
+}
+
+.match-card-main {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1.1rem;
+  cursor: pointer;
+}
+
+.match-route {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.match-route .material-icons {
+  color: var(--app-primary);
+}
+
+.match-route strong {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+  color: var(--app-text);
+}
+
+.inline-arrow {
+  font-size: 14px;
+}
+
+.match-sub {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--app-muted-text);
+}
+
+.match-score {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 130px;
+}
+
+.score-bar-track {
+  width: 90px;
+  height: 8px;
+  border-radius: 99px;
+  background: var(--app-surface-muted);
+  overflow: hidden;
+}
+
+.score-bar-fill {
+  height: 100%;
+  background: var(--app-primary);
+  border-radius: 99px;
+}
+
+.score-value {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--app-text);
+  min-width: 36px;
+}
+
+.expand-icon {
+  color: var(--app-muted-text);
+}
+
+.match-breakdown {
+  border-top: 1px solid var(--app-border);
+  padding: 0.75rem 1.1rem;
+  background: var(--app-surface-muted);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.4rem 1rem;
+}
+
+.breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--app-muted-text);
+}
+
+.breakdown-row span:last-child {
+  color: var(--app-text);
+  font-weight: 600;
+}
+
+/* ─── Match status badges ──────────────────────────────────────────────── */
+.match-status-chip {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.match-status-suggested  { background: var(--app-info-soft); color: var(--app-info); }
+.match-status-viewed     { background: var(--app-info-soft); color: var(--app-info); }
+.match-status-requested  { background: var(--app-warning-soft); color: var(--app-warning); }
+.match-status-accepted   { background: var(--app-success-soft); color: var(--app-success); }
+.match-status-rejected   { background: var(--app-error-soft); color: var(--app-error); }
+.match-status-expired    { background: var(--app-neutral-soft); color: var(--app-neutral); }
+
+/* ─── Match action buttons ─────────────────────────────────────────────── */
+.match-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0 1.1rem 0.9rem;
+}
+
+.match-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--app-radius-sm);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  text-decoration: none;
+  background: none;
+}
+
+.match-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.match-btn-primary {
+  background: var(--app-primary);
+  color: var(--app-primary-contrast);
+}
+
+.match-btn-success {
+  background: var(--app-success);
+  color: var(--app-primary-contrast);
+}
+
+.match-btn-danger {
+  background: transparent;
+  color: var(--app-error);
+  border-color: var(--app-error);
+}
+
+.match-btn-secondary {
+  background: transparent;
+  color: var(--app-muted-text);
+  border-color: var(--app-border);
+}
+
+.reject-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.reject-input {
+  padding: 0.35rem 0.6rem;
+  border-radius: var(--app-radius-sm);
+  border: 1.5px solid var(--app-border);
+  background: var(--app-surface);
+  color: var(--app-text);
+  font-size: 0.78rem;
+  min-width: 200px;
+}

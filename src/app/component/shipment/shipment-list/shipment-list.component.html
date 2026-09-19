@@ -1,0 +1,83 @@
+<div class="shipment-list-page">
+  <div class="page-header">
+    <div>
+      <h1>Shipments</h1>
+      <p class="sub-title">Manage shipment requests awaiting or in transport allocation</p>
+    </div>
+    <a class="btn btn-primary" routerLink="/shipments/new">
+      <span class="material-icons">add</span>
+      Post Shipment
+    </a>
+  </div>
+
+  <div class="list-card">
+    <p class="api-message" *ngIf="isLoading">Loading shipments...</p>
+    <p class="api-message error" *ngIf="loadError">{{ loadError }}</p>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Route</th>
+            <th>Cargo Type</th>
+            <th>Weight / Volume</th>
+            <th>Pickup Date</th>
+            <th>Delivery Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let s of shipments">
+            <td>
+              <strong>{{ s.sourceCity }} → {{ s.destinationCity }}</strong>
+              <span class="row-subtitle">{{ s.customerName || (s.customerId ? 'Customer #' + s.customerId : '') }}</span>
+            </td>
+            <td>{{ s.cargoType || '—' }}</td>
+            <td>{{ s.totalWeightKg || 0 }} kg / {{ s.totalVolumeCbm || 0 }} cbm</td>
+            <td>{{ formatDate(s.requiredPickupDate) }}</td>
+            <td>{{ formatDate(s.requiredDeliveryDate) }}</td>
+            <td>
+              <span class="shipment-status-chip" [ngClass]="getShipmentStatusClass(s.status)">
+                {{ formatStatus(s.status) }}
+              </span>
+            </td>
+            <td class="action-td">
+              <a class="table-btn" [routerLink]="['/shipments', s.shipmentId, 'matching-trucks']" title="View Matching Trucks">
+                <span class="material-icons">search</span>
+              </a>
+              <a class="table-btn" [routerLink]="['/shipments', s.shipmentId, 'edit']" title="Edit">
+                <span class="material-icons">edit</span>
+              </a>
+              <button class="table-btn delete-btn" type="button" (click)="deleteShipment(s)" title="Delete">
+                <span class="material-icons">delete</span>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="!isLoading && shipments.length === 0">
+            <td colspan="7" class="empty-row">No shipments found. Post one to get started!</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination-row" *ngIf="getDisplayTotalPages() > 0">
+      <span class="pagination-summary">
+        Page {{ getDisplayCurrentPage() }} of {{ getDisplayTotalPages() }}
+        | {{ getDisplayTotalRecords() }} records
+      </span>
+      <button type="button" [disabled]="currentPageNumber === 0" (click)="goToPage(currentPageNumber - 1)">&laquo;</button>
+      <button type="button" *ngFor="let page of visiblePageNumbers"
+        [class.active]="page === getDisplayCurrentPage()" (click)="goToPage(page - 1)">
+        {{ page }}
+      </button>
+      <button type="button" [disabled]="currentPageNumber >= getDisplayTotalPages() - 1"
+        (click)="goToPage(currentPageNumber + 1)">&raquo;</button>
+      <select class="page-size browser-default" [(ngModel)]="pageSize" (change)="changePageSize()">
+        <option [ngValue]="5">5</option>
+        <option [ngValue]="10">10</option>
+        <option [ngValue]="25">25</option>
+      </select>
+    </div>
+  </div>
+</div>

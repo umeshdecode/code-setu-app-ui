@@ -14,6 +14,12 @@ export interface VehiclePayload {
   manufacturer: string;
   mileage: number;
   capacityKg: number;
+  capacityCbm?: number;
+  lengthCm?: number;
+  widthCm?: number;
+  heightCm?: number;
+  bodyType?: string;
+  equipmentTags?: string;
   status: string;
   fuelType: string;
   registrationDate: string;

@@ -1,0 +1,205 @@
+.shipment-list-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--app-text);
+}
+
+.sub-title {
+  margin: 0.25rem 0 0;
+  color: var(--app-muted-text);
+  font-size: 0.9rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--app-radius-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--app-primary);
+  color: var(--app-primary-contrast);
+}
+
+.list-card {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-lg);
+  box-shadow: var(--app-shadow-sm);
+  padding: 1.25rem;
+}
+
+.api-message {
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--app-radius-sm);
+  background: var(--app-info-soft);
+  color: var(--app-info);
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+.api-message.error {
+  background: var(--app-error-soft);
+  color: var(--app-error);
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--app-muted-text);
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1.5px solid var(--app-border);
+}
+
+td {
+  padding: 0.7rem 0.75rem;
+  border-bottom: 1px solid var(--app-border);
+  font-size: 0.88rem;
+  color: var(--app-text);
+  vertical-align: middle;
+}
+
+.row-subtitle {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--app-muted-text);
+}
+
+.empty-row {
+  text-align: center;
+  color: var(--app-muted-text);
+  padding: 1.5rem;
+}
+
+.action-td {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.table-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--app-radius-sm);
+  border: 1.5px solid var(--app-border);
+  background: var(--app-surface);
+  color: var(--app-text);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.table-btn.delete-btn:hover {
+  border-color: var(--app-error);
+  color: var(--app-error);
+}
+
+.table-btn:hover {
+  border-color: var(--app-primary);
+  color: var(--app-primary);
+}
+
+/* ─── Shipment status chips ───────────────────────────────────────────── */
+.shipment-status-chip {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  background: var(--app-neutral-soft);
+  color: var(--app-neutral);
+}
+
+.shipment-status-draft                { background: var(--app-neutral-soft); color: var(--app-neutral); }
+.shipment-status-posted               { background: var(--app-info-soft);    color: var(--app-info); }
+.shipment-status-matching             { background: var(--app-info-soft);    color: var(--app-info); }
+.shipment-status-partially-allocated  { background: var(--app-warning-soft); color: var(--app-warning); }
+.shipment-status-allocated            { background: var(--app-success-soft); color: var(--app-success); }
+.shipment-status-completed            { background: var(--app-success-soft); color: var(--app-success); }
+.shipment-status-cancelled            { background: var(--app-error-soft);   color: var(--app-error); }
+
+/* ─── Pagination ──────────────────────────────────────────────────────── */
+.pagination-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 1rem;
+}
+
+.pagination-summary {
+  flex: 1;
+  font-size: 0.78rem;
+  color: var(--app-muted-text);
+}
+
+.pagination-row button {
+  min-width: 30px;
+  height: 30px;
+  border: 1.5px solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  background: var(--app-surface);
+  color: var(--app-text);
+  cursor: pointer;
+}
+
+.pagination-row button:disabled { opacity: 0.4; cursor: not-allowed; }
+.pagination-row button.active {
+  background: var(--app-primary);
+  color: var(--app-primary-contrast);
+  border-color: var(--app-primary);
+}
+
+.pagination-row button:not(:disabled):not(.active):hover {
+  border-color: var(--app-primary);
+  color: var(--app-primary);
+}
+
+.page-size {
+  margin-left: 0.5rem;
+  padding: 0.25rem 0.4rem;
+  border: 1.5px solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  background: var(--app-surface);
+  color: var(--app-text);
+}
+
+@media (max-width: 640px) {
+  .page-header {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}

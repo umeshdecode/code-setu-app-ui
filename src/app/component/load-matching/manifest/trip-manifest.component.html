@@ -1,0 +1,78 @@
+<div class="manifest-page">
+  <div class="page-header">
+    <div>
+      <h1>Trip Manifest</h1>
+      <p class="page-subtitle" *ngIf="trip">
+        {{ trip.tripNumber || ('Trip #' + trip.tripId) }}
+        <span *ngIf="trip.sourceCity || trip.destinationCity">
+          &mdash; {{ trip.sourceCity }} <span class="material-icons inline-arrow">arrow_forward</span> {{ trip.destinationCity }}
+        </span>
+      </p>
+    </div>
+    <a class="back-link" [routerLink]="['/trips', tripId, 'matching-loads']">
+      <span class="material-icons">search</span> View Matching Loads
+    </a>
+  </div>
+
+  <app-trip-capacity-card *ngIf="trip" [trip]="trip" (capacityInitialized)="onCapacityInitialized()"></app-trip-capacity-card>
+
+  <div class="api-message error" *ngIf="loadError">{{ loadError }}</div>
+
+  <div class="loading-state" *ngIf="isLoading">
+    <span class="material-icons spin">autorenew</span> Loading manifest...
+  </div>
+
+  <div class="empty-state" *ngIf="!isLoading && entries.length === 0 && !loadError">
+    No shipments have been added to this trip's manifest yet.
+  </div>
+
+  <div class="table-wrapper" *ngIf="!isLoading && entries.length > 0">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Route</th>
+          <th>Cargo Type</th>
+          <th>Allocated Weight</th>
+          <th>Allocated Volume</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let entry of entries">
+          <td>{{ entry.sequenceOrder ?? '-' }}</td>
+          <td>
+            {{ entry.shipmentSourceCity || '?' }}
+            <span class="material-icons inline-arrow">arrow_forward</span>
+            {{ entry.shipmentDestinationCity || '?' }}
+          </td>
+          <td>{{ entry.shipmentCargoType || '-' }}</td>
+          <td>{{ entry.allocatedWeightKg != null ? entry.allocatedWeightKg + ' kg' : '-' }}</td>
+          <td>{{ entry.allocatedVolumeCbm != null ? entry.allocatedVolumeCbm + ' cbm' : '-' }}</td>
+          <td>
+            <span class="manifest-status-chip" [ngClass]="statusClass(entry.manifestStatus)">{{ entry.manifestStatus }}</span>
+            <div class="row-error" *ngIf="entry.tripShipmentId != null && rowError[entry.tripShipmentId]">
+              {{ rowError[entry.tripShipmentId] }}
+            </div>
+          </td>
+          <td>
+            <div class="row-actions">
+              <select class="status-select"
+                      [disabled]="entry.tripShipmentId == null || rowBusy[entry.tripShipmentId!] || entry.manifestStatus === 'CANCELLED' || entry.manifestStatus === 'DELIVERED'"
+                      [ngModel]="entry.manifestStatus"
+                      (ngModelChange)="onStatusChange(entry, $event)">
+                <option *ngFor="let s of nextStatuses(entry)" [value]="s">{{ s }}</option>
+              </select>
+              <button type="button" class="manifest-btn manifest-btn-danger"
+                      [disabled]="entry.tripShipmentId == null || rowBusy[entry.tripShipmentId!] || entry.manifestStatus === 'CANCELLED' || entry.manifestStatus === 'DELIVERED'"
+                      (click)="cancelEntry(entry)">
+                Cancel
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

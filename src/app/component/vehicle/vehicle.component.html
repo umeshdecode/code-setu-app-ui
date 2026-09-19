@@ -94,6 +94,35 @@
           </div>
         </div>
         <div class="form-group">
+          <label>Capacity (cbm)</label>
+          <input type="number" formControlName="capacityCbm" placeholder="12.5">
+        </div>
+        <div class="form-group">
+          <label>Length (cm)</label>
+          <input type="number" formControlName="lengthCm" placeholder="600">
+        </div>
+        <div class="form-group">
+          <label>Width (cm)</label>
+          <input type="number" formControlName="widthCm" placeholder="240">
+        </div>
+        <div class="form-group">
+          <label>Height (cm)</label>
+          <input type="number" formControlName="heightCm" placeholder="240">
+        </div>
+        <div class="form-group">
+          <label>Body Type</label>
+          <select formControlName="bodyType">
+            <option value="OPEN">Open</option>
+            <option value="CLOSED">Closed</option>
+            <option value="REEFER">Reefer</option>
+            <option value="FLATBED">Flatbed</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Equipment Tags</label>
+          <input formControlName="equipmentTags" placeholder="Tail-lift, GPS, Straps">
+        </div>
+        <div class="form-group">
           <label>Status *</label>
           <select formControlName="status">
             <option value="AVAILABLE">Available</option>

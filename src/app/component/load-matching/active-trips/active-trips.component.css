@@ -1,0 +1,150 @@
+.active-trips-page {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: var(--app-text);
+}
+
+.page-subtitle {
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+  color: var(--app-muted-text);
+}
+
+.api-message.error {
+  color: var(--app-error);
+  background: var(--app-error-soft);
+  border-radius: var(--app-radius-sm);
+  padding: 0.6rem 0.9rem;
+  font-size: 0.85rem;
+}
+
+.loading-state,
+.empty-state {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--app-muted-text);
+  padding: 1.5rem;
+  justify-content: center;
+}
+
+.loading-state .spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.trip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.trip-grid-item {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-md);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.trip-grid-item-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.trip-number {
+  font-weight: 700;
+  color: var(--app-text);
+  font-size: 0.95rem;
+}
+
+.trip-route {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  color: var(--app-muted-text);
+}
+
+.trip-route .material-icons {
+  font-size: 14px;
+}
+
+.trip-links-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+}
+
+.view-matches-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  align-self: flex-start;
+  color: var(--app-primary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.view-matches-link:hover {
+  text-decoration: underline;
+}
+
+.view-matches-link .material-icons {
+  font-size: 16px;
+}
+
+.pagination-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pagination-summary {
+  font-size: 0.8rem;
+  color: var(--app-muted-text);
+}
+
+.pagination-buttons {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.pagination-buttons button {
+  min-width: 32px;
+  height: 32px;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  background: var(--app-surface);
+  color: var(--app-text);
+  cursor: pointer;
+  font-size: 0.82rem;
+}
+
+.pagination-buttons button.active {
+  background: var(--app-primary);
+  color: var(--app-primary-contrast);
+  border-color: var(--app-primary);
+}
+
+.pagination-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -19,6 +19,13 @@ export type TripStatus =
 export type ExpenseCategory = 'FUEL' | 'TOLL' | 'PARKING' | 'FOOD' | 'LABOUR' | 'REPAIR' | 'POLICE_FINE' | 'OTHER';
 export type ExpensePaidBy   = 'DRIVER' | 'COMPANY' | 'CUSTOMER';
 
+export interface TripStop {
+  tripStopId?: number;
+  tripId?: number;
+  stopCity: string;
+  sequenceOrder: number;
+}
+
 export interface TripStatusHistory {
   id?: number;
   tripId?: number;
@@ -68,6 +75,16 @@ export interface Trip {
   statusHistory?: TripStatusHistory[];
   createdAt?: string;
   updatedAt?: string;
+  // Capacity tracking (Smart Load Matching phase 1)
+  remainingWeightKg?: number;
+  remainingVolumeCbm?: number;
+  totalWeightKg?: number;
+  totalVolumeCbm?: number;
+  vehicleCapacityKg?: number;
+  vehicleCapacityCbm?: number;
+  vehicleTypeCategory?: string;
+  equipmentTags?: string;
+  stops?: TripStop[];
 }
 
 export interface TripPayload {

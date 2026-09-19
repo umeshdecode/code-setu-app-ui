@@ -31,6 +31,12 @@ import { SyetemconfigurationComponent } from './component/syetemconfiguration/sy
 import { QuotaionComponent } from './component/quotaion/quotaion.component';
 import { TripComponent } from './component/trip/trip.component';
 import { ShiftingWorkspaceComponent } from './component/shifting-workspace/shifting-workspace.component';
+import { ShipmentListComponent } from './component/shipment/shipment-list/shipment-list.component';
+import { PostShipmentComponent } from './component/shipment/post-shipment/post-shipment.component';
+import { ActiveTripsComponent } from './component/load-matching/active-trips/active-trips.component';
+import { MatchingLoadsComponent } from './component/load-matching/matching-loads/matching-loads.component';
+import { MatchingTrucksComponent } from './component/load-matching/matching-trucks/matching-trucks.component';
+import { TripManifestComponent } from './component/load-matching/manifest/trip-manifest.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },
@@ -71,6 +77,13 @@ const routes: Routes = [
 { path: 'quotations', component: QuotaionComponent, pathMatch: 'full', canActivate: [AuthGuard, PermissionGuard], data: { module: 'QUOTATION', action: 'READ' } },
 { path: 'trips', component: TripComponent, pathMatch: 'full', canActivate: [AuthGuard, PermissionGuard], data: { module: 'TRIP', action: 'READ' } },
 { path: 'customer/:customerId/shifting/:shiftId', component: ShiftingWorkspaceComponent, canActivate: [AuthGuard, PermissionGuard], data: { module: 'SHIFTING', action: 'READ' } },
+{ path: 'shipments', component: ShipmentListComponent, pathMatch: 'full', canActivate: [AuthGuard, PermissionGuard], data: { module: 'SHIPMENT', action: 'READ' } },
+{ path: 'shipments/new', component: PostShipmentComponent, pathMatch: 'full', canActivate: [AuthGuard, PermissionGuard], data: { module: 'SHIPMENT', action: 'CREATE' } },
+{ path: 'shipments/:id/edit', component: PostShipmentComponent, pathMatch: 'full', canActivate: [AuthGuard, PermissionGuard], data: { module: 'SHIPMENT', action: 'UPDATE' } },
+{ path: 'trips/active', component: ActiveTripsComponent, pathMatch: 'full', canActivate: [AuthGuard, PermissionGuard], data: { module: 'LOADMATCH', action: 'READ' } },
+{ path: 'trips/:id/matching-loads', component: MatchingLoadsComponent, pathMatch: 'full', canActivate: [AuthGuard, PermissionGuard], data: { module: 'LOADMATCH', action: 'READ' } },
+{ path: 'shipments/:id/matching-trucks', component: MatchingTrucksComponent, pathMatch: 'full', canActivate: [AuthGuard, PermissionGuard], data: { module: 'LOADMATCH', action: 'READ' } },
+{ path: 'trips/:id/manifest', component: TripManifestComponent, pathMatch: 'full', canActivate: [AuthGuard, PermissionGuard], data: { module: 'MANIFEST', action: 'READ' } },
 
 ];
 

@@ -116,4 +116,30 @@ export class TripService {
   deleteStatusHistory(id: number): Observable<any> {
     return this.http.delete<any>(`${this.HISTORY_URL}/${id}`);
   }
+
+  // ── Capacity endpoints (/trip/{id}/capacity) ──────────────────────────
+  getCapacity(tripId: number): Observable<any> {
+    return this.http.get<any>(`${this.BASE_URL}/${tripId}/capacity`);
+  }
+
+  initializeCapacity(tripId: number): Observable<any> {
+    return this.http.post<any>(`${this.BASE_URL}/${tripId}/capacity/initialize`, {});
+  }
+
+  updateCapacity(tripId: number, payload: any): Observable<any> {
+    return this.http.put<any>(`${this.BASE_URL}/${tripId}/capacity`, payload);
+  }
+
+  // ── Stop endpoints (/trip/{id}/stops) ──────────────────────────────────
+  getStops(tripId: number): Observable<any> {
+    return this.http.get<any>(`${this.BASE_URL}/${tripId}/stops`);
+  }
+
+  addStop(tripId: number, stop: any): Observable<any> {
+    return this.http.post<any>(`${this.BASE_URL}/${tripId}/stops`, stop);
+  }
+
+  removeStop(tripId: number, stopId: number): Observable<any> {
+    return this.http.delete<any>(`${this.BASE_URL}/${tripId}/stops/${stopId}`);
+  }
 }

@@ -1,0 +1,256 @@
+<div class="shipment-page">
+  <div class="page-header">
+    <div>
+      <h1>{{ isEditMode ? 'Edit Shipment' : 'Post Shipment' }}</h1>
+      <p class="sub-title">Create a shipment request with route, cargo and schedule details</p>
+    </div>
+    <a class="back-btn" routerLink="/shipments">
+      <span class="material-icons">arrow_back</span>
+      Back to list
+    </a>
+  </div>
+
+  <div class="form-card">
+    <div class="progress-container">
+      <div class="progress-steps">
+        <div class="progress-line"></div>
+        <div class="progress-line-active" [style.width.%]="(currentStep - 1) / 3 * 100"></div>
+
+        <div class="step" [ngClass]="getStepClass(1)">
+          <div class="step-circle">1</div>
+          <div class="step-label">Customer &amp; Route</div>
+        </div>
+        <div class="step" [ngClass]="getStepClass(2)">
+          <div class="step-circle">2</div>
+          <div class="step-label">Cargo</div>
+        </div>
+        <div class="step" [ngClass]="getStepClass(3)">
+          <div class="step-circle">3</div>
+          <div class="step-label">Schedule</div>
+        </div>
+        <div class="step" [ngClass]="getStepClass(4)">
+          <div class="step-circle">4</div>
+          <div class="step-label">Review</div>
+        </div>
+      </div>
+    </div>
+
+    <p class="api-message" *ngIf="isLoadingDetail">Loading shipment...</p>
+    <p class="api-message error" *ngIf="submitError">{{ submitError }}</p>
+    <p class="api-message" *ngIf="submitMessage">{{ submitMessage }}</p>
+    <p class="api-message error" *ngIf="customerLoadError">{{ customerLoadError }}</p>
+
+    <form [formGroup]="shipmentForm">
+      <!-- STEP 1: Customer & Route -->
+      <div class="form-step" [class.active]="currentStep === 1" formGroupName="customerInfo">
+        <div class="form-group">
+          <label>Customer <span class="required">*</span></label>
+          <select class="form-input" formControlName="customerId" (change)="onCustomerChange()">
+            <option [ngValue]="null">Select a customer</option>
+            <option *ngFor="let c of customerList" [ngValue]="c.customerId || c.id">{{ getCustomerName(c) }}</option>
+          </select>
+          <small class="error-msg" *ngIf="isInvalid('customerInfo', 'customerId')">Please select a customer</small>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Source City <span class="required">*</span></label>
+            <input type="text" class="form-input" formControlName="sourceCity" placeholder="Mumbai">
+            <small class="error-msg" *ngIf="isInvalid('customerInfo', 'sourceCity')">Source city is required</small>
+          </div>
+          <div class="form-group">
+            <label>Destination City <span class="required">*</span></label>
+            <input type="text" class="form-input" formControlName="destinationCity" placeholder="Pune">
+            <small class="error-msg" *ngIf="isInvalid('customerInfo', 'destinationCity')">Destination city is required</small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Pickup Address</label>
+            <input type="text" class="form-input" formControlName="pickupAddress" placeholder="Pickup address">
+          </div>
+          <div class="form-group">
+            <label>Drop Address</label>
+            <input type="text" class="form-input" formControlName="dropAddress" placeholder="Drop address">
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: Cargo -->
+      <div class="form-step" [class.active]="currentStep === 2" formGroupName="cargoInfo">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Cargo Type</label>
+            <input type="text" class="form-input" formControlName="cargoType" placeholder="General / Electronics / FMCG">
+          </div>
+          <div class="form-group">
+            <label>Total Weight (kg) <span class="required">*</span></label>
+            <input type="number" class="form-input" formControlName="totalWeightKg" placeholder="1500">
+            <small class="error-msg" *ngIf="isInvalid('cargoInfo', 'totalWeightKg')">Enter a valid weight</small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Total Volume (cbm) <span class="required">*</span></label>
+            <input type="number" class="form-input" formControlName="totalVolumeCbm" placeholder="5.5">
+            <small class="error-msg" *ngIf="isInvalid('cargoInfo', 'totalVolumeCbm')">Enter a valid volume</small>
+          </div>
+        </div>
+
+        <div class="form-row three-col">
+          <div class="form-group">
+            <label>Length (cm)</label>
+            <input type="number" class="form-input" formControlName="lengthCm">
+          </div>
+          <div class="form-group">
+            <label>Width (cm)</label>
+            <input type="number" class="form-input" formControlName="widthCm">
+          </div>
+          <div class="form-group">
+            <label>Height (cm)</label>
+            <input type="number" class="form-input" formControlName="heightCm">
+          </div>
+        </div>
+
+        <div class="items-section" formArrayName="items">
+          <div class="items-header">
+            <h3>Shipment Items</h3>
+            <button type="button" class="btn btn-secondary btn-small" (click)="addItemRow()">
+              <span class="material-icons">add</span> Add Item
+            </button>
+          </div>
+
+          <p class="empty-hint" *ngIf="itemsArray.length === 0">No items added yet. Add one or more cargo items.</p>
+
+          <div class="item-row" *ngFor="let item of itemsArray.controls; let i = index" [formGroupName]="i">
+            <div class="item-row-header">
+              <span>Item {{ i + 1 }}</span>
+              <button type="button" class="icon-btn danger" (click)="removeItemRow(i)">
+                <span class="material-icons">delete</span>
+              </button>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Item Name <span class="required">*</span></label>
+                <input type="text" class="form-input" formControlName="itemName" placeholder="Carton box">
+              </div>
+              <div class="form-group">
+                <label>Quantity <span class="required">*</span></label>
+                <input type="number" class="form-input" formControlName="quantity" min="1">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Weight (kg) <span class="required">*</span></label>
+                <input type="number" class="form-input" formControlName="weightKg">
+              </div>
+              <div class="form-group">
+                <label>Volume (cbm) <span class="required">*</span></label>
+                <input type="number" class="form-input" formControlName="volumeCbm">
+              </div>
+            </div>
+            <div class="form-row three-col">
+              <div class="form-group">
+                <label>Length (cm)</label>
+                <input type="number" class="form-input" formControlName="lengthCm">
+              </div>
+              <div class="form-group">
+                <label>Width (cm)</label>
+                <input type="number" class="form-input" formControlName="widthCm">
+              </div>
+              <div class="form-group">
+                <label>Height (cm)</label>
+                <input type="number" class="form-input" formControlName="heightCm">
+              </div>
+            </div>
+            <div class="form-row checkbox-row">
+              <label class="checkbox-label">
+                <input type="checkbox" formControlName="fragile"> Fragile
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" formControlName="stackable"> Stackable
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: Schedule -->
+      <div class="form-step" [class.active]="currentStep === 3" formGroupName="scheduleInfo">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Required Pickup Date <span class="required">*</span></label>
+            <input type="date" class="form-input" formControlName="requiredPickupDate">
+            <small class="error-msg" *ngIf="isInvalid('scheduleInfo', 'requiredPickupDate')">Pickup date is required</small>
+          </div>
+          <div class="form-group">
+            <label>Required Delivery Date <span class="required">*</span></label>
+            <input type="date" class="form-input" formControlName="requiredDeliveryDate">
+            <small class="error-msg" *ngIf="isInvalid('scheduleInfo', 'requiredDeliveryDate')">Delivery date is required</small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Vehicle Type Required</label>
+          <input type="text" class="form-input" formControlName="vehicleTypeRequired" placeholder="e.g. 14ft Truck, Container">
+        </div>
+
+        <div class="form-group">
+          <label>Special Handling</label>
+          <div class="checkbox-grid">
+            <label class="checkbox-label"><input type="checkbox" formControlName="fragile"> Fragile</label>
+            <label class="checkbox-label"><input type="checkbox" formControlName="keepUpright"> Keep Upright</label>
+            <label class="checkbox-label"><input type="checkbox" formControlName="temperatureControlled"> Temperature Controlled</label>
+            <label class="checkbox-label"><input type="checkbox" formControlName="hazardous"> Hazardous</label>
+            <label class="checkbox-label"><input type="checkbox" formControlName="highValue"> High Value</label>
+            <label class="checkbox-label"><input type="checkbox" formControlName="stackableHandling"> Stackable</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4: Review -->
+      <div class="form-step" [class.active]="currentStep === 4" formGroupName="reviewInfo">
+        <div class="review-section">
+          <h3>Customer &amp; Route</h3>
+          <div class="review-grid">
+            <div><span class="review-label">Customer</span><span>{{ selectedCustomerName }}</span></div>
+            <div><span class="review-label">Route</span><span>{{ shipmentForm.value.customerInfo.sourceCity }} → {{ shipmentForm.value.customerInfo.destinationCity }}</span></div>
+            <div><span class="review-label">Pickup Address</span><span>{{ shipmentForm.value.customerInfo.pickupAddress || '—' }}</span></div>
+            <div><span class="review-label">Drop Address</span><span>{{ shipmentForm.value.customerInfo.dropAddress || '—' }}</span></div>
+          </div>
+        </div>
+
+        <div class="review-section">
+          <h3>Cargo</h3>
+          <div class="review-grid">
+            <div><span class="review-label">Cargo Type</span><span>{{ shipmentForm.value.cargoInfo.cargoType || '—' }}</span></div>
+            <div><span class="review-label">Total Weight</span><span>{{ shipmentForm.value.cargoInfo.totalWeightKg }} kg</span></div>
+            <div><span class="review-label">Total Volume</span><span>{{ shipmentForm.value.cargoInfo.totalVolumeCbm }} cbm</span></div>
+            <div><span class="review-label">Items</span><span>{{ itemsArray.length }}</span></div>
+          </div>
+        </div>
+
+        <div class="review-section">
+          <h3>Schedule</h3>
+          <div class="review-grid">
+            <div><span class="review-label">Pickup Date</span><span>{{ shipmentForm.value.scheduleInfo.requiredPickupDate || '—' }}</span></div>
+            <div><span class="review-label">Delivery Date</span><span>{{ shipmentForm.value.scheduleInfo.requiredDeliveryDate || '—' }}</span></div>
+            <div><span class="review-label">Vehicle Type</span><span>{{ shipmentForm.value.scheduleInfo.vehicleTypeRequired || '—' }}</span></div>
+            <div><span class="review-label">Special Handling</span><span>{{ selectedSpecialHandling }}</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="prevStep()" *ngIf="currentStep > 1">Back</button>
+        <button type="button" class="btn btn-secondary" (click)="cancel()" *ngIf="currentStep === 1">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="nextStep()" [disabled]="isSubmitting">
+          {{ currentStep === 4 ? (isSubmitting ? 'Saving...' : (isEditMode ? 'Update Shipment' : 'Post Shipment')) : 'Next' }}
+          <span class="material-icons" *ngIf="currentStep < 4">arrow_forward</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,110 @@
+.capacity-card {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.capacity-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vehicle-info {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--app-text);
+}
+
+.vehicle-info .material-icons {
+  color: var(--app-primary);
+}
+
+.vehicle-info strong {
+  display: block;
+  font-size: 0.9rem;
+}
+
+.vehicle-sub {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--app-muted-text);
+}
+
+.capacity-bar-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.capacity-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--app-muted-text);
+}
+
+.capacity-bar-track {
+  height: 8px;
+  border-radius: 99px;
+  background: var(--app-surface-muted);
+  overflow: hidden;
+}
+
+.capacity-bar-fill {
+  height: 100%;
+  background: var(--app-primary);
+  border-radius: 99px;
+  transition: width 0.2s;
+}
+
+.capacity-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--app-muted-text);
+}
+
+.capacity-meta .material-icons { font-size: 15px; }
+
+.no-capacity-msg {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--app-muted-text);
+}
+
+.api-message.error {
+  font-size: 0.78rem;
+  color: var(--app-error);
+  margin: 0;
+}
+
+.init-btn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--app-radius-sm);
+  border: 1.5px solid var(--app-primary);
+  background: var(--app-primary-soft);
+  color: var(--app-primary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.init-btn:hover:not(:disabled) {
+  background: var(--app-primary);
+  color: var(--app-primary-contrast);
+}
+
+.init-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.init-btn .material-icons { font-size: 16px; }
