@@ -37,6 +37,7 @@ import { ActiveTripsComponent } from './component/load-matching/active-trips/act
 import { MatchingLoadsComponent } from './component/load-matching/matching-loads/matching-loads.component';
 import { MatchingTrucksComponent } from './component/load-matching/matching-trucks/matching-trucks.component';
 import { TripManifestComponent } from './component/load-matching/manifest/trip-manifest.component';
+import { FindLoadsComponent } from './component/load-matching/find-loads/find-loads.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },
@@ -84,6 +85,7 @@ const routes: Routes = [
 { path: 'trips/:id/matching-loads', component: MatchingLoadsComponent, pathMatch: 'full', canActivate: [AuthGuard, PermissionGuard], data: { module: 'LOADMATCH', action: 'READ' } },
 { path: 'shipments/:id/matching-trucks', component: MatchingTrucksComponent, pathMatch: 'full', canActivate: [AuthGuard, PermissionGuard], data: { module: 'LOADMATCH', action: 'READ' } },
 { path: 'trips/:id/manifest', component: TripManifestComponent, pathMatch: 'full', canActivate: [AuthGuard, PermissionGuard], data: { module: 'MANIFEST', action: 'READ' } },
+{ path: 'find-loads', component: FindLoadsComponent, pathMatch: 'full', canActivate: [AuthGuard, PermissionGuard], data: { module: 'LOADMATCH', action: 'READ' } },
 
 ];
 

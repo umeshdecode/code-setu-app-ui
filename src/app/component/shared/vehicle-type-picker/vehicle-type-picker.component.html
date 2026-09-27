@@ -1,0 +1,21 @@
+<div class="vehicle-type-picker">
+  <div class="vt-grid">
+    <div class="vt-card" *ngIf="allowClear" [class.selected]="!selected" (click)="select(null)">
+      <div class="vt-icon-container">
+        <i class="material-icons">block</i>
+      </div>
+      <span class="vt-label">Any</span>
+      <span class="vt-sub">Not specified</span>
+      <i class="material-icons vt-check" *ngIf="!selected">check_circle</i>
+    </div>
+
+    <div class="vt-card" *ngFor="let type of vehicleTypes" [class.selected]="selected === type.code" (click)="select(type.code)">
+      <div class="vt-icon-container">
+        <i class="material-icons">{{ type.icon }}</i>
+      </div>
+      <span class="vt-label">{{ type.label }}</span>
+      <span class="vt-sub">{{ type.minTon }}-{{ type.maxTon }} Ton</span>
+      <i class="material-icons vt-check" *ngIf="selected === type.code">check_circle</i>
+    </div>
+  </div>
+</div>

@@ -108,3 +108,39 @@
 .init-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .init-btn .material-icons { font-size: 16px; }
+
+.set-vehicle-type-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--app-radius-sm);
+  border: 1.5px solid var(--app-border);
+  background: transparent;
+  color: var(--app-primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.set-vehicle-type-btn:hover {
+  background: var(--app-primary-soft);
+  border-color: var(--app-primary);
+}
+
+.set-vehicle-type-btn .material-icons { font-size: 15px; }
+
+.vehicle-type-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-top: 1px solid var(--app-border);
+  padding-top: 0.65rem;
+}
+
+.updating-hint {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--app-muted-text);
+}

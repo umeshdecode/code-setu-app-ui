@@ -6,11 +6,12 @@ import { LoaderComponent } from '../loader/loader.component';
 import { VehiclePayload, VehicleService } from 'src/app/services/vehicle.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { DialogboxComponent } from '../dialogbox/dialogbox.component';
+import { VehicleTypePickerComponent } from '../shared/vehicle-type-picker/vehicle-type-picker.component';
 
 @Component({
   selector: 'app-vehicle',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, LoaderComponent, MatDialogModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, LoaderComponent, MatDialogModule, VehicleTypePickerComponent],
   templateUrl: './vehicle.component.html',
   styleUrls: ['./vehicle.component.css']
 })

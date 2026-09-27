@@ -1,0 +1,125 @@
+<div class="find-loads-page">
+  <div class="page-header">
+    <h1>Find Loads</h1>
+    <p class="page-subtitle">Search open shipments looking for a truck and find your best match.</p>
+  </div>
+
+  <!-- Loads For You -->
+  <div class="loads-for-you" *ngIf="!isLoadingTrips && myTrips.length > 0">
+    <span class="section-label">Loads For You — based on your active trips</span>
+    <div class="trip-chip-row">
+      <button type="button" class="trip-chip" *ngFor="let trip of myTrips" (click)="selectTripChip(trip)">
+        <span class="material-icons">route</span>
+        {{ trip.sourceCity || '?' }} <span class="material-icons inline-arrow">arrow_forward</span> {{ trip.destinationCity || '?' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Search form -->
+  <div class="search-card">
+    <div class="search-row">
+      <div class="form-field">
+        <label>From City</label>
+        <input type="text" placeholder="Source city" autocomplete="off"
+          [(ngModel)]="criteria.sourceCity"
+          (input)="onCityInput(criteria, 'sourceCity')"
+          (blur)="hideCitySuggestionsSoon()">
+        <div class="autocomplete-results" *ngIf="isActiveCityField(criteria, 'sourceCity')">
+          <div class="autocomplete-item" *ngFor="let place of citySuggestions" (mousedown)="selectCity(place)">
+            <strong>{{ place.name }}</strong>
+            <small *ngIf="place.state || place.country">{{ place.state }}{{ place.state && place.country ? ', ' : '' }}{{ place.country }}</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label>To City</label>
+        <input type="text" placeholder="Destination city" autocomplete="off"
+          [(ngModel)]="criteria.destinationCity"
+          (input)="onCityInput(criteria, 'destinationCity')"
+          (blur)="hideCitySuggestionsSoon()">
+        <div class="autocomplete-results" *ngIf="isActiveCityField(criteria, 'destinationCity')">
+          <div class="autocomplete-item" *ngFor="let place of citySuggestions" (mousedown)="selectCity(place)">
+            <strong>{{ place.name }}</strong>
+            <small *ngIf="place.state || place.country">{{ place.state }}{{ place.state && place.country ? ', ' : '' }}{{ place.country }}</small>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="search-btn" [disabled]="isSearching" (click)="search(0)">
+        <span class="material-icons">search</span>
+        {{ isSearching ? 'Searching...' : 'Find Loads' }}
+      </button>
+    </div>
+
+    <button type="button" class="vt-toggle-btn" (click)="toggleVehicleTypeFilter()">
+      <span class="material-icons">{{ showVehicleTypeFilter ? 'expand_less' : 'tune' }}</span>
+      Vehicle Type Filter{{ vehicleTypeRequired ? ' (' + vehicleTypeLabelFor(vehicleTypeRequired) + ')' : '' }}
+    </button>
+
+    <div class="vt-filter-section" *ngIf="showVehicleTypeFilter">
+      <app-vehicle-type-picker
+        [allowClear]="true"
+        [selected]="vehicleTypeRequired"
+        (selectionChange)="onVehicleTypeChange($event)">
+      </app-vehicle-type-picker>
+    </div>
+  </div>
+
+  <p class="api-message error" *ngIf="searchError">{{ searchError }}</p>
+
+  <!-- Results -->
+  <div class="loading-state" *ngIf="isSearching">
+    <span class="material-icons spin">autorenew</span> Searching open loads...
+  </div>
+
+  <div class="empty-state" *ngIf="!isSearching && hasSearched && results.length === 0 && !searchError">
+    No open loads found for this search.
+  </div>
+
+  <div class="results-list" *ngIf="!isSearching && results.length > 0">
+    <div class="result-card" *ngFor="let shipment of results">
+      <div class="result-route">
+        <span class="material-icons">inventory_2</span>
+        <div>
+          <strong>{{ shipment.sourceCity }} <span class="material-icons inline-arrow">arrow_forward</span> {{ shipment.destinationCity }}</strong>
+          <span class="result-sub">{{ shipment.cargoType || 'General cargo' }}</span>
+        </div>
+      </div>
+
+      <div class="result-meta">
+        <span *ngIf="shipment.totalWeightKg != null">{{ shipment.totalWeightKg }} kg</span>
+        <span *ngIf="shipment.totalVolumeCbm != null">{{ shipment.totalVolumeCbm }} cbm</span>
+        <span *ngIf="shipment.vehicleTypeRequired" class="vt-chip">{{ vehicleTypeLabelFor(shipment.vehicleTypeRequired) }}</span>
+      </div>
+
+      <a class="match-btn" [routerLink]="['/shipments', shipment.shipmentId, 'matching-trucks']">
+        Find My Best Truck Match
+      </a>
+    </div>
+  </div>
+
+  <!-- Find loads from chips -->
+  <div class="source-chip-row" *ngIf="!isSearching && sourceCityChips.length > 0">
+    <span class="section-label">Find Loads From</span>
+    <div class="trip-chip-row">
+      <button type="button" class="trip-chip" *ngFor="let city of sourceCityChips" (click)="filterBySourceCity(city)">
+        {{ city }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-row" *ngIf="!isSearching && results.length > 0 && getDisplayTotalPages() > 1">
+    <button type="button" [disabled]="currentPageNumber === 0" (click)="goToPage(currentPageNumber - 1)">
+      <span class="material-icons">chevron_left</span>
+    </button>
+    <button type="button" *ngFor="let p of visiblePageNumbers" [class.active]="p - 1 === currentPageNumber" (click)="goToPage(p - 1)">
+      {{ p }}
+    </button>
+    <button type="button" [disabled]="currentPageNumber >= getDisplayTotalPages() - 1" (click)="goToPage(currentPageNumber + 1)">
+      <span class="material-icons">chevron_right</span>
+    </button>
+    <span class="pagination-summary">{{ getDisplayTotalRecords() }} loads</span>
+  </div>
+</div>

@@ -2,11 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { Trip } from 'src/app/models/trip';
 import { TripService } from 'src/app/services/trip.service';
+import { vehicleTypeLabel } from 'src/app/models/vehicle-type';
+import { VehicleTypePickerComponent } from '../../shared/vehicle-type-picker/vehicle-type-picker.component';
 
 @Component({
   selector: 'app-trip-capacity-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, VehicleTypePickerComponent],
   templateUrl: './trip-capacity-card.component.html',
   styleUrls: ['./trip-capacity-card.component.css']
 })
@@ -19,12 +21,42 @@ export class TripCapacityCardComponent implements OnChanges {
 
   capacityKnown = false;
 
+  showVehicleTypePicker = false;
+  isUpdatingVehicleType = false;
+  vehicleTypeError = '';
+
   constructor(private tripService: TripService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['trip']) {
       this.capacityKnown = this.trip?.totalWeightKg != null && this.trip?.totalVolumeCbm != null;
     }
+  }
+
+  get vehicleTypeCategoryLabel(): string {
+    return vehicleTypeLabel(this.trip?.vehicleTypeCategory);
+  }
+
+  toggleVehicleTypePicker(): void {
+    this.showVehicleTypePicker = !this.showVehicleTypePicker;
+    this.vehicleTypeError = '';
+  }
+
+  setVehicleType(code: string | null): void {
+    if (!this.trip?.tripId || !code) return;
+    this.isUpdatingVehicleType = true;
+    this.vehicleTypeError = '';
+    this.tripService.updateCapacity(this.trip.tripId, { vehicleTypeCategory: code }).subscribe({
+      next: () => {
+        this.isUpdatingVehicleType = false;
+        this.showVehicleTypePicker = false;
+        this.capacityInitialized.emit(this.trip);
+      },
+      error: err => {
+        this.isUpdatingVehicleType = false;
+        this.vehicleTypeError = err.error?.message || 'Unable to update vehicle type.';
+      }
+    });
   }
 
   get weightUsedPct(): number {

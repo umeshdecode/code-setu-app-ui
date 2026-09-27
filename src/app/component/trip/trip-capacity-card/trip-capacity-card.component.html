@@ -4,9 +4,22 @@
       <span class="material-icons">local_shipping</span>
       <div>
         <strong>{{ trip?.vehicleRegistrationNumber || (trip?.vehicleId ? 'Vehicle #' + trip?.vehicleId : 'Vehicle not assigned') }}</strong>
-        <span class="vehicle-sub" *ngIf="trip?.vehicleTypeCategory">{{ trip?.vehicleTypeCategory }}</span>
+        <span class="vehicle-sub" *ngIf="vehicleTypeCategoryLabel">{{ vehicleTypeCategoryLabel }}</span>
       </div>
     </div>
+    <button type="button" class="set-vehicle-type-btn" (click)="toggleVehicleTypePicker()">
+      <span class="material-icons">{{ showVehicleTypePicker ? 'expand_less' : 'edit' }}</span>
+      {{ trip?.vehicleTypeCategory ? 'Change Vehicle Type' : 'Set Vehicle Type' }}
+    </button>
+  </div>
+
+  <div class="vehicle-type-section" *ngIf="showVehicleTypePicker">
+    <p class="api-message error" *ngIf="vehicleTypeError">{{ vehicleTypeError }}</p>
+    <app-vehicle-type-picker
+      [selected]="trip?.vehicleTypeCategory"
+      (selectionChange)="setVehicleType($event)">
+    </app-vehicle-type-picker>
+    <p class="updating-hint" *ngIf="isUpdatingVehicleType">Updating...</p>
   </div>
 
   <ng-container *ngIf="capacityKnown; else notInitialized">

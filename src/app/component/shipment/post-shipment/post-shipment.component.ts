@@ -8,11 +8,12 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Shipment, ShipmentItem, ShipmentPayload } from 'src/app/models/shipment';
 import { ShipmentService } from 'src/app/services/shipment.service';
 import { CustomersService } from 'src/app/services/customers.service';
+import { VehicleTypePickerComponent } from '../../shared/vehicle-type-picker/vehicle-type-picker.component';
 
 @Component({
   selector: 'app-post-shipment',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, VehicleTypePickerComponent],
   templateUrl: './post-shipment.component.html',
   styleUrls: ['./post-shipment.component.css']
 })

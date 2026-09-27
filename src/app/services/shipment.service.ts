@@ -46,4 +46,19 @@ export class ShipmentService {
   deleteItem(shipmentId: number, itemId: number): Observable<any> {
     return this.http.delete<any>(`${this.BASE_URL}/${shipmentId}/items/${itemId}`);
   }
+
+  // ── Open shipment search (Find Loads) ────────────────────────────────
+  searchOpenShipments(
+    criteria: { sourceCity?: string; destinationCity?: string; vehicleTypeRequired?: string },
+    pageNumber = 0,
+    pageSize = 10
+  ): Observable<any> {
+    let params = new HttpParams()
+      .set('pageNumber', pageNumber)
+      .set('pageSize', pageSize);
+    if (criteria.sourceCity) params = params.set('sourceCity', criteria.sourceCity);
+    if (criteria.destinationCity) params = params.set('destinationCity', criteria.destinationCity);
+    if (criteria.vehicleTypeRequired) params = params.set('vehicleTypeRequired', criteria.vehicleTypeRequired);
+    return this.http.get<any>(`${this.BASE_URL}/search`, { params });
+  }
 }

@@ -48,6 +48,7 @@ export class AccessMenuService {
         { id: 'trips', label: 'Trips', subtitle: 'Manage trip lifecycle', icon: 'route', route: '/trips', accent: 'blue', permissions: ['TRIP', 'TRIP_VIEW', 'TRIP_CREATE', 'MANAGE_TRIP'] },
         { id: 'shipments', label: 'Shipments', subtitle: 'Post and track shipment requests', icon: 'inventory_2', route: '/shipments', accent: 'orange', permissions: ['SHIPMENT', 'SHIPMENT_READ', 'SHIPMENT_VIEW', 'MANAGE_SHIPMENT'] },
         { id: 'load-matching', label: 'Load Matching', subtitle: 'Match shipments to spare trip capacity', icon: 'sync_alt', route: '/trips/active', accent: 'blue', permissions: ['LOADMATCH', 'LOADMATCH_VIEW'] },
+        { id: 'find-loads', label: 'Find Loads', subtitle: 'Search open shipments for your trucks', icon: 'travel_explore', route: '/find-loads', accent: 'blue', permissions: ['LOADMATCH', 'LOADMATCH_VIEW'] },
         { id: 'billing', label: 'Billing', subtitle: 'Invoices, GST and receipts', icon: 'receipt_long', accent: 'green', comingSoon: true, permissions: ['BILLING', 'BILLING_VIEW', 'INVOICE', 'MANAGE_BILLING'] }
       ]
     },

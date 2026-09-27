@@ -194,7 +194,11 @@
 
         <div class="form-group">
           <label>Vehicle Type Required</label>
-          <input type="text" class="form-input" formControlName="vehicleTypeRequired" placeholder="e.g. 14ft Truck, Container">
+          <app-vehicle-type-picker
+            [allowClear]="true"
+            [selected]="shipmentForm.get('scheduleInfo.vehicleTypeRequired')?.value"
+            (selectionChange)="shipmentForm.get('scheduleInfo.vehicleTypeRequired')?.setValue($event)">
+          </app-vehicle-type-picker>
         </div>
 
         <div class="form-group">

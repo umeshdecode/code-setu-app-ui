@@ -59,9 +59,12 @@
           <label>Registration No *</label>
           <input formControlName="registrationNumber" placeholder="MH-12-AB-1234">
         </div>
-        <div class="form-group">
+        <div class="form-group form-group-full">
           <label>Vehicle Type *</label>
-          <input formControlName="vehicleType" placeholder="TRUCK">
+          <app-vehicle-type-picker
+            [selected]="vehicleForm.get('vehicleType')?.value"
+            (selectionChange)="vehicleForm.get('vehicleType')?.setValue($event)">
+          </app-vehicle-type-picker>
         </div>
         <div class="form-group">
           <label>Chassis Number *</label>
