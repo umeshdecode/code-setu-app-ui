@@ -1,0 +1,166 @@
+<section class="route-section" aria-labelledby="trip-route-heading">
+  <div class="route-header">
+    <div>
+      <p class="route-title" id="trip-route-heading">Trip Route &amp; Location</p>
+      <span class="route-chip">Planned route</span>
+    </div>
+    <button class="route-btn ghost" type="button" (click)="load(true)" [disabled]="state === 'loading'"
+      title="Recalculate the planned route">
+      <i class="material-icons">refresh</i> Refresh
+    </button>
+  </div>
+
+  <!-- Summary -->
+  <div class="route-summary" *ngIf="route">
+    <div class="endpoint">
+      <span class="dot source"></span>
+      <div class="endpoint-body">
+        <span class="meta-label">From</span>
+        <span class="meta-val">{{ pointLabel(route.source) }}</span>
+        <span class="loc-status ok" *ngIf="route.source.confirmed">Location confirmed</span>
+        <span class="loc-status warn" *ngIf="!route.source.confirmed">Location not confirmed</span>
+        <button *ngIf="canEdit" class="link-btn" type="button" (click)="openEditor('SOURCE')">
+          {{ route.source.confirmed ? 'Change' : 'Confirm location' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="endpoint">
+      <span class="dot destination"></span>
+      <div class="endpoint-body">
+        <span class="meta-label">To</span>
+        <span class="meta-val">{{ pointLabel(route.destination) }}</span>
+        <span class="loc-status ok" *ngIf="route.destination.confirmed">Location confirmed</span>
+        <span class="loc-status warn" *ngIf="!route.destination.confirmed">Location not confirmed</span>
+        <button *ngIf="canEdit" class="link-btn" type="button" (click)="openEditor('DESTINATION')">
+          {{ route.destination.confirmed ? 'Change' : 'Confirm location' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="metric">
+      <span class="meta-label">Planned road distance</span>
+      <span class="meta-val big">{{ state === 'ready' ? formatDistance(route.distanceMeters) : '—' }}</span>
+      <span class="meta-sub" *ngIf="route.plannedDistanceKm">Entered on trip: {{ route.plannedDistanceKm }} km</span>
+    </div>
+
+    <div class="metric">
+      <span class="meta-label">Estimated driving time</span>
+      <span class="meta-val big">{{ state === 'ready' ? formatDuration(route.durationSeconds) : '—' }}</span>
+    </div>
+  </div>
+
+  <!-- Location editor -->
+  <div class="location-editor" *ngIf="editor">
+    <p class="editor-title">Confirm {{ editor.label }} location</p>
+    <p class="editor-hint">
+      Search the address, choose the correct result, or place a pin on the map. Nothing is saved until you press
+      “Confirm location”.
+    </p>
+    <form class="search-row" (ngSubmit)="search()">
+      <input name="searchQuery" [(ngModel)]="searchQuery" placeholder="Full pickup / drop address"
+        aria-label="Location search" maxlength="300">
+      <button class="route-btn" type="submit" [disabled]="searching || !searchQuery.trim()">
+        {{ searching ? 'Searching…' : 'Search' }}
+      </button>
+      <button class="route-btn ghost" type="button" (click)="togglePinMode()" [disabled]="!mapsReady">
+        <i class="material-icons">push_pin</i> {{ pinMode ? 'Stop placing pin' : 'Pick on map' }}
+      </button>
+    </form>
+
+    <p class="route-note" *ngIf="searchMessage">{{ searchMessage }}</p>
+
+    <ul class="candidates" *ngIf="candidates.length">
+      <li *ngFor="let c of candidates">
+        <button type="button" class="candidate" [class.selected]="pending?.lat === c.latitude && pending?.lng === c.longitude"
+          (click)="selectCandidate(c)">
+          <span>{{ c.formattedAddress }}</span>
+          <span class="badge warn" *ngIf="c.approximate">Approximate (city/area level)</span>
+          <span class="badge" *ngIf="c.partialMatch && !c.approximate">Partial match</span>
+        </button>
+      </li>
+    </ul>
+
+    <div class="pending-box" *ngIf="pending">
+      <p><strong>Selected:</strong> {{ pending.description }}</p>
+      <p class="route-note warn" *ngIf="pending.approximate">
+        This result is only city/area level, not a precise pickup/drop point. Prefer a full address or place a pin.
+      </p>
+    </div>
+
+    <p class="route-note error" *ngIf="saveError">{{ saveError }}</p>
+
+    <div class="editor-actions">
+      <button class="route-btn" type="button" [disabled]="!pending || saving" (click)="confirmPending()">
+        {{ saving ? 'Saving…' : 'Confirm location' }}
+      </button>
+      <button class="route-btn ghost" type="button" (click)="closeEditor()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- State messages -->
+  <div class="route-state" *ngIf="state === 'loading'" role="status">
+    <span class="spinner" aria-hidden="true"></span> Loading planned route…
+  </div>
+
+  <div class="route-state warn" *ngIf="state === 'missing'">
+    <i class="material-icons">location_off</i>
+    <span>
+      {{ message || 'Confirm the source and destination locations to see the planned route.' }}
+      <ng-container *ngIf="!canEdit"> Ask a user with trip edit access to confirm them.</ng-container>
+    </span>
+  </div>
+
+  <div class="route-state warn" *ngIf="state === 'no-route'">
+    <i class="material-icons">wrong_location</i>
+    <span>A route could not be calculated for these locations.</span>
+  </div>
+
+  <div class="route-state error" *ngIf="state === 'error'">
+    <i class="material-icons">error_outline</i>
+    <span>
+      {{ message || 'The route service is unavailable right now.' }}
+      <small *ngIf="route?.referenceId"> (Ref: {{ route?.referenceId }})</small>
+    </span>
+    <button *ngIf="isRetryable" class="route-btn ghost" type="button" (click)="load(true)">Retry</button>
+  </div>
+
+  <p class="route-note" *ngIf="state === 'ready' && message">{{ message }}</p>
+
+  <!-- Map -->
+  <app-trip-route-map *ngIf="mapsReady; else mapFallback"
+    [source]="sourceMarker"
+    [destination]="destinationMarker"
+    [stops]="stopMarkers"
+    [path]="path"
+    [pending]="pendingMarker"
+    [pinMode]="pinMode && !!editor"
+    (mapClicked)="onMapClicked($event)">
+  </app-trip-route-map>
+  <ng-template #mapFallback>
+    <div class="map-fallback">
+      <i class="material-icons">map</i>
+      <span>{{ mapsError || 'Loading map…' }}</span>
+    </div>
+  </ng-template>
+
+  <!-- Stops -->
+  <div class="stops" *ngIf="route?.stops?.length">
+    <p class="meta-label">Stops (in order)</p>
+    <ol>
+      <li *ngFor="let stop of route?.stops">
+        <span>{{ stop.city || 'Stop ' + stop.sequenceOrder }}</span>
+        <span class="loc-status ok" *ngIf="stop.includedInRoute">On route</span>
+        <span class="loc-status warn" *ngIf="!stop.confirmed">Location not confirmed – not on route</span>
+        <button *ngIf="canEdit" class="link-btn" type="button" (click)="openEditor('STOP', stop)">
+          {{ stop.confirmed ? 'Change' : 'Confirm location' }}
+        </button>
+      </li>
+    </ol>
+  </div>
+
+  <p class="disclaimer">
+    <i class="material-icons">info</i>
+    {{ route?.disclaimer || 'Planned general driving route. Distance and time are estimates, not live vehicle tracking and not verified for truck size/weight restrictions.' }}
+  </p>
+</section>

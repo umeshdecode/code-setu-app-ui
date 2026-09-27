@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ENV } from 'src/assets/env';
+import { RouteLocationUpdate } from 'src/app/models/trip-route';
 
 @Injectable({ providedIn: 'root' })
 export class TripService {
@@ -141,5 +142,21 @@ export class TripService {
 
   removeStop(tripId: number, stopId: number): Observable<any> {
     return this.http.delete<any>(`${this.BASE_URL}/${tripId}/stops/${stopId}`);
+  }
+
+  // ── Planned route endpoints (/trip/{id}/route) ────────────────────────
+  // Every response is a GenericDataDTO; data is a TripRoute (or GeocodeCandidate[] for geocode).
+  getTripRoute(tripId: number, refresh = false): Observable<any> {
+    const params = new HttpParams().set('refresh', refresh);
+    return this.http.get<any>(`${this.BASE_URL}/${tripId}/route`, { params });
+  }
+
+  /** Address search sent in the body (not the URL) so it stays out of access logs. */
+  geocodeTripLocation(tripId: number, query: string): Observable<any> {
+    return this.http.post<any>(`${this.BASE_URL}/${tripId}/route/geocode`, { query });
+  }
+
+  confirmTripLocation(tripId: number, update: RouteLocationUpdate): Observable<any> {
+    return this.http.put<any>(`${this.BASE_URL}/${tripId}/route/location`, update);
   }
 }

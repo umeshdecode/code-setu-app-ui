@@ -7,6 +7,7 @@ import { TripService } from 'src/app/services/trip.service';
 import { DriverService } from 'src/app/services/driver.service';
 import { VehicleService } from 'src/app/services/vehicle.service';
 import { CustomersService } from 'src/app/services/customers.service';
+import { AccessMenuService } from 'src/app/services/access-menu.service';
 import { DialogboxComponent } from '../dialogbox/dialogbox.component';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, DecimalPipe } from '@angular/common';
@@ -119,8 +120,14 @@ export class TripComponent implements OnInit {
     private driverService: DriverService,
     private vehicleService: VehicleService,
     private customersService: CustomersService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private accessMenuService: AccessMenuService
   ) {}
+
+  /** Confirming route locations writes to the trip's shifting, so it needs TRIP update access. */
+  get canEditTripRoute(): boolean {
+    return this.accessMenuService.hasPermission('TRIP', 'UPDATE');
+  }
 
   ngOnInit(): void {
     this.loadTrips();
@@ -280,7 +287,7 @@ export class TripComponent implements OnInit {
   }
 
   // ── Detail panel ──────────────────────────────────────────────────────
-  openDetailPanel(trip: Trip): void {
+  openDetailPanel(trip: Trip, scrollToRoute = false): void {
     this.showCreateForm = false;
     this.showDetailPanel = true;
     this.selectedTrip = { ...trip };
@@ -301,6 +308,10 @@ export class TripComponent implements OnInit {
       this.loadExpenses(trip.tripId);
       this.loadStatusHistory(trip.tripId);
       this.loadDocuments(trip.tripId);
+    }
+    if (scrollToRoute) {
+      setTimeout(() => document.getElementById('trip-route-section')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
     }
   }
 

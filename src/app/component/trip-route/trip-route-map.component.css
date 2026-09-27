@@ -1,0 +1,36 @@
+:host {
+  display: block;
+}
+
+/* Fixed, non-zero height so the map never initialises into a collapsed container. */
+.route-map {
+  position: relative;
+  height: 380px;
+  width: 100%;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-md, 8px);
+  overflow: hidden;
+  background: var(--app-surface-muted);
+}
+
+.route-map.pin-mode {
+  border-color: var(--app-warning);
+  box-shadow: 0 0 0 2px var(--app-warning-soft);
+}
+
+.pin-hint {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: var(--app-warning);
+  color: #fff;
+  font-size: 0.8rem;
+  pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  .route-map { height: 300px; }
+}

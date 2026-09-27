@@ -1,0 +1,204 @@
+:host { display: block; }
+
+.route-section {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-lg, 12px);
+  background: var(--app-surface);
+  color: var(--app-text);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.route-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.route-header > div { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+
+.route-title { margin: 0; font-weight: 600; font-size: 1rem; color: var(--app-text); }
+
+.route-chip {
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  background: var(--app-primary-soft);
+  color: var(--app-primary);
+  border: 1px solid var(--app-border-strong);
+}
+
+.route-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.endpoint { display: flex; gap: 0.5rem; align-items: flex-start; }
+.endpoint-body, .metric { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+
+.dot { width: 12px; height: 12px; border-radius: 50%; margin-top: 0.3rem; flex: none; }
+.dot.source { background: var(--app-success); }
+.dot.destination { background: var(--app-error); }
+
+.meta-label { font-size: 0.75rem; color: var(--app-muted-text); text-transform: uppercase; letter-spacing: 0.03em; }
+.meta-val { font-size: 0.9rem; overflow-wrap: anywhere; }
+.meta-val.big { font-size: 1.15rem; font-weight: 600; }
+.meta-sub { font-size: 0.75rem; color: var(--app-muted-text); }
+
+.loc-status { font-size: 0.72rem; }
+.loc-status.ok { color: var(--app-success); }
+.loc-status.warn { color: var(--app-warning); }
+
+.link-btn {
+  align-self: flex-start;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--app-primary);
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.route-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--app-radius-sm, 6px);
+  border: 1px solid var(--app-primary);
+  background: var(--app-primary);
+  color: var(--app-primary-contrast, #fff);
+  font-size: 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.route-btn:hover:not(:disabled) { background: var(--app-primary-hover); }
+.route-btn.ghost { background: transparent; color: var(--app-primary); }
+.route-btn.ghost:hover:not(:disabled) { background: var(--app-primary-soft); }
+.route-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.route-btn .material-icons { font-size: 18px; }
+
+.route-state {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--app-radius-md, 8px);
+  background: var(--app-info-soft);
+  color: var(--app-text);
+  font-size: 0.88rem;
+}
+.route-state.warn { background: var(--app-warning-soft); }
+.route-state.warn .material-icons { color: var(--app-warning); }
+.route-state.error { background: var(--app-error-soft); }
+.route-state.error .material-icons { color: var(--app-error); }
+.route-state .route-btn { margin-left: auto; }
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--app-border-strong);
+  border-top-color: var(--app-primary);
+  border-radius: 50%;
+  animation: route-spin 0.8s linear infinite;
+}
+@keyframes route-spin { to { transform: rotate(360deg); } }
+
+.route-note { margin: 0; font-size: 0.82rem; color: var(--app-muted-text); }
+.route-note.warn { color: var(--app-warning); }
+.route-note.error { color: var(--app-error); }
+
+.map-fallback {
+  height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  text-align: center;
+  padding: 1rem;
+  border: 1px dashed var(--app-border-strong);
+  border-radius: var(--app-radius-md, 8px);
+  color: var(--app-muted-text);
+  background: var(--app-bg);
+}
+
+.location-editor {
+  padding: 0.85rem;
+  border: 1px solid var(--app-border-strong);
+  border-radius: var(--app-radius-md, 8px);
+  background: var(--app-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.editor-title { margin: 0; font-weight: 600; }
+.editor-hint { margin: 0; font-size: 0.8rem; color: var(--app-muted-text); }
+
+.search-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.search-row input {
+  flex: 1 1 240px;
+  min-width: 0;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--app-border-strong);
+  border-radius: var(--app-radius-sm, 6px);
+  background: var(--app-surface);
+  color: var(--app-text);
+}
+
+.candidates { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.35rem; }
+.candidate {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: left;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-sm, 6px);
+  background: var(--app-surface);
+  color: var(--app-text);
+  cursor: pointer;
+}
+.candidate:hover { border-color: var(--app-primary); }
+.candidate.selected { border-color: var(--app-primary); box-shadow: 0 0 0 2px var(--app-primary-shadow); }
+
+.badge {
+  font-size: 0.7rem;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background: var(--app-neutral-soft);
+  color: var(--app-neutral);
+}
+.badge.warn { background: var(--app-warning-soft); color: var(--app-warning); }
+
+.pending-box p { margin: 0.1rem 0; font-size: 0.85rem; }
+.editor-actions { display: flex; gap: 0.5rem; }
+
+.stops ol { margin: 0.35rem 0 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.3rem; }
+.stops li { font-size: 0.88rem; }
+.stops li > * { margin-right: 0.5rem; }
+
+.disclaimer {
+  margin: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--app-muted-text);
+}
+.disclaimer .material-icons { font-size: 16px; }
+
+@media (max-width: 900px) {
+  .route-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  .route-summary { grid-template-columns: 1fr; }
+  .route-header { flex-wrap: wrap; }
+}

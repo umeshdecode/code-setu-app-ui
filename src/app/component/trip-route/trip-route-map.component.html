@@ -1,0 +1,25 @@
+<div class="route-map" [class.pin-mode]="pinMode">
+  <google-map
+    height="100%"
+    width="100%"
+    [options]="mapOptions"
+    (mapInitialized)="onMapReady($event)"
+    (mapClick)="onMapClick($event)">
+
+    <map-polyline *ngIf="path.length > 1" [path]="path" [options]="polylineOptions"></map-polyline>
+
+    <map-marker *ngIf="source" [position]="source.position" [title]="source.title"
+      [label]="markerLabel(source, 'A')" [options]="sourceOptions"></map-marker>
+
+    <map-marker *ngFor="let stop of stops; trackBy: trackByTitle" [position]="stop.position"
+      [title]="stop.title" [label]="markerLabel(stop, '')" [options]="stopOptions"></map-marker>
+
+    <map-marker *ngIf="destination" [position]="destination.position" [title]="destination.title"
+      [label]="markerLabel(destination, 'B')" [options]="destinationOptions"></map-marker>
+
+    <map-marker *ngIf="pending" [position]="pending.position" [title]="pending.title"
+      [options]="pendingOptions"></map-marker>
+  </google-map>
+
+  <div class="pin-hint" *ngIf="pinMode">Click on the map to place the pin</div>
+</div>

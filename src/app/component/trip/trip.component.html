@@ -247,6 +247,11 @@
       <div class="meta-item"><span class="meta-label">Total Expense</span><span class="meta-val">₹{{ totalExpenseAmount | number:'1.0-0' }}</span></div>
     </div>
 
+    <!-- Planned route (Google Maps) -->
+    <app-trip-route-section id="trip-route-section" *ngIf="selectedTrip.tripId"
+      [tripId]="selectedTrip.tripId" [canEdit]="canEditTripRoute">
+    </app-trip-route-section>
+
     <!-- Expenses section -->
     <div class="expenses-section">
       <p class="charges-subtitle">Expenses</p>
@@ -483,6 +488,9 @@
               <div class="action-cell">
                 <button type="button" title="View Details" (click)="openDetailPanel(trip)">
                   <i class="material-icons">visibility</i>
+                </button>
+                <button type="button" title="View Route" (click)="openDetailPanel(trip, true)">
+                  <i class="material-icons">route</i>
                 </button>
                 <button type="button" title="Delete" (click)="deleteTrip(trip)">
                   <i class="material-icons">delete</i>

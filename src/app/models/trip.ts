@@ -24,6 +24,9 @@ export interface TripStop {
   tripId?: number;
   stopCity: string;
   sequenceOrder: number;
+  latitude?: number;
+  longitude?: number;
+  locationSource?: string;
 }
 
 export interface TripStatusHistory {
@@ -56,6 +59,7 @@ export interface Trip {
   driverId?: number;
   vehicleId?: number;
   plannedStartTime?: string;
+  plannedEndTime?: string;
   actualStartTime?: string;
   actualEndTime?: string;
   plannedDistanceKm?: number;
@@ -94,6 +98,7 @@ export interface TripPayload {
   driverId?: number;
   vehicleId?: number;
   plannedStartTime?: string;
+  plannedEndTime?: string;
   actualStartTime?: string;
   actualEndTime?: string;
   plannedDistanceKm?: number;

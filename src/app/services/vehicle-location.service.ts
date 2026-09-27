@@ -22,17 +22,15 @@ export class VehicleLocationService {
 
   constructor(private http: HttpClient) { }
 
-  // 🔥 REST API
+  // 🔥 REST API - backend: GET /api/v2/cargosetu/vehicle/location/{vehicleId}/location
   getLiveLocation(vehicleId: number) {
     return this.http.get<any>(
-      `${this.BASE_URL}/vehicle/${vehicleId}/location`
+      `${this.BASE_URL}/vehicle/location/${vehicleId}/location`
     );
   }
 
   loadInitialLocation(vehicleId: any): Observable<any> {
-    return this.http.get<any>(
-      `${this.BASE_URL}/vehicle/${vehicleId}/location`
-    );
+    return this.getLiveLocation(vehicleId);
   }
 
   connect(vehicleId: number) {
@@ -81,5 +79,8 @@ export class VehicleLocationService {
     if (this.stompClient) {
       this.stompClient.deactivate();
     }
+
+    // Don't replay the previous vehicle's last position to the next subscriber.
+    this.locationSubject.next(null);
   }
 }

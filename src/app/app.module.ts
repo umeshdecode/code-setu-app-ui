@@ -77,6 +77,7 @@ import { ThemeCustomizerComponent } from './component/theme-customizer/theme-cus
 import { ThemeService } from './services/theme.service';
 import { ViewcomponentComponent } from './component/viewcomponent/viewcomponent.component';
 import { TripComponent } from './component/trip/trip.component';
+import { TripRouteSectionComponent } from './component/trip-route/trip-route-section.component';
 import { ShiftingWorkspaceComponent } from './component/shifting-workspace/shifting-workspace.component';
 import { WsOverviewComponent } from './component/shifting-workspace/overview/overview.component';
 import { WsInventoryComponent } from './component/shifting-workspace/inventory/inventory.component';
@@ -176,6 +177,7 @@ import { HasPermissionDirective } from './directives/has-permission.directive';
     FeaturescreenComponent,
     VehicleManagementComponent,
     DriverLocationComponent,
+    TripRouteSectionComponent,
     PaginationComponent,
     DialogboxComponent,
   ],
