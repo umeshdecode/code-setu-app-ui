@@ -28,6 +28,9 @@ export class VehicleComponent implements OnInit {
   message = '';
   error = '';
   showForm = true;
+  manufacturers: string[] = [];
+  models: any[] = [];
+  isLoadingModels = false;
 
   constructor(
     private fb: FormBuilder,
@@ -38,10 +41,48 @@ export class VehicleComponent implements OnInit {
   ngOnInit(): void {
     this.initForm();
     this.loadVehicles();
+    this.loadManufacturers();
+
+    this.vehicleForm.get('manufacturer')?.valueChanges.subscribe(manufacturer => {
+      this.vehicleForm.get('model')?.setValue('');
+      this.models = [];
+      if (manufacturer) {
+        this.loadModelsForManufacturer(manufacturer);
+      }
+    });
+  }
+
+  loadManufacturers(): void {
+    this.vehicleService.getManufacturers().subscribe({
+      next: response => {
+        this.manufacturers = this.extractList(response);
+      },
+      error: error => console.error('Failed to load manufacturers:', error)
+    });
+  }
+
+  loadModelsForManufacturer(manufacturer: string): void {
+    this.isLoadingModels = true;
+    this.vehicleService.getModelsForManufacturer(manufacturer).subscribe({
+      next: response => {
+        this.models = this.extractList(response);
+        this.isLoadingModels = false;
+      },
+      error: error => {
+        console.error('Failed to load models:', error);
+        this.isLoadingModels = false;
+      }
+    });
   }
 
   get isApiBusy(): boolean {
     return this.isLoading || this.isSaving || this.isDeleting;
+  }
+
+  get modelPlaceholder(): string {
+    if (this.isLoadingModels) return 'Loading models...';
+    if (!this.vehicleForm.get('manufacturer')?.value) return '-- Select manufacturer first --';
+    return '-- Select Model --';
   }
 
   get filteredVehicles(): any[] {
@@ -164,7 +205,13 @@ export class VehicleComponent implements OnInit {
     
     const capKg = vehicle.capacityKg || 0;
     const isTon = capKg > 0 && capKg % 1000 === 0;
-    
+
+    if (vehicle.manufacturer) {
+      this.loadModelsForManufacturer(vehicle.manufacturer);
+    }
+
+    // emitEvent: false - avoids the manufacturer valueChanges listener resetting
+    // the model value we're patching in the same call.
     this.vehicleForm.patchValue({
       chassisNumber: vehicle.chassisNumber || '',
       engineNumber: vehicle.engineNumber || '',
@@ -187,7 +234,7 @@ export class VehicleComponent implements OnInit {
       insuranceExpiryDate: vehicle.insuranceExpiryDate || '',
       pollutionExpiryDate: vehicle.pollutionExpiryDate || '',
       currentLocation: vehicle.currentLocation || ''
-    });
+    }, { emitEvent: false });
   }
 
   delete(id: number): void {

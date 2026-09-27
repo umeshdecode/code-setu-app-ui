@@ -59,6 +59,14 @@ export class VehicleService {
     return this.http.delete<any>(`${this.BASE_URL}/${id}`);
   }
 
+  getManufacturers(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.BASE_URL}/manufacturer-models/manufacturers`);
+  }
+
+  getModelsForManufacturer(manufacturer: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.BASE_URL}/manufacturer-models/manufacturers/${encodeURIComponent(manufacturer)}/models`);
+  }
+
     getAssignments(page: number, size: number): Observable<any> {
     return this.http.get<Assignments[]>(this.BASE_URL_ASSIGN+'');
   }

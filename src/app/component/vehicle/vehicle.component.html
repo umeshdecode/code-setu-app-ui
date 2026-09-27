@@ -75,12 +75,18 @@
           <input formControlName="engineNumber" placeholder="Engine number">
         </div>
         <div class="form-group">
-          <label>Model *</label>
-          <input formControlName="model" placeholder="LPT 1613">
+          <label>Manufacturer *</label>
+          <select formControlName="manufacturer">
+            <option value="" disabled>-- Select Manufacturer --</option>
+            <option *ngFor="let m of manufacturers" [value]="m">{{ m }}</option>
+          </select>
         </div>
         <div class="form-group">
-          <label>Manufacturer *</label>
-          <input formControlName="manufacturer" placeholder="Tata Motors">
+          <label>Model *</label>
+          <select formControlName="model">
+            <option value="" disabled>{{ modelPlaceholder }}</option>
+            <option *ngFor="let m of models" [value]="m.model">{{ m.model }}</option>
+          </select>
         </div>
         <div class="form-group">
           <label>Mileage *</label>
