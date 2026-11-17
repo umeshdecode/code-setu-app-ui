@@ -56,8 +56,9 @@ export class ShiftingWorkspaceComponent implements OnInit {
     this.isQuickActionLoading = true;
     this.templateService.getInvoicePdf(this.shiftId).subscribe({
       next: (blob) => {
-        this.downloadBlob(blob, `invoice-${this.shiftId}.pdf`);
-        this.isQuickActionLoading = false;
+        this.templateService.deliverDocument(blob, `invoice-${this.shiftId}`)
+          .catch((err) => console.error('Invoice display failed:', err))
+          .finally(() => { this.isQuickActionLoading = false; });
       },
       error: () => { this.isQuickActionLoading = false; }
     });

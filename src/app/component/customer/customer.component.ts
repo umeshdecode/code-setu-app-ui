@@ -717,10 +717,18 @@ export class CustomerComponent implements OnInit {
     this.isGeneratingDocument = true;
     this.templateService.getInvoicePdf(shiftingId).subscribe({
       next: (blob) => {
-        this.downloadBlob(blob, `invoice-${shiftingId}.pdf`);
-        this.showMessage('Invoice PDF downloaded successfully.');
-        this.downloadingQuotationId = null;
-        this.isGeneratingDocument = false;
+        this.templateService.deliverDocument(blob, `invoice-${shiftingId}`)
+          .then((result) => this.showMessage(result === 'downloaded'
+            ? 'Invoice PDF downloaded successfully.'
+            : 'Invoice ready. Choose "Save as PDF" in the print dialog to save it.'))
+          .catch((err) => {
+            console.error('Invoice display failed:', err);
+            this.showError('Unable to open invoice.');
+          })
+          .finally(() => {
+            this.downloadingQuotationId = null;
+            this.isGeneratingDocument = false;
+          });
       },
       error: (error) => {
         console.error('Invoice PDF download failed:', error);
@@ -788,10 +796,18 @@ export class CustomerComponent implements OnInit {
     this.isGeneratingDocument = true;
     this.templateService.getQuotationPdf(shiftingId).subscribe({
       next: (blob) => {
-        this.downloadBlob(blob, `quotation-${shiftingId}.pdf`);
-        this.showMessage('Quotation PDF downloaded successfully.');
-        this.downloadingQuotationId = null;
-        this.isGeneratingDocument = false;
+        this.templateService.deliverDocument(blob, `quotation-${shiftingId}`)
+          .then((result) => this.showMessage(result === 'downloaded'
+            ? 'Quotation PDF downloaded successfully.'
+            : 'Quotation ready. Choose "Save as PDF" in the print dialog to save it.'))
+          .catch((err) => {
+            console.error('Quotation display failed:', err);
+            this.showError('Unable to open quotation.');
+          })
+          .finally(() => {
+            this.downloadingQuotationId = null;
+            this.isGeneratingDocument = false;
+          });
       },
       error: (error) => {
         console.error('Quotation PDF download failed:', error);
